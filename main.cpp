@@ -12,7 +12,7 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     //ENGINE::GLFrameWork engine(1440,1080);
-    TestEngine engine(1280,1024);
+    TestEngine engine(1280,960);
 
     if (engine.InitSDL()) {
         cout << "init sdl ok" << endl;

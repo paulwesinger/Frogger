@@ -20,6 +20,9 @@ enum FrogState{
     Die
 };
 
+const int MAX_TILE_X = 20;
+const int MAX_TILE_Y = 15;
+
 
 class TestEngine : public ENGINE::GLFrameWork
 {
@@ -45,7 +48,16 @@ protected:
     std::vector<ENGINE::Base*> Holz;
     Audio * audio;
 
+    // +++++++++++++++++++++++++++++++
+    // unser hauptakteur: der Frosch
+    // +++++++++++++++++++++++++++++++
     ENGINE::Sprite * frog;
+
+    // +++++++++++++++++++++++++++++++
+    // cars and snakes als tiles 64x64
+    // 20 Stk pro x-achse
+    // +++++++++++++++++++++++++++++++
+    ENGINE::Sprite * carsAndsnakes[20];
 
 
 

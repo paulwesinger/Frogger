@@ -8,7 +8,11 @@
 #include <imageloader.h>
 
 
-const uint64_t Frogger_TIME = 150;
+const uint64_t Frogger_TIME = 70;
+const int Frogger_FRAMES = 1;
+
+const int STEP_X = 32;
+const int STEP_Y = 32;
 
 
 
@@ -31,6 +35,10 @@ TestEngine::~TestEngine(){
 
     delete frog;
     delete Frogger;
+
+
+    for(int i=0; i< MAX_TILE_X; i++)
+        delete carsAndsnakes[i];
 
     // wav freigeben
     Mix_FreeChunk(sound_Hop);
@@ -74,11 +82,11 @@ void TestEngine::UserUpdate(KEYBOARDSTATE state){
         keyboardtext = "Up Key";
         audio->PlaySound(sound_Hop);
 
-        _StepX = 0; _StepY = -32;
+        _StepX = 0; _StepY = -STEP_X;
         _TileX = 1;
         _TileY = 0;
         _EndTileX = 0; _EndTileY = 0;
-        frog->StartAnimation(_TileX,_TileY,Frogger_TIME,1,_StepX,_StepY);
+        frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
         //frog->MoveSprite(_StepX,_StepY,Frogger_TIME,2,_Elapsed,_TileX,_TileY);
         break;
     }
@@ -87,11 +95,11 @@ void TestEngine::UserUpdate(KEYBOARDSTATE state){
         keyboardtext = "Down Key";
         audio->PlaySound(sound_Hop);
 
-        _StepX = 0; _StepY = 32;
+        _StepX = 0; _StepY = STEP_X;
         _TileX = 5;
         _TileY = 0;
         _EndTileX = 4; _EndTileY = 0;
-        frog->StartAnimation(_TileX,_TileY,Frogger_TIME,1,_StepX,_StepY);
+        frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
         //frog->MoveSprite(_StepX,_StepY,Frogger_TIME,2,_Elapsed,_TileX,_TileY);
         break;
 
@@ -99,11 +107,11 @@ void TestEngine::UserUpdate(KEYBOARDSTATE state){
         keyboardtext = "Left Key";
         audio->PlaySound(sound_Hop);
 
-        _StepX = -32; _StepY = 0;
+        _StepX = -STEP_X; _StepY = 0;
         _TileX = 3;
         _TileY = 0;
         _EndTileX = 2; _EndTileY = 0;
-        frog->StartAnimation(_TileX,_TileY,Frogger_TIME,1,_StepX,_StepY);
+        frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
         // frog->MoveSprite(_StepX,_StepY,Frogger_TIME,2,_Elapsed,_TileX,_TileY);
         break;
 
@@ -111,11 +119,11 @@ void TestEngine::UserUpdate(KEYBOARDSTATE state){
         keyboardtext = "Right Key";
         audio->PlaySound(sound_Hop);
 
-        _StepX = 32; _StepY = 0;
+        _StepX = STEP_X; _StepY = 0;
         _TileX = 7;
         _TileY = 0;
         _EndTileX = 6; _EndTileY = 0;
-        frog->StartAnimation(_TileX,_TileY,Frogger_TIME,1,_StepX,_StepY);
+        frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
         //frog->MoveSprite(_StepX,_StepY,Frogger_TIME,2,_Elapsed,_TileX,_TileY);
         break;
 
@@ -124,17 +132,25 @@ void TestEngine::UserUpdate(KEYBOARDSTATE state){
         break;
 
 
+
+    default:
+        keyboardtext = "No Key";
+        _StepX = 0;
+        _StepY = 0;
+        break;
+    }
+
+    switch(state.BtnStateUP){
     case BTN_UP_UP_KEY:
     case BTN_UP_DOWN_KEY:
     case BTN_UP_LEFT_KEY:
     case BTN_UP_RIGHT_KEY:
         frog->EndAnimation(_TileX,_TileY);
         break;
+
     default:
-        keyboardtext = "No Key";
-        _StepX = 0;
-        _StepY = 0;
         break;
+
     }
 }
 
@@ -187,21 +203,21 @@ void TestEngine::Run(){
 
         //  Frogger->Render();
         // frog->Render();
-
         //frog->RenderFromAsset(0,1);
+
+        int x = 0;
+        for (int i = 0; i< MAX_TILE_X; i++){
+            carsAndsnakes[i]->setPos(x,812);
+            carsAndsnakes[i]->RenderFromAsset(8,0);
+            x += 64;
+        }
+
         if ( ! frog->AnimationDone() )
 
-        frog->MoveSprite(_StepX,_StepY,Frogger_TIME,1,_Elapsed,_TileX,_TileY);
+            frog->MoveSprite(_StepX,_StepY,Frogger_TIME,Frogger_FRAMES,_Elapsed,_TileX,_TileY);
 
-
-        // frog->Animate(elapsed,
-        //             _StepX,_StepY,
-        //             _TileX,
-        //             _TileX+1,
-        //             _TileY);
         else{
 
-            //    frog->EndAnimation(_EndTileX,_EndTileY);
             frog->RenderFromAsset(_EndTileX,_EndTileY);
         }
 
@@ -242,15 +258,31 @@ bool TestEngine::InitUserObjects(){
         Holz.push_back(obj);
     }
 
-    Frogger = new ENGINE::BaseObject2D(_ResX,_ResY,"/home/paul/workspace/images/retrogames/frogger/Sprites640x560.png",_Shader);
-    Frogger->setPos(300,400);
+    // Frogger = new ENGINE::BaseObject2D(_ResX,_ResY,"/home/paul/workspace/images/retrogames/frogger/Sprites640x560.png",_Shader);
+    // Frogger->setPos(300,400);
 
     //CarsAndSnakes32x32.png
     frog = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/images/retrogames/frogger/Froggs8x4.png",_Shader); //graphics-game-sprites640x560.png",_Shader);x
-    frog->setPos(500,800);
+
+    // Für Auflösung 1280x960 Für 64 pixel tiles
+    frog->setPos(608,812);
     frog->InitTextureMap(8,4);
     //frog->SetTimeToAnimate(1500);
     //frog->SetCountSequences(1);
+
+    // carsAndsnakes = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/images/retrogames/frogger/CarsAndSnakes64x64.png.png",_Shader);
+    // // Momentan noch keine SetPos,
+    // carsAndsnakes->InitTextureMap(9,4);
+
+    // Die untere Strasse Rendern:
+    // instancen für sprites in einer schleife generieren.
+    for(int i = 0; i < MAX_TILE_X; i++){
+        carsAndsnakes[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/images/retrogames/frogger/CarsAndSnakes64x64.png",_Shader);
+        carsAndsnakes[i]->InitTextureMap(9,4);
+    }
+    // instancen in einem array of sprites neu anlegen
+
+
 
     // Default settings at start
     _TileX = 0;
