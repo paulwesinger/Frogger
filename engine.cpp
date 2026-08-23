@@ -8,8 +8,8 @@
 #include <imageloader.h>
 
 
-const uint64_t Frogger_TIME = 50;
-const int Frogger_FRAMES = 1;
+const uint64_t Frogger_TIME = 100;
+const int Frogger_FRAMES = 5;
 
 const int STEP_X = 32;
 const int STEP_Y = 32;
@@ -80,84 +80,94 @@ void TestEngine::UserUpdate(KEYBOARDSTATE state){
 
     case  BTN_PRESS_UP_KEY:{
         keyboardtext = "Up Key";
-        audio->PlaySound(sound_Hop);
+        // audio->PlaySound(sound_Hop);
 
-        _StepX = 0; _StepY = -STEP_X;
+        _StepX = 0; _StepY = -STEP_Y;
         _TileX = 1;
         _TileY = 0;
         _EndTileX = 0; _EndTileY = 0;
 
-        if (frog->AnimationDone()) {
+        if (frog->AnimationDone() /*&& ! frog->IsLocked()*/) {
             frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
+            cout << "Animation started" << endl;
         }
-        else
-            frog->MoveSprite(_StepX,_StepY,Frogger_TIME,2,_Elapsed,_TileX,_TileY);
+        // else
+        // if ( ! frog->AnimationDone())
+        // {
+        //     frog->MoveSprite(_StepX,_StepY,Frogger_TIME,2,_Elapsed,_TileX,_TileY);
+        //     cout << "movesprite " << endl;
+        // }
         break;
     }
 
     case BTN_PRESS_DOWN_KEY:
         keyboardtext = "Down Key";
-        audio->PlaySound(sound_Hop);
+       // audio->PlaySound(sound_Hop);
 
-        _StepX = 0; _StepY = STEP_X;
+        _StepX = 0; _StepY = STEP_Y;
         _TileX = 5;
         _TileY = 0;
         _EndTileX = 4; _EndTileY = 0;
-        if (frog->AnimationDone())
+        if (frog->AnimationDone() /* && ! frog->IsLocked()*/)
             frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
-        else
-            frog->MoveSprite(_StepX,_StepY,Frogger_TIME,2,_Elapsed,_TileX,_TileY);
+        //else
+         //   frog->MoveSprite(_StepX,_StepY,Frogger_TIME,2,_Elapsed,_TileX,_TileY);
         break;
 
     case BTN_PRESS_LEFT_KEY:
         keyboardtext = "Left Key";
-        audio->PlaySound(sound_Hop);
+       // audio->PlaySound(sound_Hop);
 
         _StepX = -STEP_X; _StepY = 0;
         _TileX = 3;
         _TileY = 0;
         _EndTileX = 2; _EndTileY = 0;
-        frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
-        frog->MoveSprite(_StepX,_StepY,Frogger_TIME,1,_Elapsed,_TileX,_TileY);
+
+        if (frog->AnimationDone()/* && ! frog->IsLocked()*/)
+            frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
+
+        //frog->MoveSprite(_StepX,_StepY,Frogger_TIME,1,_Elapsed,_TileX,_TileY);
         break;
 
     case BTN_PRESS_RIGHT_KEY:
         keyboardtext = "Right Key";
-        audio->PlaySound(sound_Hop);
+        //audio->PlaySound(sound_Hop);
 
         _StepX = STEP_X; _StepY = 0;
         _TileX = 7;
         _TileY = 0;
         _EndTileX = 6; _EndTileY = 0;
-        frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
-        frog->MoveSprite(_StepX,_StepY,Frogger_TIME,2,_Elapsed,_TileX,_TileY);
+
+        if (frog->AnimationDone() /*&& ! frog->IsLocked()*/)
+            frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
+
+        //frog->MoveSprite(_StepX,_StepY,Frogger_TIME,2,_Elapsed,_TileX,_TileY);
         break;
 
     case BTN_PRESS_SPACE_KEY:
         keyboardtext = "Space Key";
         break;
-
-
-
     default:
         keyboardtext = "No Key";
         _StepX = 0;
         _StepY = 0;
         break;
     }
+}
 
-    switch(state.BtnStateUP){
-    case BTN_UP_UP_KEY:
-    case BTN_UP_DOWN_KEY:
-    case BTN_UP_LEFT_KEY:
-    case BTN_UP_RIGHT_KEY:
-        frog->EndAnimation(_TileX,_TileY);
-        break;
+void TestEngine::HandleMessage(){
+    GLFrameWork::HandleMessage();
 
-    default:
-        break;
-
-    }
+    switch(KeyboardState.BtnStateUP){
+        case BTN_UP_DOWN_KEY:
+        case BTN_UP_UP_KEY:
+        case BTN_UP_LEFT_KEY:
+        case BTN_UP_RIGHT_KEY:
+            frog->EndAnimation(_TileX,_TileY);
+        //    audio->PlaySound(sound_Hop);
+            cout << "Animation ends" << endl;
+            break;
+        }
 }
 
 void TestEngine::Run(){

@@ -34,6 +34,8 @@ public:
     void SetCountSequences(int count);
     void SetTimeToAnimate(uint64_t t);
 
+    bool IsLocked();
+
 
 protected:
     std::vector<sTileTextureCoords> tilecoordinats;

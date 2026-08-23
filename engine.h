@@ -33,6 +33,8 @@ public:
     bool AddTextDisplay(int x, int y,int id, string name) override;
     bool AddTextDisplayWithBackground(int x, int y,int id,string name) override;
 
+    void HandleMessage() override;
+
     void UserUpdate(KEYBOARDSTATE state);
     bool InitUserObjects();
     void StartUp();

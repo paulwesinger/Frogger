@@ -87,6 +87,9 @@ void ENGINE::Sprite::SetTimeToAnimate(uint64_t t){
     _TimeToAnimate = t;
 }
 
+bool ENGINE::Sprite::IsLocked(){
+    return _IsLocked;
+}
 
 void ENGINE::Sprite::MoveSprite(int pixelsX, int pixelsY, uint64_t timetoanimate, int steps,uint64_t elapsed,
                                 int tilex,int tiley){
@@ -101,47 +104,43 @@ void ENGINE::Sprite::MoveSprite(int pixelsX, int pixelsY, uint64_t timetoanimate
     static double pixX = 0;
     static double pixY = 0;
 
-
-    if (_IsLocked) {
-        RenderFromAsset(tilex-1,tiley);
-        return;
-    }
-
-    pixX = (double)pixelsX;
-    pixY = (double)pixelsY;
-
     steptime += elapsed;
     time += elapsed;
 
-    stepx = (double)elapsed/(double)timetoanimate * pixX;   //pixelsX / steps;
-    stepy = (double)elapsed/(double)timetoanimate * pixY;    //pixelsY / steps;
 
-    if (pixelsX != 0)
-    {
-        if (stepx >=1.0 || stepx <= -1.0){
-            _Pos.x += (int)stepx;
-            if (steptime >= nextstep) {
+    if (! _IsLocked) {
+
+        pixX = (double)pixelsX;
+        pixY = (double)pixelsY;
+
+        stepx = (double)elapsed/(double)timetoanimate * pixX;   //pixelsX / steps;
+        stepy = (double)elapsed/(double)timetoanimate * pixY;    //pixelsY / steps;
+
+        if (pixelsX != 0)
+        {
+            if (stepx >=1.0 || stepx <= -1.0){
+                _Pos.x += (int)stepx;
+                if (steptime >= nextstep) {
 
 
-                std::cout << "Steptime : " << steptime  << std::endl;
-                //steptime = 0;
+                    std::cout << "Steptime : " << steptime  << std::endl;
+                    steptime = 0;
+                }
+            }
+        }
+
+        if (pixelsY != 0)
+        {
+            if (stepy >= 1.0 || stepy <= -1.0) {
+                _Pos.y += (int)stepy;
+                if (steptime >= nextstep) {
+
+                    std::cout << "Steptime : " << steptime  << std::endl;
+                    steptime = 0;
+                }
             }
         }
     }
-
-    if (pixelsY != 0)
-    {
-        if (stepy >= 1.0 || stepy <= -1.0) {
-            _Pos.y += (int)stepy;
-            if (steptime >= nextstep) {
-
-                std::cout << "Steptime : " << steptime  << std::endl;
-                //steptime = 0;
-            }
-        }
-    }
-
-
     if (time >= timetoanimate){
         _AnimationDone = true;
         _IsLocked = true;
@@ -151,10 +150,8 @@ void ENGINE::Sprite::MoveSprite(int pixelsX, int pixelsY, uint64_t timetoanimate
         std::cout << "time : " << time << std::endl;
         time = 0;
         nextstep = 0;
-
-        RenderFromAsset(tilex,tiley);
     }
-
+    RenderFromAsset(tilex,tiley);
 }
 
 void ENGINE::Sprite::Animate(uint64_t elapsed, int pixelXperSecond, int pixelYperSecond,
@@ -274,9 +271,8 @@ void ENGINE::Sprite::SetCountSequences(int count){
 void ENGINE::Sprite::EndAnimation(int endtileX, int endtileY){
 
     setPos(_ToPosX,_ToPosY);
-
     _IsLocked = false;
-   // RenderFromAsset(endtileX,endtileY);
+    //RenderFromAsset(endtileX,endtileY);
 }
 bool ENGINE::Sprite::AnimationDone(){ return _AnimationDone; }
 
