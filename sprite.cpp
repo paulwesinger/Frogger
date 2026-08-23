@@ -95,59 +95,64 @@ void ENGINE::Sprite::MoveSprite(int pixelsX, int pixelsY, uint64_t timetoanimate
     static uint64_t nextstep =0;
     static uint64_t time = 0;
 
-    static int stepx = 0;
-    static int stepy = 0;
+    static double stepx = 0;
+    static double stepy = 0;
+
+    static double pixX = 0;
+    static double pixY = 0;
+
+
+    if (_IsLocked) {
+        RenderFromAsset(tilex-1,tiley);
+        return;
+    }
+
+    pixX = (double)pixelsX;
+    pixY = (double)pixelsY;
 
     steptime += elapsed;
     time += elapsed;
 
-    // if (steps > 1) {
-    //nextstep = _TimePerSequence; //timetoanimate / steps;
-
-    if (steptime >= _TimePerSequence) {
-        stepx = pixelsX / steps;
-        stepy = pixelsY / steps;
-    }
-
-    // }
-    // else {
-    //     //nextstep = timetoanimate;
-    //     stepx = pixelsX;
-    //     stepy = pixelsY;
-    // }
-
-
-
+    stepx = (double)elapsed/(double)timetoanimate * pixX;   //pixelsX / steps;
+    stepy = (double)elapsed/(double)timetoanimate * pixY;    //pixelsY / steps;
 
     if (pixelsX != 0)
     {
-        _Pos.x += stepx;
-        if (steptime >= nextstep) {
+        if (stepx >=1.0 || stepx <= -1.0){
+            _Pos.x += (int)stepx;
+            if (steptime >= nextstep) {
 
 
-            std::cout << "Steptime : " << steptime  << std::endl;
-            steptime = 0;
+                std::cout << "Steptime : " << steptime  << std::endl;
+                //steptime = 0;
+            }
         }
     }
 
     if (pixelsY != 0)
     {
-        _Pos.y += stepy;
+        if (stepy >= 1.0 || stepy <= -1.0) {
+            _Pos.y += (int)stepy;
+            if (steptime >= nextstep) {
 
-        if (steptime >= nextstep) {
-            std::cout << "Steptime : " << steptime  << std::endl;
-            steptime = 0;
+                std::cout << "Steptime : " << steptime  << std::endl;
+                //steptime = 0;
+            }
         }
     }
 
-    RenderFromAsset(tilex,tiley);
+
     if (time >= timetoanimate){
         _AnimationDone = true;
+        _IsLocked = true;
         _Pos.x = _ToPosX;
         _Pos.y = _ToPosY;
-
+        steptime = 0;
         std::cout << "time : " << time << std::endl;
         time = 0;
+        nextstep = 0;
+
+        RenderFromAsset(tilex,tiley);
     }
 
 }
@@ -161,6 +166,8 @@ void ENGINE::Sprite::Animate(uint64_t elapsed, int pixelXperSecond, int pixelYpe
     static uint64_t second = 0;
     static uint64_t steptime = 0;
     static int countframes = 0;
+
+
 
     //speedXpersecond und speedYpersecond sind die pixel pro sekunde, tileX und Y geben das tile im image an
     second += elapsed;
@@ -250,6 +257,7 @@ void ENGINE::Sprite::Animate(uint64_t elapsed, int pixelXperSecond, int pixelYpe
 
         //_Pos.y = _ToPosY;//fromStartY + toDestY;// stepy;
         _AnimationDone = true;
+        _IsLocked = true;
 
         second = 0;   // zum aufaddieren mit elapsed bis 1000
         stepx = 0;
@@ -266,12 +274,15 @@ void ENGINE::Sprite::SetCountSequences(int count){
 void ENGINE::Sprite::EndAnimation(int endtileX, int endtileY){
 
     setPos(_ToPosX,_ToPosY);
-    RenderFromAsset(endtileX,endtileY);
+
+    _IsLocked = false;
+   // RenderFromAsset(endtileX,endtileY);
 }
 bool ENGINE::Sprite::AnimationDone(){ return _AnimationDone; }
 
 void ENGINE::Sprite::StartAnimation(int tileX, int tileY,uint64_t timetoanimation,int stepsPerMove,int pixelsX, int pixelsY){
 
+    _IsLocked = false;
     _AnimationDone = false;
     _TimePerSequence =  timetoanimation/stepsPerMove;
     // _CountSteps = stepsPerMove;

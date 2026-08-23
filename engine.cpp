@@ -8,7 +8,7 @@
 #include <imageloader.h>
 
 
-const uint64_t Frogger_TIME = 70;
+const uint64_t Frogger_TIME = 50;
 const int Frogger_FRAMES = 1;
 
 const int STEP_X = 32;
@@ -86,8 +86,12 @@ void TestEngine::UserUpdate(KEYBOARDSTATE state){
         _TileX = 1;
         _TileY = 0;
         _EndTileX = 0; _EndTileY = 0;
-        frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
-        //frog->MoveSprite(_StepX,_StepY,Frogger_TIME,2,_Elapsed,_TileX,_TileY);
+
+        if (frog->AnimationDone()) {
+            frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
+        }
+        else
+            frog->MoveSprite(_StepX,_StepY,Frogger_TIME,2,_Elapsed,_TileX,_TileY);
         break;
     }
 
@@ -99,8 +103,10 @@ void TestEngine::UserUpdate(KEYBOARDSTATE state){
         _TileX = 5;
         _TileY = 0;
         _EndTileX = 4; _EndTileY = 0;
-        frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
-        //frog->MoveSprite(_StepX,_StepY,Frogger_TIME,2,_Elapsed,_TileX,_TileY);
+        if (frog->AnimationDone())
+            frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
+        else
+            frog->MoveSprite(_StepX,_StepY,Frogger_TIME,2,_Elapsed,_TileX,_TileY);
         break;
 
     case BTN_PRESS_LEFT_KEY:
@@ -112,7 +118,7 @@ void TestEngine::UserUpdate(KEYBOARDSTATE state){
         _TileY = 0;
         _EndTileX = 2; _EndTileY = 0;
         frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
-        // frog->MoveSprite(_StepX,_StepY,Frogger_TIME,2,_Elapsed,_TileX,_TileY);
+        frog->MoveSprite(_StepX,_StepY,Frogger_TIME,1,_Elapsed,_TileX,_TileY);
         break;
 
     case BTN_PRESS_RIGHT_KEY:
@@ -124,7 +130,7 @@ void TestEngine::UserUpdate(KEYBOARDSTATE state){
         _TileY = 0;
         _EndTileX = 6; _EndTileY = 0;
         frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
-        //frog->MoveSprite(_StepX,_StepY,Frogger_TIME,2,_Elapsed,_TileX,_TileY);
+        frog->MoveSprite(_StepX,_StepY,Frogger_TIME,2,_Elapsed,_TileX,_TileY);
         break;
 
     case BTN_PRESS_SPACE_KEY:
@@ -212,10 +218,12 @@ void TestEngine::Run(){
             x += 64;
         }
 
-        if ( ! frog->AnimationDone() )
+
+        //frog->RenderFromAsset(_EndTileX,_EndTileY);
+        if ( ! frog->AnimationDone() ){
 
             frog->MoveSprite(_StepX,_StepY,Frogger_TIME,Frogger_FRAMES,_Elapsed,_TileX,_TileY);
-
+        }
         else{
 
             frog->RenderFromAsset(_EndTileX,_EndTileY);

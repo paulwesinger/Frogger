@@ -46,10 +46,14 @@ private:
     int _TileTextureColumns;
 
     sPoint _StartPos;
+    bool _IsLocked;
+
 
     uint64_t nextframe;
 
     int _CountSteps;
+
+
 
 
     uint64_t _TimePerSequence;
