@@ -10,6 +10,7 @@
 
 const uint64_t Frogger_TIME = 100;
 const int Frogger_FRAMES = 5;
+const uint64_t Frogger_END_DELAY = 100;
 
 const int STEP_X = 32;
 const int STEP_Y = 32;
@@ -49,19 +50,6 @@ TestEngine::~TestEngine(){
     //  Mix_FreeMusic(sound_StartUp);
 }
 
-// void TestEngine::GetKey(){
-//     // switch (KeyboardState.BtnStatePress){
-//     // case BTN_PRESS_LEFT_KEY:keyboardtext = "Left pressed"; cout << "Left pressed " << endl; break;
-//     // case BTN_PRESS_RIGHT_KEY:keyboardtext = "Right pressed"; cout << "Right pressed " << endl; break;
-//     // case BTN_PRESS_UP_KEY:keyboardtext = "up pressed"; break;
-//     // case BTN_PRESS_DOWN_KEY:keyboardtext = "Down pressed"; break;
-//     // case BTN_PRESS_SPACE_KEY: keyboardtext = "Space pressed"; break;
-//     // case BTN_PRESS_NO: keyboardtext = "Nix"; break;
-//     // default:
-//     //     keyboardtext = "default nix";
-//     // }
-// }
-
 bool TestEngine::LoadSurface(string path){
 
     ENGINE::ImageLoader imgloader;
@@ -74,8 +62,10 @@ bool TestEngine::LoadSurface(string path){
     return false;
 }
 
-void TestEngine::UserUpdate(KEYBOARDSTATE state){
+bool TestEngine::UserUpdate(KEYBOARDSTATE state){
 
+
+    bool ret = false;
     switch(state.BtnStatePress){
 
     case  BTN_PRESS_UP_KEY:{
@@ -87,16 +77,14 @@ void TestEngine::UserUpdate(KEYBOARDSTATE state){
         _TileY = 0;
         _EndTileX = 0; _EndTileY = 0;
 
-        if (frog->AnimationDone() /*&& ! frog->IsLocked()*/) {
-            frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
+        if (frog->AnimationDone()) {
+            frog->EndAnimation(_EndTileX,_EndTileY,Frogger_END_DELAY,_Elapsed);
+
+            if (frog->EndAnimationDone())
+                frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
+
             cout << "Animation started" << endl;
         }
-        // else
-        // if ( ! frog->AnimationDone())
-        // {
-        //     frog->MoveSprite(_StepX,_StepY,Frogger_TIME,2,_Elapsed,_TileX,_TileY);
-        //     cout << "movesprite " << endl;
-        // }
         break;
     }
 
@@ -108,10 +96,15 @@ void TestEngine::UserUpdate(KEYBOARDSTATE state){
         _TileX = 5;
         _TileY = 0;
         _EndTileX = 4; _EndTileY = 0;
-        if (frog->AnimationDone() /* && ! frog->IsLocked()*/)
-            frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
-        //else
-         //   frog->MoveSprite(_StepX,_StepY,Frogger_TIME,2,_Elapsed,_TileX,_TileY);
+
+        if (frog->AnimationDone()) {
+            frog->EndAnimation(_EndTileX,_EndTileY,Frogger_END_DELAY,_Elapsed);
+
+            if (frog->EndAnimationDone())
+                frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
+
+            cout << "Animation started" << endl;
+        }
         break;
 
     case BTN_PRESS_LEFT_KEY:
@@ -123,10 +116,14 @@ void TestEngine::UserUpdate(KEYBOARDSTATE state){
         _TileY = 0;
         _EndTileX = 2; _EndTileY = 0;
 
-        if (frog->AnimationDone()/* && ! frog->IsLocked()*/)
-            frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
+        if (frog->AnimationDone()) {
+            frog->EndAnimation(_EndTileX,_EndTileY,Frogger_END_DELAY,_Elapsed);
 
-        //frog->MoveSprite(_StepX,_StepY,Frogger_TIME,1,_Elapsed,_TileX,_TileY);
+            if (frog->EndAnimationDone())
+                frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
+
+            cout << "Animation started" << endl;
+        }
         break;
 
     case BTN_PRESS_RIGHT_KEY:
@@ -138,10 +135,14 @@ void TestEngine::UserUpdate(KEYBOARDSTATE state){
         _TileY = 0;
         _EndTileX = 6; _EndTileY = 0;
 
-        if (frog->AnimationDone() /*&& ! frog->IsLocked()*/)
-            frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
+        if (frog->AnimationDone()) {
+            frog->EndAnimation(_EndTileX,_EndTileY,Frogger_END_DELAY,_Elapsed);
 
-        //frog->MoveSprite(_StepX,_StepY,Frogger_TIME,2,_Elapsed,_TileX,_TileY);
+            if (frog->EndAnimationDone())
+                frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
+
+            cout << "Animation started" << endl;
+        }
         break;
 
     case BTN_PRESS_SPACE_KEY:
@@ -153,6 +154,8 @@ void TestEngine::UserUpdate(KEYBOARDSTATE state){
         _StepY = 0;
         break;
     }
+
+    return ret;
 }
 
 void TestEngine::HandleMessage(){
@@ -163,7 +166,7 @@ void TestEngine::HandleMessage(){
         case BTN_UP_UP_KEY:
         case BTN_UP_LEFT_KEY:
         case BTN_UP_RIGHT_KEY:
-            frog->EndAnimation(_TileX,_TileY);
+            frog->EndAnimation(_TileX,_TileY,Frogger_END_DELAY,_Elapsed);
         //    audio->PlaySound(sound_Hop);
             cout << "Animation ends" << endl;
             break;
@@ -185,8 +188,7 @@ void TestEngine::Run(){
         HandleMessage();
 
         KEYBOARDSTATE state =  KeyState();
-        UserUpdate(state); // Nur mal testen
-
+        UserUpdate(state);// Nur mal testen
 
         //        std::this_thread::sleep_for(std::chrono::milliseconds(50));
         // cout << "Key pressed " << keyboardtext <<  endl;
@@ -228,7 +230,6 @@ void TestEngine::Run(){
             x += 64;
         }
 
-
         //frog->RenderFromAsset(_EndTileX,_EndTileY);
         if ( ! frog->AnimationDone() ){
 
@@ -238,8 +239,6 @@ void TestEngine::Run(){
 
             frog->RenderFromAsset(_EndTileX,_EndTileY);
         }
-
-
         SwapWindow();
     }
 }
@@ -283,14 +282,10 @@ bool TestEngine::InitUserObjects(){
     frog = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/images/retrogames/frogger/Froggs8x4.png",_Shader); //graphics-game-sprites640x560.png",_Shader);x
 
     // Für Auflösung 1280x960 Für 64 pixel tiles
-    frog->setPos(608,812);
+    frog->SetPosition(608,812);
     frog->InitTextureMap(8,4);
-    //frog->SetTimeToAnimate(1500);
-    //frog->SetCountSequences(1);
+    frog->SetMoveArea(0,0,1280,876);
 
-    // carsAndsnakes = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/images/retrogames/frogger/CarsAndSnakes64x64.png.png",_Shader);
-    // // Momentan noch keine SetPos,
-    // carsAndsnakes->InitTextureMap(9,4);
 
     // Die untere Strasse Rendern:
     // instancen für sprites in einer schleife generieren.

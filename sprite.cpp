@@ -9,12 +9,14 @@
 ENGINE::Sprite::Sprite(int resx, int resy, Shader *sh)
     :BaseObject2D(resx,resy,sh)
 {
+    _IsRunning = false;
     _AnimationDone = true;
 }
 
 ENGINE::Sprite::Sprite(int resx, int resy, std::string path, Shader * sh)
     :BaseObject2D(resx,resy,path,sh)
 {
+    _IsRunning = false;
     _AnimationDone = true;
 }
 
@@ -91,6 +93,10 @@ bool ENGINE::Sprite::IsLocked(){
     return _IsLocked;
 }
 
+bool ENGINE::Sprite::IsRunning(){
+    return _IsRunning;
+}
+
 void ENGINE::Sprite::MoveSprite(int pixelsX, int pixelsY, uint64_t timetoanimate, int steps,uint64_t elapsed,
                                 int tilex,int tiley){
 
@@ -132,12 +138,22 @@ void ENGINE::Sprite::MoveSprite(int pixelsX, int pixelsY, uint64_t timetoanimate
         if (pixelsY != 0)
         {
             if (stepy >= 1.0 || stepy <= -1.0) {
-                _Pos.y += (int)stepy;
-                if (steptime >= nextstep) {
+                // check up
 
-                    std::cout << "Steptime : " << steptime  << std::endl;
-                    steptime = 0;
-                }
+
+                    if ( ! (_Pos.y + stepy < _Bounds.y) ||
+                         ! (_Pos.y + stepy > _Bounds.y1)){
+
+                        _Pos.y += (int)stepy;
+
+                        std::cout << "_Pos.y : " << _Pos.y  << std::endl;
+                        if (steptime >= nextstep) {
+
+                            std::cout << "Steptime : " << steptime  << std::endl;
+
+                            steptime = 0;
+                        }
+                    }
             }
         }
     }
@@ -268,18 +284,39 @@ void ENGINE::Sprite::SetCountSequences(int count){
     _CountSteps = count;
 }
 
-void ENGINE::Sprite::EndAnimation(int endtileX, int endtileY){
+void ENGINE::Sprite::EndAnimation(int endtileX, int endtileY, uint64_t delay,uint64_t elapsed){
 
-    setPos(_ToPosX,_ToPosY);
-    _IsLocked = false;
-    //RenderFromAsset(endtileX,endtileY);
+    static uint64_t time = 0;
+
+    time += elapsed;
+
+    if (time <= delay)
+    {
+        setPos(_ToPosX,_ToPosY);
+        _IsLocked = false;
+        _IsRunning = false;
+        _EndAnimationDone = false;
+        RenderFromAsset(endtileX,endtileY);
+        time += elapsed;
+    }
+    else{
+        time = 0;
+        _EndAnimationDone = true;
+    }
+
 }
+
 bool ENGINE::Sprite::AnimationDone(){ return _AnimationDone; }
+
+bool ENGINE::Sprite::EndAnimationDone(){
+    return _EndAnimationDone;
+}
 
 void ENGINE::Sprite::StartAnimation(int tileX, int tileY,uint64_t timetoanimation,int stepsPerMove,int pixelsX, int pixelsY){
 
     _IsLocked = false;
     _AnimationDone = false;
+    _IsRunning = true;
     _TimePerSequence =  timetoanimation/stepsPerMove;
     // _CountSteps = stepsPerMove;
 
@@ -294,8 +331,16 @@ void ENGINE::Sprite::SetPosition(int x, int y){
 
     _ToPosX = x;
     _ToPosY = y;
-
 }
+
+void ENGINE::Sprite::SetMoveArea(int left, int top, int right, int bottom){
+    _Bounds.x = left;
+    _Bounds.y = top;
+    _Bounds.x1 = right;
+    _Bounds.y1 = bottom;
+}
+
+
 
 void ENGINE::Sprite::RenderFromAsset(int fromcol, int fromrow)
 {

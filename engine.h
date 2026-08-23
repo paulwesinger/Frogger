@@ -35,7 +35,7 @@ public:
 
     void HandleMessage() override;
 
-    void UserUpdate(KEYBOARDSTATE state);
+    bool UserUpdate(KEYBOARDSTATE state);
     bool InitUserObjects();
     void StartUp();
     void StartBackgroundSound();
