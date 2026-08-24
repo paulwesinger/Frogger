@@ -137,24 +137,59 @@ void ENGINE::Sprite::MoveSprite(int pixelsX, int pixelsY, uint64_t timetoanimate
 
         if (pixelsY != 0)
         {
-            if (stepy >= 1.0 || stepy <= -1.0) {
-                // check up
+            if (stepy < 0) {    //negativ
+                if (_Pos.y + stepy >= _Bounds.y){
+                    _Pos.y += (int)stepy;
 
+                    std::cout << "_Pos.y : " << _Pos.y  << std::endl;
+                    if (steptime >= nextstep) {
 
-                    if ( ! (_Pos.y + stepy < _Bounds.y) ||
-                         ! (_Pos.y + stepy > _Bounds.y1)){
+                        std::cout << "Steptime : " << steptime  << std::endl;
 
-                        _Pos.y += (int)stepy;
-
-                        std::cout << "_Pos.y : " << _Pos.y  << std::endl;
-                        if (steptime >= nextstep) {
-
-                            std::cout << "Steptime : " << steptime  << std::endl;
-
-                            steptime = 0;
-                        }
+                        steptime = 0;
                     }
+                }
+                else{   // ToPosY auf die aktuelle Pos einstellen, sonst läuft der Frog weiter.....
+                    _ToPosY = _Pos.y;
+                }
             }
+
+            if (stepy > 0) {    // positiv
+                if (_Pos.y + stepy <= _Bounds.y1){
+                    _Pos.y += (int)stepy;
+
+                    std::cout << "_Pos.y : " << _Pos.y  << std::endl;
+                    if (steptime >= nextstep) {
+
+                        std::cout << "Steptime : " << steptime  << std::endl;
+
+                        steptime = 0;
+                    }
+                }
+                else{   // ToPosY auf die aktuelle Pos einstellen, sonst läuft der Frog weiter.....
+                    _ToPosY = _Pos.y;
+                }
+            }
+
+
+            // if (stepy >= 1.0 || stepy <= -1.0) {
+            //     // check up
+
+            //         // stepy kann auch negativ sein...
+            //         if ( (_Pos.y + stepy <= _Bounds.y1) ||  // stepy positiv
+            //              (_Pos.y + stepy >= _Bounds.y)){    // stepy negativ
+
+            //             _Pos.y += (int)stepy;
+
+            //             std::cout << "_Pos.y : " << _Pos.y  << std::endl;
+            //             if (steptime >= nextstep) {
+
+            //                 std::cout << "Steptime : " << steptime  << std::endl;
+
+            //                 steptime = 0;
+            //             }
+            //         }
+            // }
         }
     }
     if (time >= timetoanimate){
@@ -174,110 +209,110 @@ void ENGINE::Sprite::Animate(uint64_t elapsed, int pixelXperSecond, int pixelYpe
                              int fromTileX, int toTileX, int tileY){
 
     // zum aufaddieren mit elapsed bis 1000
-    static double stepx = 0;
-    static double stepy = 0;
-    static uint64_t second = 0;
-    static uint64_t steptime = 0;
-    static int countframes = 0;
+    // static double stepx = 0;
+    // static double stepy = 0;
+    // static uint64_t second = 0;
+    // static uint64_t steptime = 0;
+    // static int countframes = 0;
 
 
 
-    //speedXpersecond und speedYpersecond sind die pixel pro sekunde, tileX und Y geben das tile im image an
-    second += elapsed;
-    steptime += elapsed;
-    countframes ++;
+    // //speedXpersecond und speedYpersecond sind die pixel pro sekunde, tileX und Y geben das tile im image an
+    // second += elapsed;
+    // steptime += elapsed;
+    // countframes ++;
 
-    //  if (second >= _TimePerSequence) {
+    // //  if (second >= _TimePerSequence) {
 
-    //      nextframe++;
+    // //      nextframe++;
 
-    //      if (nextframe > toTileX )
-    //          nextframe = toTileX;
-    //     // second = 0;
+    // //      if (nextframe > toTileX )
+    // //          nextframe = toTileX;
+    // //     // second = 0;
+    // // }
+
+    // // double toX = (double)(_ToPosX);
+    // // double toY = (double)(_ToPosY);
+
+    // double pixelxpersec = (double)(pixelXperSecond);
+    // double pixelypersec = (double)(pixelYperSecond);
+
+    // // double sx = static_cast<double>(_StartPos.x);
+    // // double sy = static_cast<double>(_StartPos.y);
+    // double timetoanaim = (double)(_TimeToAnimate);
+
+
+
+    // // erstmal den faktor für die pixels per frame berechnen..
+    // double pixelperframex;
+    // double pixelperframey;
+
+    // if (pixelXperSecond != 0 ){
+    //     pixelperframex = pixelxpersec / timetoanaim;
+    //     stepx += pixelperframex * elapsed;
+    // }
+    // //else
+    // //    stepx =0;
+
+    // if (pixelYperSecond != 0){
+    //     pixelperframey = pixelypersec / timetoanaim;
+    //     stepy += pixelperframey * elapsed;
     // }
 
-    // double toX = (double)(_ToPosX);
-    // double toY = (double)(_ToPosY);
-
-    double pixelxpersec = (double)(pixelXperSecond);
-    double pixelypersec = (double)(pixelYperSecond);
-
-    // double sx = static_cast<double>(_StartPos.x);
-    // double sy = static_cast<double>(_StartPos.y);
-    double timetoanaim = (double)(_TimeToAnimate);
-
-
-
-    // erstmal den faktor für die pixels per frame berechnen..
-    double pixelperframex;
-    double pixelperframey;
-
-    if (pixelXperSecond != 0 ){
-        pixelperframex = pixelxpersec / timetoanaim;
-        stepx += pixelperframex * elapsed;
-    }
-    //else
-    //    stepx =0;
-
-    if (pixelYperSecond != 0){
-        pixelperframey = pixelypersec / timetoanaim;
-        stepy += pixelperframey * elapsed;
-    }
 
 
 
 
+    // // if (pixelXperSecond > 0 )
+    // // //    stepx = (toX-sx) / timetoanaim * elapsed;  // wird bei 64 pixel breite 64 sein..... muss aber nicht
+    // //     stepx += pixelxpersec  / timetoanaim * elapsed;  // wird bei 64 pixel breite 64 sein..... muss aber nicht
+    // // else
+    // //     stepx = 0;
 
-    // if (pixelXperSecond > 0 )
-    // //    stepx = (toX-sx) / timetoanaim * elapsed;  // wird bei 64 pixel breite 64 sein..... muss aber nicht
-    //     stepx += pixelxpersec  / timetoanaim * elapsed;  // wird bei 64 pixel breite 64 sein..... muss aber nicht
-    // else
+    // // if (pixelYperSecond> 0)
+    // //     //stepy = (toY-sy) / timetoanaim * elapsed;
+    // //     stepy += pixelypersec / timetoanaim * elapsed;
+    // // else
+    // //     stepy = 0;
+
+    // if (stepx >= 1.0 || stepx <= -1.0)
+    //     _Pos.x += (int)stepx;
+
+    // //if (_Pos.x == (_Pos.x + _ToPosX) )
+    // //    _Pos.x = _ToPosX;
+
+    // if (stepy >= 1.0 || stepy <= -1.0)
+    //     _Pos.y += (int)stepy;
+
+    // std::cout << "Elapsed : " << elapsed << std::endl;
+    // std::cout << "Pos x : " << _Pos.x << std::endl;
+    // std::cout << "Pos y : "  <<_Pos.y << std::endl << std::endl;
+
+
+
+
+    // RenderFromAsset(toTileX, tileY);
+
+    // //if (abs(stepx) >= pixelXperSecond && abs(stepy) >= pixelYperSecond){
+
+    // std::cout << "second: " << second << std::endl;
+
+    // if (second >= _TimeToAnimate && ! _AnimationDone) {
+    //     //_Pos.x = _ToPosX; //fromstartX + toDestX;//stepx;
+    //     std::cout << "second: " << second << std::endl;
+
+    //     std::cout << "Count frames : " << countframes << std::endl;
+
+    //     //_Pos.y = _ToPosY;//fromStartY + toDestY;// stepy;
+    //     _AnimationDone = true;
+    //     _IsLocked = true;
+
+    //     second = 0;   // zum aufaddieren mit elapsed bis 1000
     //     stepx = 0;
-
-    // if (pixelYperSecond> 0)
-    //     //stepy = (toY-sy) / timetoanaim * elapsed;
-    //     stepy += pixelypersec / timetoanaim * elapsed;
-    // else
     //     stepy = 0;
-
-    if (stepx >= 1.0 || stepx <= -1.0)
-        _Pos.x += (int)stepx;
-
-    //if (_Pos.x == (_Pos.x + _ToPosX) )
-    //    _Pos.x = _ToPosX;
-
-    if (stepy >= 1.0 || stepy <= -1.0)
-        _Pos.y += (int)stepy;
-
-    std::cout << "Elapsed : " << elapsed << std::endl;
-    std::cout << "Pos x : " << _Pos.x << std::endl;
-    std::cout << "Pos y : "  <<_Pos.y << std::endl << std::endl;
-
-
-
-
-    RenderFromAsset(toTileX, tileY);
-
-    //if (abs(stepx) >= pixelXperSecond && abs(stepy) >= pixelYperSecond){
-
-    std::cout << "second: " << second << std::endl;
-
-    if (second >= _TimeToAnimate && ! _AnimationDone) {
-        //_Pos.x = _ToPosX; //fromstartX + toDestX;//stepx;
-        std::cout << "second: " << second << std::endl;
-
-        std::cout << "Count frames : " << countframes << std::endl;
-
-        //_Pos.y = _ToPosY;//fromStartY + toDestY;// stepy;
-        _AnimationDone = true;
-        _IsLocked = true;
-
-        second = 0;   // zum aufaddieren mit elapsed bis 1000
-        stepx = 0;
-        stepy = 0;
-        countframes = 0;
-        nextframe = toTileX;
-    }
+    //     countframes = 0;
+    //     nextframe = toTileX;
+    // }
 }
 
 void ENGINE::Sprite::SetCountSequences(int count){

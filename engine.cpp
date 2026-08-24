@@ -8,12 +8,12 @@
 #include <imageloader.h>
 
 
-const uint64_t Frogger_TIME = 100;
+const uint64_t Frogger_TIME = 50;
 const int Frogger_FRAMES = 5;
 const uint64_t Frogger_END_DELAY = 100;
 
-const int STEP_X = 32;
-const int STEP_Y = 32;
+const int STEP_X = 48;
+const int STEP_Y = 48;
 
 
 
@@ -35,11 +35,12 @@ TestEngine::~TestEngine(){
     }
 
     delete frog;
-    delete Frogger;
-
 
     for(int i=0; i< MAX_TILE_X; i++)
-        delete carsAndsnakes[i];
+        delete StreetBlocksBottom[i];
+
+    for(int i=0; i< MAX_TILE_X; i++)
+        delete StreetBlocksMiddle[i];
 
     // wav freigeben
     Mix_FreeChunk(sound_Hop);
@@ -225,9 +226,13 @@ void TestEngine::Run(){
 
         int x = 0;
         for (int i = 0; i< MAX_TILE_X; i++){
-            carsAndsnakes[i]->setPos(x,812);
-            carsAndsnakes[i]->RenderFromAsset(8,0);
+            StreetBlocksBottom[i]->setPos(x,812);
+            StreetBlocksBottom[i]->RenderFromAsset(8,0);
+
+            StreetBlocksBottom[i]->setPos(x,380);
+            StreetBlocksBottom[i]->RenderFromAsset(8,0);
             x += 64;
+
         }
 
         //frog->RenderFromAsset(_EndTileX,_EndTileY);
@@ -284,18 +289,24 @@ bool TestEngine::InitUserObjects(){
     // Für Auflösung 1280x960 Für 64 pixel tiles
     frog->SetPosition(608,812);
     frog->InitTextureMap(8,4);
-    frog->SetMoveArea(0,0,1280,876);
+    frog->SetMoveArea(0,40,1280,812);//876);
 
 
     // Die untere Strasse Rendern:
     // instancen für sprites in einer schleife generieren.
     for(int i = 0; i < MAX_TILE_X; i++){
-        carsAndsnakes[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/images/retrogames/frogger/CarsAndSnakes64x64.png",_Shader);
-        carsAndsnakes[i]->InitTextureMap(9,4);
+        StreetBlocksBottom[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/images/retrogames/frogger/CarsAndSnakes64x64.png",_Shader);
+        StreetBlocksBottom[i]->InitTextureMap(9,4);
     }
     // instancen in einem array of sprites neu anlegen
 
-
+    // Die obere Strasse Rendern:
+    // instancen für sprites in einer schleife generieren.
+    for(int i = 0; i < MAX_TILE_X; i++){
+        StreetBlocksMiddle[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/images/retrogames/frogger/CarsAndSnakes64x64.png",_Shader);
+        StreetBlocksMiddle[i]->InitTextureMap(9,4);
+    }
+    // instancen in einem array of sprites neu anlegen
 
     // Default settings at start
     _TileX = 0;

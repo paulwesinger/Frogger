@@ -59,7 +59,8 @@ protected:
     // cars and snakes als tiles 64x64
     // 20 Stk pro x-achse
     // +++++++++++++++++++++++++++++++
-    ENGINE::Sprite * carsAndsnakes[20];
+    ENGINE::Sprite * StreetBlocksBottom[20];
+    ENGINE::Sprite * StreetBlocksMiddle[20];
 
 
 
