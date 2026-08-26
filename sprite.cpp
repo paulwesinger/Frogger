@@ -114,7 +114,7 @@ void ENGINE::Sprite::MoveSprite(int pixelsX, int pixelsY, uint64_t timetoanimate
     time += elapsed;
 
 
-    if (! _IsLocked) {
+   // if (! _IsLocked) {
 
         pixX = (double)pixelsX;
         pixY = (double)pixelsY;
@@ -125,9 +125,8 @@ void ENGINE::Sprite::MoveSprite(int pixelsX, int pixelsY, uint64_t timetoanimate
         if (pixelsX != 0)
         {
             if (stepx >=1.0 || stepx <= -1.0){
-                _Pos.x += (int)stepx;
+                _Pos.x += round(stepx);
                 if (steptime >= nextstep) {
-
 
                     std::cout << "Steptime : " << steptime  << std::endl;
                     steptime = 0;
@@ -139,9 +138,8 @@ void ENGINE::Sprite::MoveSprite(int pixelsX, int pixelsY, uint64_t timetoanimate
         {            
             if (stepy < 0) {    //negativ
                 if (_Pos.y + stepy >= _Bounds.y){
-                    _Pos.y += (int)stepy;
+                    _Pos.y += round(stepy);
 
-                    std::cout << "_Pos.y : " << _Pos.y  << std::endl;
                     if (steptime >= nextstep) {
 
                         std::cout << "Steptime : " << steptime  << std::endl;
@@ -156,7 +154,7 @@ void ENGINE::Sprite::MoveSprite(int pixelsX, int pixelsY, uint64_t timetoanimate
 
             if (stepy > 0) {    // positiv
                 if (_Pos.y + stepy <= _Bounds.y1){
-                    _Pos.y += (int)stepy;
+                    _Pos.y += round(stepy);
 
                     std::cout << "_Pos.y : " << _Pos.y  << std::endl;
                     if (steptime >= nextstep) {
@@ -191,7 +189,7 @@ void ENGINE::Sprite::MoveSprite(int pixelsX, int pixelsY, uint64_t timetoanimate
             //         }
             // }
         }
-    }
+    //}
     if (time >= timetoanimate){
         _AnimationDone = true;
         _IsLocked = true;
@@ -333,6 +331,9 @@ void ENGINE::Sprite::EndAnimation(int endtileX, int endtileY, uint64_t delay,uin
         _EndAnimationDone = false;
         RenderFromAsset(endtileX,endtileY);
         time += elapsed;
+
+        cout << "FrogPos X : "<< _Pos.x << "   FrogPos Y : "<< _Pos.y << std::endl;
+
     }
     else{
         time = 0;
@@ -380,23 +381,20 @@ void ENGINE::Sprite::StartAnimation(int tileX, int tileY,uint64_t timetoanimatio
             _AnimationDone = true;
             _ToPosY = _Pos.y;
         }
-        else{
-            _ToPosY = _Pos.y + pixelsY;
-            std::cout << " ToPosY: " << _ToPosY << std::endl;
-            _ToPosY = (_Pos.y + pixelsY) >> 5 << 5;
-            std::cout << " ToPosY: " << _ToPosY << std::endl;
-            std::cout<<std::endl;
+        else{           
+            _ToPosY = (_Pos.y + pixelsY);
         }
     }
     else
     if (pixelsY > 0){
-        if (_Pos.y + pixelsY > _Bounds.y1){
+        if (_Pos.y + pixelsY + 64 > _Bounds.y1){
+            cout << "Posy +stepy + size.h " << _Pos.y + pixelsY + 64
+                 <<  "  " << _Pos.y << "  " <<  pixelsY << "  " << "64" << std::endl;
             _AnimationDone = true;
             _ToPosY = _Pos.y;
         }
         else{
-           // _ToPosY = _Pos.y + pixelsY;
-            _ToPosY = (_Pos.y + pixelsY) >> 5 << 5;
+            _ToPosY = (_Pos.y + pixelsY);
         }
     }
 

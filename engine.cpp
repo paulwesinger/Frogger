@@ -8,7 +8,7 @@
 #include <imageloader.h>
 
 
-const uint64_t Frogger_TIME = 50;
+const uint64_t Frogger_TIME = 100;
 const int Frogger_FRAMES = 5;
 const uint64_t Frogger_END_DELAY = 100;
 
@@ -229,7 +229,7 @@ void TestEngine::Run(){
 
         int x = 0;
         for (int i = 0; i< MAX_TILE_X; i++){
-            StreetBlocksBottom[i]->setPos(x,812);
+            StreetBlocksBottom[i]->setPos(x,802);
             StreetBlocksBottom[i]->RenderFromAsset(8,0);
 
             StreetBlocksBottom[i]->setPos(x,348);
@@ -298,9 +298,9 @@ bool TestEngine::InitUserObjects(){
     frog = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/images/retrogames/frogger/Froggs8x4.png",_Shader); //graphics-game-sprites640x560.png",_Shader);x
 
     // Für Auflösung 1280x960 Für 64 pixel tiles
-    frog->SetPosition(608,812);
+    frog->SetPosition(608,802);
     frog->InitTextureMap(8,4);
-    frog->SetMoveArea(0,10,1280,876);
+    frog->SetMoveArea(0,32,1280,876);
 
 
     // Die untere Strasse Rendern:
