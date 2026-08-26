@@ -12,8 +12,8 @@ const uint64_t Frogger_TIME = 50;
 const int Frogger_FRAMES = 5;
 const uint64_t Frogger_END_DELAY = 100;
 
-const int STEP_X = 48;
-const int STEP_Y = 48;
+const int STEP_X = 64;
+const int STEP_Y = 64;
 
 
 
@@ -41,6 +41,9 @@ TestEngine::~TestEngine(){
 
     for(int i=0; i< MAX_TILE_X; i++)
         delete StreetBlocksMiddle[i];
+
+     for (int i =0; i<5; i++)
+        delete FrogZiel[i];
 
     // wav freigeben
     Mix_FreeChunk(sound_Hop);
@@ -229,13 +232,21 @@ void TestEngine::Run(){
             StreetBlocksBottom[i]->setPos(x,812);
             StreetBlocksBottom[i]->RenderFromAsset(8,0);
 
-            StreetBlocksBottom[i]->setPos(x,380);
+            StreetBlocksBottom[i]->setPos(x,348);
             StreetBlocksBottom[i]->RenderFromAsset(8,0);
             x += 64;
 
         }
 
-        //frog->RenderFromAsset(_EndTileX,_EndTileY);
+        x=0;
+        for(int i=0; i< 5; i++){
+            FrogZiel[i]->setPos(x,0);
+            FrogZiel[i]->RenderFromAsset(0,0);
+            x +=270;
+        }
+
+
+
         if ( ! frog->AnimationDone() ){
 
             frog->MoveSprite(_StepX,_StepY,Frogger_TIME,Frogger_FRAMES,_Elapsed,_TileX,_TileY);
@@ -289,7 +300,7 @@ bool TestEngine::InitUserObjects(){
     // Für Auflösung 1280x960 Für 64 pixel tiles
     frog->SetPosition(608,812);
     frog->InitTextureMap(8,4);
-    frog->SetMoveArea(0,40,1280,812);//876);
+    frog->SetMoveArea(0,10,1280,876);
 
 
     // Die untere Strasse Rendern:
@@ -306,6 +317,16 @@ bool TestEngine::InitUserObjects(){
         StreetBlocksMiddle[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/images/retrogames/frogger/CarsAndSnakes64x64.png",_Shader);
         StreetBlocksMiddle[i]->InitTextureMap(9,4);
     }
+
+    // Frog Destination:
+    x = 0;
+    for(int i=0; i< 5; i++){
+        FrogZiel[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/FrogZiel.png",_Shader);
+        FrogZiel[i]->InitTextureMap(1,1);
+
+        x +=150;
+    }
+
     // instancen in einem array of sprites neu anlegen
 
     // Default settings at start

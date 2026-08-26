@@ -62,6 +62,8 @@ protected:
     ENGINE::Sprite * StreetBlocksBottom[20];
     ENGINE::Sprite * StreetBlocksMiddle[20];
 
+    ENGINE::Sprite *FrogZiel[5];
+
 
 
 

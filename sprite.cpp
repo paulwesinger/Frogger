@@ -136,7 +136,7 @@ void ENGINE::Sprite::MoveSprite(int pixelsX, int pixelsY, uint64_t timetoanimate
         }
 
         if (pixelsY != 0)
-        {
+        {            
             if (stepy < 0) {    //negativ
                 if (_Pos.y + stepy >= _Bounds.y){
                     _Pos.y += (int)stepy;
@@ -355,8 +355,50 @@ void ENGINE::Sprite::StartAnimation(int tileX, int tileY,uint64_t timetoanimatio
     _TimePerSequence =  timetoanimation/stepsPerMove;
     // _CountSteps = stepsPerMove;
 
-    _ToPosX = _Pos.x + pixelsX;
-    _ToPosY = _Pos.y + pixelsY;
+
+    if (pixelsX < 0){
+        if (_Pos.x + pixelsX < _Bounds.x){
+            _AnimationDone = true;
+            _ToPosX = _Pos.x;
+        }
+        else
+            _ToPosX = _Pos.x + pixelsX;
+    }
+    else
+    if (pixelsX > 0){
+        if (_Pos.x + pixelsX > _Bounds.x1){
+            _AnimationDone = true;
+            _ToPosX = _Pos.x;
+        }
+        else
+            _ToPosX = _Pos.x + pixelsX;
+    }
+
+
+    if (pixelsY < 0){
+        if (_Pos.y + pixelsY < _Bounds.y){
+            _AnimationDone = true;
+            _ToPosY = _Pos.y;
+        }
+        else{
+            _ToPosY = _Pos.y + pixelsY;
+            std::cout << " ToPosY: " << _ToPosY << std::endl;
+            _ToPosY = (_Pos.y + pixelsY) >> 5 << 5;
+            std::cout << " ToPosY: " << _ToPosY << std::endl;
+            std::cout<<std::endl;
+        }
+    }
+    else
+    if (pixelsY > 0){
+        if (_Pos.y + pixelsY > _Bounds.y1){
+            _AnimationDone = true;
+            _ToPosY = _Pos.y;
+        }
+        else{
+           // _ToPosY = _Pos.y + pixelsY;
+            _ToPosY = (_Pos.y + pixelsY) >> 5 << 5;
+        }
+    }
 
     RenderFromAsset(tileX,tileY);
 }
