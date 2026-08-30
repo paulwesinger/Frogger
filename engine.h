@@ -64,10 +64,6 @@ protected:
 
     ENGINE::Sprite *FrogZiel[5];
 
-
-
-
-
     // sounds .wav
     Wav8Bit Wav_Startup;
     Wav8Bit Wav_Hop;

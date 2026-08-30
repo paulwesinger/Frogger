@@ -1,10 +1,14 @@
 #include "audio.h"
 #include <iostream>
+#include <thread>
 
 
 
 float _Time = 0;
 float _Freq = 320;//440;
+
+std::atomic<bool> sound_finished(false);
+std::atomic<int> finished_channel(-1);
 
 Audio::Audio(){
     Init();
@@ -33,6 +37,12 @@ void Audio::ReleaseAudioWav(Wav8Bit &wav,int audioid){
 
 void Audio::ReleaseAudioMP3(Mix_Music * music){
     Mix_FreeMusic(music);
+}
+
+
+void Audio::on_channel_finished(int channel){
+    finished_channel = channel;
+    sound_finished = true;
 }
 
 void Audio::audiocallback(void* data,Uint8* stream,int len)
@@ -175,17 +185,32 @@ bool Audio::InitAudioSpec(Wav8Bit &wav,int & audioid){
     return true;
 }
 
-void Audio::PlaySound(Mix_Chunk *sound){
-    int channel = Mix_PlayChannel(-1, sound, 0);
+
+void Audio::PlayMixChunckAsync(Mix_Chunk * chunck){
+    if (chunck == nullptr)
+        return;
+    int channel = Mix_PlayChannel(-1, chunck, 0);
     if (channel == -1) {
         std::cout << "Sound konnte nicht abgespielt werden! Fehler: " <<  Mix_GetError() << std::endl;
     }
 
-    // 5. Warten, bis der Sound fertig abgespielt ist
-    // Mix_Playing prüft, ob der Kanal noch aktiv ist
-    while (Mix_Playing(channel)) {
-        SDL_Delay(50);
+}
+
+void Audio::PlaySound(Mix_Chunk *sound){
+
+    if (sound == nullptr)
+        return;
+    // if (! sound_finished)
+    //     return;
+
+    Mix_PlayChannel(1,sound,0);
+    std::cout << "Channel " << finished_channel << std::endl;
+
+    if (sound_finished){
+        sound_finished = false;
+        std::cout << "Sound finished " << std::endl;
     }
+
 }
 
 void Audio::Init(){
@@ -200,8 +225,15 @@ void Audio::Init(){
     // else
     Mp3_Init_OK = true;
 
-    if (OpenMixerDevice())
-        std::cout << "Audio initialisiert " << std::endl;
 
+
+    if (OpenMixerDevice()) {
+        std::cout << "Audio initialisiert " << std::endl;
+        Mix_ChannelFinished(on_channel_finished);
+
+
+
+
+    }
 }
 

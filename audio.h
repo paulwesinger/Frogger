@@ -4,7 +4,7 @@
 #include </usr/include/SDL2/SDL_mixer.h>
 #include <map>
 #include <string>
-
+#include <atomic>
 
 
 #define PI2 6.28318530718
@@ -24,6 +24,8 @@ typedef struct{
     Mix_Music * music;
     int id ;
 }Mp3struct;
+
+
 
 
 class Audio
@@ -49,9 +51,6 @@ public:
     void PlayMp3(Mix_Chunk *music, bool endless = true);
     void PlayBackrgoundSound(Mix_Music * music,bool endless = true,int loops=0);
 
-
-
-
     bool Mp3InitDone();
     bool InitAudioSpec(Wav8Bit &spec, int &audioid);
 
@@ -74,10 +73,13 @@ private :
 
     bool Mp3_Init_OK;
 
+
     int _AudioId;
     void Init();
     bool OpenMixerDevice();
     static void audiocallback (void* data,Uint8* stream,int len);
+    static void on_channel_finished(int channel);
+    void PlayMixChunckAsync(Mix_Chunk * chunck);
 };
 
 #endif // AUDIO_H

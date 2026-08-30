@@ -74,7 +74,9 @@ bool TestEngine::UserUpdate(KEYBOARDSTATE state){
 
     case  BTN_PRESS_UP_KEY:{
         keyboardtext = "Up Key";
-        // audio->PlaySound(sound_Hop);
+        //audio->PlaySound(sound_Hop);
+
+
 
         _StepX = 0; _StepY = -STEP_Y;
         _TileX = 1;
@@ -124,9 +126,7 @@ bool TestEngine::UserUpdate(KEYBOARDSTATE state){
             frog->EndAnimation(_EndTileX,_EndTileY,Frogger_END_DELAY,_Elapsed);
 
             if (frog->EndAnimationDone())
-                frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
-
-            cout << "Animation started" << endl;
+                frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);            
         }
         break;
 
@@ -171,7 +171,7 @@ void TestEngine::HandleMessage(){
         case BTN_UP_LEFT_KEY:
         case BTN_UP_RIGHT_KEY:
             frog->EndAnimation(_TileX,_TileY,Frogger_END_DELAY,_Elapsed);
-        //    audio->PlaySound(sound_Hop);
+            audio->PlaySound(sound_Hop);
             cout << "Animation ends" << endl;
             break;
         }
@@ -239,13 +239,13 @@ void TestEngine::Run(){
         }
 
         x=0;
-        for(int i=0; i< 5; i++){
+        for(int i=0; i< 4; i++){
             FrogZiel[i]->setPos(x,0);
             FrogZiel[i]->RenderFromAsset(0,0);
             x +=270;
-        }
-
-
+        }        
+        FrogZiel[4]->setPos(1152,0);
+        FrogZiel[4]->RenderFromAsset(0,0);
 
         if ( ! frog->AnimationDone() ){
 

@@ -114,82 +114,62 @@ void ENGINE::Sprite::MoveSprite(int pixelsX, int pixelsY, uint64_t timetoanimate
     time += elapsed;
 
 
-   // if (! _IsLocked) {
 
-        pixX = (double)pixelsX;
-        pixY = (double)pixelsY;
 
-        stepx = (double)elapsed/(double)timetoanimate * pixX;   //pixelsX / steps;
-        stepy = (double)elapsed/(double)timetoanimate * pixY;    //pixelsY / steps;
+    pixX = (double)pixelsX;
+    pixY = (double)pixelsY;
 
-        if (pixelsX != 0)
-        {
-            if (stepx >=1.0 || stepx <= -1.0){
-                _Pos.x += round(stepx);
+    stepx = (double)elapsed/(double)timetoanimate * pixX;   //pixelsX / steps;
+    stepy = (double)elapsed/(double)timetoanimate * pixY;    //pixelsY / steps;
+
+    if (pixelsX != 0)
+    {
+        if (stepx >=1.0 || stepx <= -1.0){
+            _Pos.x += round(stepx);
+            if (steptime >= nextstep) {
+
+                std::cout << "Steptime : " << steptime  << std::endl;
+                steptime = 0;
+            }
+        }
+    }
+
+    if (pixelsY != 0)
+    {
+        if (stepy < 0) {    //negativ
+            if (_Pos.y + stepy >= _Bounds.y){
+                _Pos.y += round(stepy);
+
                 if (steptime >= nextstep) {
 
                     std::cout << "Steptime : " << steptime  << std::endl;
+
                     steptime = 0;
                 }
             }
+            else{   // ToPosY auf die aktuelle Pos einstellen, sonst läuft der Frog weiter.....
+                _ToPosY = _Pos.y;
+            }
         }
 
-        if (pixelsY != 0)
-        {            
-            if (stepy < 0) {    //negativ
-                if (_Pos.y + stepy >= _Bounds.y){
-                    _Pos.y += round(stepy);
+        if (stepy > 0) {    // positiv
+            if (_Pos.y + stepy <= _Bounds.y1){
+                _Pos.y += round(stepy);
 
-                    if (steptime >= nextstep) {
+                std::cout << "_Pos.y : " << _Pos.y  << std::endl;
+                if (steptime >= nextstep) {
 
-                        std::cout << "Steptime : " << steptime  << std::endl;
+                    std::cout << "Steptime : " << steptime  << std::endl;
 
-                        steptime = 0;
-                    }
-                }
-                else{   // ToPosY auf die aktuelle Pos einstellen, sonst läuft der Frog weiter.....
-                    _ToPosY = _Pos.y;
+                    steptime = 0;
                 }
             }
-
-            if (stepy > 0) {    // positiv
-                if (_Pos.y + stepy <= _Bounds.y1){
-                    _Pos.y += round(stepy);
-
-                    std::cout << "_Pos.y : " << _Pos.y  << std::endl;
-                    if (steptime >= nextstep) {
-
-                        std::cout << "Steptime : " << steptime  << std::endl;
-
-                        steptime = 0;
-                    }
-                }
-                else{   // ToPosY auf die aktuelle Pos einstellen, sonst läuft der Frog weiter.....
-                    _ToPosY = _Pos.y;
-                }
+            else{   // ToPosY auf die aktuelle Pos einstellen, sonst läuft der Frog weiter.....
+                _ToPosY = _Pos.y;
             }
-
-
-            // if (stepy >= 1.0 || stepy <= -1.0) {
-            //     // check up
-
-            //         // stepy kann auch negativ sein...
-            //         if ( (_Pos.y + stepy <= _Bounds.y1) ||  // stepy positiv
-            //              (_Pos.y + stepy >= _Bounds.y)){    // stepy negativ
-
-            //             _Pos.y += (int)stepy;
-
-            //             std::cout << "_Pos.y : " << _Pos.y  << std::endl;
-            //             if (steptime >= nextstep) {
-
-            //                 std::cout << "Steptime : " << steptime  << std::endl;
-
-            //                 steptime = 0;
-            //             }
-            //         }
-            // }
         }
-    //}
+    }
+
     if (time >= timetoanimate){
         _AnimationDone = true;
         _IsLocked = true;
