@@ -113,9 +113,6 @@ void ENGINE::Sprite::MoveSprite(int pixelsX, int pixelsY, uint64_t timetoanimate
     steptime += elapsed;
     time += elapsed;
 
-
-
-
     pixX = (double)pixelsX;
     pixY = (double)pixelsY;
 
@@ -128,7 +125,9 @@ void ENGINE::Sprite::MoveSprite(int pixelsX, int pixelsY, uint64_t timetoanimate
             _Pos.x += round(stepx);
             if (steptime >= nextstep) {
 
+#ifndef NDEBUG
                 std::cout << "Steptime : " << steptime  << std::endl;
+#endif
                 steptime = 0;
             }
         }
