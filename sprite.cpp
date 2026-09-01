@@ -100,10 +100,6 @@ bool ENGINE::Sprite::IsRunning(){
 void ENGINE::Sprite::MoveSprite(int pixelsX, int pixelsY, uint64_t timetoanimate, int steps,uint64_t elapsed,
                                 int tilex,int tiley){
 
-    static uint64_t steptime = 0;
-    static uint64_t nextstep =0;
-    static uint64_t time = 0;
-
     static double stepx = 0;
     static double stepy = 0;
 
@@ -121,17 +117,27 @@ void ENGINE::Sprite::MoveSprite(int pixelsX, int pixelsY, uint64_t timetoanimate
 
     if (pixelsX != 0)
     {
-        if (stepx >=1.0 || stepx <= -1.0){
-            _Pos.x += round(stepx);
-            if (steptime >= nextstep) {
-
-#ifndef NDEBUG
-                std::cout << "Steptime : " << steptime  << std::endl;
-#endif
-                steptime = 0;
+        if (stepx <0.0){
+            if (_Pos.x + stepx >= _Bounds.x){
+                _Pos.x += round(stepx);
             }
+            else
+                 _ToPosX = _Pos.x;
+        }
+
+        if (stepx > 0.0){
+            if (_Pos.x + stepx <= _Bounds.x1){
+                _Pos.x += round(stepx);
+                // if (steptime >= nextstep) {
+                //     _NextTile ++;
+                //     steptime = 0;
+                // }
+            }
+            else
+                _ToPosX = _Pos.x;
         }
     }
+
 
     if (pixelsY != 0)
     {
@@ -139,12 +145,10 @@ void ENGINE::Sprite::MoveSprite(int pixelsX, int pixelsY, uint64_t timetoanimate
             if (_Pos.y + stepy >= _Bounds.y){
                 _Pos.y += round(stepy);
 
-                if (steptime >= nextstep) {
-
-                    std::cout << "Steptime : " << steptime  << std::endl;
-
-                    steptime = 0;
-                }
+                // if (steptime >= nextstep) {
+                //     _NextTile++;
+                //     steptime = 0;
+                // }
             }
             else{   // ToPosY auf die aktuelle Pos einstellen, sonst läuft der Frog weiter.....
                 _ToPosY = _Pos.y;
@@ -155,13 +159,11 @@ void ENGINE::Sprite::MoveSprite(int pixelsX, int pixelsY, uint64_t timetoanimate
             if (_Pos.y + stepy <= _Bounds.y1){
                 _Pos.y += round(stepy);
 
-                std::cout << "_Pos.y : " << _Pos.y  << std::endl;
-                if (steptime >= nextstep) {
-
-                    std::cout << "Steptime : " << steptime  << std::endl;
-
-                    steptime = 0;
-                }
+                // std::cout << "_Pos.y : " << _Pos.y  << std::endl;
+                // if (steptime >= nextstep) {
+                //     _NextTile ++;
+                //     steptime = 0;
+                // }
             }
             else{   // ToPosY auf die aktuelle Pos einstellen, sonst läuft der Frog weiter.....
                 _ToPosY = _Pos.y;
@@ -169,17 +171,30 @@ void ENGINE::Sprite::MoveSprite(int pixelsX, int pixelsY, uint64_t timetoanimate
         }
     }
 
+    if (steptime >= _TimePerSequence) {
+
+        std::cout << "Step Time " << steptime << std::endl;
+        _NextTile ++;
+        steptime = 0;
+    }
+    // -----------------------------------
+    // Save range check
+    // Todo: Tile indicator für x und y !
+    // -----------------------------------
+    if (_NextTile >= _CountSteps)
+        _NextTile = _CountSteps -1;
+
     if (time >= timetoanimate){
+        std::cout << "Time " << time << std::endl;
         _AnimationDone = true;
         _IsLocked = true;
         _Pos.x = _ToPosX;
         _Pos.y = _ToPosY;
         steptime = 0;
-        std::cout << "time : " << time << std::endl;
         time = 0;
-        nextstep = 0;
+        _NextTile = 0;
     }
-    RenderFromAsset(tilex,tiley);
+    RenderFromAsset(_NextTile,tiley);
 }
 
 void ENGINE::Sprite::Animate(uint64_t elapsed, int pixelXperSecond, int pixelYperSecond,
@@ -308,7 +323,7 @@ void ENGINE::Sprite::EndAnimation(int endtileX, int endtileY, uint64_t delay,uin
         _IsLocked = false;
         _IsRunning = false;
         _EndAnimationDone = false;
-        RenderFromAsset(endtileX,endtileY);
+      //  RenderFromAsset(endtileX,endtileY);
         time += elapsed;
 
         cout << "FrogPos X : "<< _Pos.x << "   FrogPos Y : "<< _Pos.y << std::endl;
@@ -331,10 +346,15 @@ void ENGINE::Sprite::StartAnimation(int tileX, int tileY,uint64_t timetoanimatio
 
     _IsLocked = false;
     _AnimationDone = false;
+    _EndAnimationDone = false;
     _IsRunning = true;
     _TimePerSequence =  timetoanimation/stepsPerMove;
-    // _CountSteps = stepsPerMove;
 
+    // NextTile bei mehreren animationsteps-> sind die texturen im image
+    _NextTile = 0;
+
+    // Wieviele Tiles sind für eine Animation?
+    _CountSteps = stepsPerMove;
 
     if (pixelsX < 0){
         if (_Pos.x + pixelsX < _Bounds.x){
@@ -377,7 +397,7 @@ void ENGINE::Sprite::StartAnimation(int tileX, int tileY,uint64_t timetoanimatio
         }
     }
 
-    RenderFromAsset(tileX,tileY);
+  //  RenderFromAsset(tileX,tileY);
 }
 
 void ENGINE::Sprite::SetPosition(int x, int y){

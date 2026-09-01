@@ -63,15 +63,8 @@ private:
     bool _IsRunning;
 
     Bounds _Bounds;
-
-
-
-    uint64_t nextframe;
-
+    int _NextTile;
     int _CountSteps;
-
-
-
 
     uint64_t _TimePerSequence;
     int _ToPosX;
@@ -79,6 +72,9 @@ private:
     bool _AnimationDone;
     bool _EndAnimationDone;
     uint64_t _TimeToAnimate;
+
+    uint64_t steptime = 0;
+    uint64_t time = 0;
 };
 }
 

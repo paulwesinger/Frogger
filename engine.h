@@ -54,6 +54,7 @@ protected:
     // unser hauptakteur: der Frosch
     // +++++++++++++++++++++++++++++++
     ENGINE::Sprite * frog;
+    ENGINE::Sprite * snake;
 
     // +++++++++++++++++++++++++++++++
     // cars and snakes als tiles 64x64
@@ -93,6 +94,7 @@ private:
     int _EndTileX;
     int _EndTileY;
 
+    int SnakeX;
 };
 
 #endif // ENGINE_H

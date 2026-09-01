@@ -26,15 +26,16 @@ TestEngine::TestEngine(int resx,int resy)
 TestEngine::~TestEngine(){
 
 
-    if (! Holz.empty()) {
-        for (ENGINE::Base *elem:Holz)
-        {
-            delete elem;
-        }
-        Holz.clear();
-    }
+    // if (! Holz.empty()) {
+    //     for (ENGINE::Base *elem:Holz)
+    //     {
+    //         delete elem;
+    //     }
+    //     Holz.clear();
+    // }
 
     delete frog;
+    delete snake;
 
     for(int i=0; i< MAX_TILE_X; i++)
         delete StreetBlocksBottom[i];
@@ -219,21 +220,13 @@ void TestEngine::Run(){
         // for(ENGINE::RenderText* elems:_Displays)
         //     elems->Draw();
 
-
-        // for (ENGINE::Base* elem: Holz)
-        //      elem->Render();
-
-        //  Frogger->Render();
-        // frog->Render();
-        //frog->RenderFromAsset(0,1);
-
         int x = 0;
         for (int i = 0; i< MAX_TILE_X; i++){
             StreetBlocksBottom[i]->setPos(x,802);
             StreetBlocksBottom[i]->RenderFromAsset(8,0);
 
-            StreetBlocksBottom[i]->setPos(x,348);
-            StreetBlocksBottom[i]->RenderFromAsset(8,0);
+            StreetBlocksMiddle[i]->setPos(x,348);
+            StreetBlocksMiddle[i]->RenderFromAsset(8,0);
             x += 64;
 
         }
@@ -255,6 +248,23 @@ void TestEngine::Run(){
 
             frog->RenderFromAsset(_EndTileX,_EndTileY);
         }
+
+        snake->MoveSprite(16,0,900,3,_Elapsed,0,0);
+        std::cout << "Move sprite" << std::endl;
+        if ( snake->AnimationDone()){
+            std::cout << "Animation Done" << std::endl;
+            snake->EndAnimation(2,0,200,_Elapsed);
+
+            if (snake->EndAnimationDone()) {
+                 std::cout << "En Animation done" << std::endl;
+                snake->StartAnimation(0,0,900,3,16,0);
+                snake->SetPosition(SnakeX,802);
+                SnakeX += 5;
+            }
+        }
+
+        if (SnakeX > _ResX)
+            SnakeX = 0;
         SwapWindow();
     }
 }
@@ -282,26 +292,31 @@ bool TestEngine::InitUserObjects(){
     }
 
     int x = 0;
-    for (int i =0; i<5; i++){
-        ENGINE::Base* obj = new ENGINE::BaseObject2D(_ResX,_ResY,"/home/paul/workspace/GLFrameWork/images/Holztexture/Wood.png",_Shader);
+    // for (int i =0; i<5; i++){
+    //     ENGINE::Base* obj = new ENGINE::BaseObject2D(_ResX,_ResY,"/home/paul/workspace/GLFrameWork/images/Holztexture/Wood.png",_Shader);
 
-        obj->setPos(x,400);
-        obj->setSize(150,40);
-        x+=200;
-        Holz.push_back(obj);
-    }
+    //     obj->setPos(x,400);
+    //     obj->setSize(150,40);
+    //     x+=200;
+    //     Holz.push_back(obj);
+    // }
 
-    // Frogger = new ENGINE::BaseObject2D(_ResX,_ResY,"/home/paul/workspace/images/retrogames/frogger/Sprites640x560.png",_Shader);
-    // Frogger->setPos(300,400);
-
-    //CarsAndSnakes32x32.png
-    frog = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/images/retrogames/frogger/Froggs8x4.png",_Shader); //graphics-game-sprites640x560.png",_Shader);x
-
+    frog = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/images/retrogames/frogger/Froggs8x4.png",_Shader);
     // Für Auflösung 1280x960 Für 64 pixel tiles
     frog->SetPosition(608,802);
     frog->InitTextureMap(8,4);
     frog->SetMoveArea(0,32,1280,876);
 
+
+    // ---------------------------------------------
+    // Snake
+    // ---------------------------------------------
+    snake = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Snakes3x1_128_64.png",_Shader);
+    snake->InitTextureMap(3,1);
+    snake->SetPosition(0,802);
+
+    snake ->StartAnimation(0,0,3000,3,5,0);
+    SnakeX = 0;
 
     // Die untere Strasse Rendern:
     // instancen für sprites in einer schleife generieren.
