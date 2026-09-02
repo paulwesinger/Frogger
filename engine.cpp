@@ -249,19 +249,29 @@ void TestEngine::Run(){
             frog->RenderFromAsset(_EndTileX,_EndTileY);
         }
 
-        snake->MoveSprite(16,0,900,3,_Elapsed,0,0);
-        std::cout << "Move sprite" << std::endl;
-        if ( snake->AnimationDone()){
-            std::cout << "Animation Done" << std::endl;
-            snake->EndAnimation(2,0,200,_Elapsed);
 
-            if (snake->EndAnimationDone()) {
-                 std::cout << "En Animation done" << std::endl;
-                snake->StartAnimation(0,0,900,3,16,0);
-                snake->SetPosition(SnakeX,802);
-                SnakeX += 5;
-            }
+        if (! snake->IsColliding(frog->Pos(),frog->Size())) {
+
+            snake->MoveSprite(0,2,100,128,64,-4,0,_Elapsed);
+
         }
+        else{
+            cout << "Colliding !!!!!!!!!!!!!!" << std::endl;
+            cout << "Size Frog " << frog->Size().w << "  " << frog ->Size().h << std::endl;
+            // Frog death
+        }
+        // std::cout << "Move sprite" << std::endl;
+        // if ( snake->AnimationDone()){
+        //     std::cout << "Animation Done" << std::endl;
+        //     snake->EndAnimation(2,0,200,_Elapsed);
+
+        //     if (snake->EndAnimationDone()) {
+        //          std::cout << "En Animation done" << std::endl;
+        //         snake->StartAnimation(0,0,900,3,16,0);
+        //         snake->SetPosition(SnakeX,802);
+        //         SnakeX += 5;
+        //     }
+        // }
 
         if (SnakeX > _ResX)
             SnakeX = 0;

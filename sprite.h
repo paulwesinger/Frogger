@@ -30,6 +30,8 @@ public:
     void RenderFromAsset(int fromcol, int fromrow);
 
     void MoveSprite(int pixelsX, int pixelsY, uint64_t timetoanimate, int steps, uint64_t elapsed, int tilex, int tiley);
+    void MoveSprite(int starttile, int lasttile, int tilesizeX, int tilesizeY, uint64_t timeperTile, int stepx, int stepy, uint64_t elapsed);
+
     void Animate(uint64_t elapsed, int pixelXperSecond, int pixelYperSecond, int fromTileX, int toTileX, int tileY);
     void InitTextureMap(int colums,int rows);
     bool AnimationDone();
@@ -40,6 +42,10 @@ public:
     void SetPosition(int x, int y);
     void SetCountSequences(int count);
     void SetTimeToAnimate(uint64_t t);
+
+    // Collission detection
+    bool IsColliding(sPoint p, sSize s);
+
 
     // Bewegungsgrenzen
     void SetMoveArea(int left, int top,int right, int bottom);
@@ -52,7 +58,7 @@ protected:
     std::vector<sTileTextureCoords> tilecoordinats;
     float _TileWidth;
     float _TileHeight;
-
+    sSize _SpriteSize;
 
 private:
     int _TileTextureRows;
@@ -66,6 +72,7 @@ private:
     int _NextTile;
     int _CountSteps;
 
+
     uint64_t _TimePerSequence;
     int _ToPosX;
     int _ToPosY;
@@ -75,6 +82,9 @@ private:
 
     uint64_t steptime = 0;
     uint64_t time = 0;
+
+    // Die grösse des sprites in tilesize
+
 };
 }
 

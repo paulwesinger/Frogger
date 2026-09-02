@@ -40,6 +40,12 @@ void ENGINE::Sprite::InitTextureMap(int colums, int rows){
     std::cout << "tilewidth " << ftw << "image width " << Width() << std::endl;
     std::cout << "tileheight " << fth << "image height " << Width() << std::endl;
 
+
+    _SpriteSize.w = Width() / colums;
+    _SpriteSize.h = Height() / rows;
+
+
+
     _TileWidth = 1.0f / ftw;
     _TileHeight =  1.0f / fth;
 
@@ -96,6 +102,50 @@ bool ENGINE::Sprite::IsLocked(){
 bool ENGINE::Sprite::IsRunning(){
     return _IsRunning;
 }
+
+bool ENGINE::Sprite::IsColliding(sPoint p, sSize s){
+
+    return ((p.x >= _Pos.x && p.x <= _Pos.x + _SpriteSize.w)
+           && (p.y >= _Pos.y) && (p.y <= _Pos.y+_SpriteSize.h));
+}
+
+
+void ENGINE::Sprite::MoveSprite(int starttile,int lasttile, int tilesizeX, int tilesizeY, uint64_t timeperTile,int stepx,int stepy, uint64_t elapsed){
+
+    static uint64_t steptime =0;
+    static int currenttile = starttile;
+
+    steptime += elapsed;
+    RenderFromAsset(currenttile,0);
+    if (steptime >= timeperTile){
+        currenttile ++;
+
+        if (currenttile > lasttile) {  // restart from first image
+            currenttile = starttile;
+        }
+
+        steptime = 0;
+    }
+    _Pos.x += stepx;
+    _Pos.y += stepy;
+
+    if (_Pos.x > _ResX)
+        _Pos.x = -tilesizeX;
+
+    if (_Pos.x < -tilesizeX)
+        _Pos.x = _ResX;
+
+    if (_Pos.y > _ResY)
+        _Pos.y = -tilesizeY;
+
+    if (_Pos.y < -tilesizeY)
+        _Pos.y = _ResY;
+}
+
+
+
+
+
 
 void ENGINE::Sprite::MoveSprite(int pixelsX, int pixelsY, uint64_t timetoanimate, int steps,uint64_t elapsed,
                                 int tilex,int tiley){
