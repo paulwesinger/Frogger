@@ -71,8 +71,10 @@ protected:
     Wav8Bit Wav_Plunk;
     Wav8Bit Wav_Squash;
 
+
     Mix_Chunk* sound_Startup;
     Mix_Chunk* sound_Hop;
+    Mix_Chunk* sound_FrogDeath;
 
     // Sounds .mp3
     Mix_Music* sound_Background;

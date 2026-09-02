@@ -49,6 +49,7 @@ TestEngine::~TestEngine(){
     // wav freigeben
     Mix_FreeChunk(sound_Hop);
     Mix_FreeChunk(sound_Startup);
+    Mix_FreeChunk(sound_FrogDeath);
 
     // Mixer_Music freigeben
     Mix_FreeMusic(sound_Background);
@@ -259,6 +260,9 @@ void TestEngine::Run(){
             cout << "Colliding !!!!!!!!!!!!!!" << std::endl;
             cout << "Size Frog " << frog->Size().w << "  " << frog ->Size().h << std::endl;
             // Frog death
+            audio->PlaySound(sound_FrogDeath);
+
+            //SDL_Delay(1500);
         }
         // std::cout << "Move sprite" << std::endl;
         // if ( snake->AnimationDone()){
@@ -368,12 +372,16 @@ bool TestEngine::InitUserObjects(){
     // ------------------------
     sound_Hop =  audio->LoadWavMixSound("/home/paul/workspace/sounds/retrogames/frogger/pickupCoin.wav");
     sound_Startup = audio->LoadWavMixSound("/home/paul/workspace/sounds/retrogames/frogger/downloaded/sound-frogger-coin-in/sound-frogger-coin-in.wav");
-
+    sound_FrogDeath = audio->LoadWavMixSound("/home/paul/workspace/Frogger/sounds/frogDeath.wav");
     // -----------------------
     // Mp3's
     // -----------------------
     // hintergrundsound laden, etwas nervig aber witzig...!!
-    sound_Background = audio->LoadBackgroundSound("/home/paul/workspace/sounds/retrogames/frogger/AudacityModiyfied/EndlessBackground.mp3");    return ret;
+    sound_Background = audio->LoadBackgroundSound("/home/paul/workspace/sounds/retrogames/frogger/AudacityModiyfied/EndlessBackground.mp3");
+
+
+
+    return ret;
 }
 
 void TestEngine::StartBackgroundSound(){
