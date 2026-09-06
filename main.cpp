@@ -26,8 +26,8 @@ int main(int argc, char *argv[])
             // Init Userobjects
             // +++++++++++++++++++++++++++++++++++++++
             if (engine.InitUserObjects()){
-                engine.StartUp();
-                engine.StartBackgroundSound();
+               // engine.StartUp();
+
                 engine.Run();
             }
         }

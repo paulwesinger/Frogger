@@ -36,6 +36,7 @@ TestEngine::~TestEngine(){
 
     delete frog;
     delete snake;
+    delete frogdeath;
 
     for(int i=0; i< MAX_TILE_X; i++)
         delete StreetBlocksBottom[i];
@@ -53,7 +54,6 @@ TestEngine::~TestEngine(){
 
     // Mixer_Music freigeben
     Mix_FreeMusic(sound_Background);
-    //  Mix_FreeMusic(sound_StartUp);
 }
 
 bool TestEngine::LoadSurface(string path){
@@ -76,9 +76,6 @@ bool TestEngine::UserUpdate(KEYBOARDSTATE state){
 
     case  BTN_PRESS_UP_KEY:{
         keyboardtext = "Up Key";
-        //audio->PlaySound(sound_Hop);
-
-
 
         _StepX = 0; _StepY = -STEP_Y;
         _TileX = 1;
@@ -91,14 +88,13 @@ bool TestEngine::UserUpdate(KEYBOARDSTATE state){
             if (frog->EndAnimationDone())
                 frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
 
-            cout << "Animation started" << endl;
+
         }
         break;
     }
 
     case BTN_PRESS_DOWN_KEY:
-        keyboardtext = "Down Key";
-       // audio->PlaySound(sound_Hop);
+        keyboardtext = "Down Key"; 
 
         _StepX = 0; _StepY = STEP_Y;
         _TileX = 5;
@@ -116,8 +112,7 @@ bool TestEngine::UserUpdate(KEYBOARDSTATE state){
         break;
 
     case BTN_PRESS_LEFT_KEY:
-        keyboardtext = "Left Key";
-       // audio->PlaySound(sound_Hop);
+        keyboardtext = "Left Key";  
 
         _StepX = -STEP_X; _StepY = 0;
         _TileX = 3;
@@ -134,7 +129,6 @@ bool TestEngine::UserUpdate(KEYBOARDSTATE state){
 
     case BTN_PRESS_RIGHT_KEY:
         keyboardtext = "Right Key";
-        //audio->PlaySound(sound_Hop);
 
         _StepX = STEP_X; _StepY = 0;
         _TileX = 7;
@@ -173,19 +167,40 @@ void TestEngine::HandleMessage(){
         case BTN_UP_LEFT_KEY:
         case BTN_UP_RIGHT_KEY:
             frog->EndAnimation(_TileX,_TileY,Frogger_END_DELAY,_Elapsed);
-            audio->PlaySound(sound_Hop);
+            audio->PlaySound(sound_Hop,AUDIO_Channel_Hop);
             cout << "Animation ends" << endl;
             break;
         }
 }
 
+void TestEngine::RenderBackgroundSprites(){
+    int x = 0;
+    for (int i = 0; i< MAX_TILE_X; i++){
+        StreetBlocksBottom[i]->setPos(x,802);
+        StreetBlocksBottom[i]->RenderFromAsset(8,0);
+
+        StreetBlocksMiddle[i]->setPos(x,348);
+        StreetBlocksMiddle[i]->RenderFromAsset(8,0);
+        x += 64;
+    }
+
+    x=0;
+    for(int i=0; i< 4; i++){
+        FrogZiel[i]->setPos(x,0);
+        FrogZiel[i]->RenderFromAsset(0,0);
+        x +=270;
+    }
+    FrogZiel[4]->setPos(1152,0);
+    FrogZiel[4]->RenderFromAsset(0,0);
+}
+
 void TestEngine::Run(){
     glEnable(GL_DEPTH_TEST);
-
-
-    LoadSurface("/home/paul/workspace/GLFrameWork/images/standard/errorAlpha.png");
-
+    //LoadSurface("/home/paul/workspace/GLFrameWork/images/standard/errorAlpha.png");
     clock.Start();
+
+    StartUp();
+    GameState = GAMESTATE::Starting;
 
     while (! _Quit) {
 
@@ -221,61 +236,88 @@ void TestEngine::Run(){
         // for(ENGINE::RenderText* elems:_Displays)
         //     elems->Draw();
 
-        int x = 0;
-        for (int i = 0; i< MAX_TILE_X; i++){
-            StreetBlocksBottom[i]->setPos(x,802);
-            StreetBlocksBottom[i]->RenderFromAsset(8,0);
+        // --------------------------------------
+        // Hintergrund und mauern immer rendern..
+        // --------------------------------------
 
-            StreetBlocksMiddle[i]->setPos(x,348);
-            StreetBlocksMiddle[i]->RenderFromAsset(8,0);
-            x += 64;
+        RenderBackgroundSprites();
 
-        }
+        // Das ganze mal mit den states:
 
-        x=0;
-        for(int i=0; i< 4; i++){
-            FrogZiel[i]->setPos(x,0);
-            FrogZiel[i]->RenderFromAsset(0,0);
-            x +=270;
-        }        
-        FrogZiel[4]->setPos(1152,0);
-        FrogZiel[4]->RenderFromAsset(0,0);
+        switch (GameState){
+            case GAMESTATE::Starting:
 
-        if ( ! frog->AnimationDone() ){
+                SDL_Delay(100);
 
-            frog->MoveSprite(_StepX,_StepY,Frogger_TIME,Frogger_FRAMES,_Elapsed,_TileX,_TileY);
-        }
-        else{
+                if (audio->PlaySoundFinished())
+                    GameState = GAMESTATE::StartUpFinished;
+                break;
 
-            frog->RenderFromAsset(_EndTileX,_EndTileY);
-        }
+            case GAMESTATE::StartUpFinished:
+                    audio->PlayBackrgoundSound(sound_Background,1);
+                    frog->SetPosition(608,802);
 
+                    GameState= GAMESTATE::Run;
+                break;
+            case GAMESTATE::Run:
+                if ( ! frog->AnimationDone() ){
 
-        if (! snake->IsColliding(frog->Pos(),frog->Size())) {
+                    frog->MoveSprite(_StepX,_StepY,Frogger_TIME,Frogger_FRAMES,_Elapsed,_TileX,_TileY);
+                }
+                else{
+                    frog->RenderFromAsset(_EndTileX,_EndTileY);
+                }
 
-            snake->MoveSprite(0,2,100,128,64,-4,0,_Elapsed);
+                if (! snake->IsColliding(frog->Pos(),frog->Size())) {
 
-        }
-        else{
-            cout << "Colliding !!!!!!!!!!!!!!" << std::endl;
-            cout << "Size Frog " << frog->Size().w << "  " << frog ->Size().h << std::endl;
-            // Frog death
-            audio->PlaySound(sound_FrogDeath);
+                    bool tmp;
+                    snake->MoveSprite(0,2,100,128,64,-4,0,_Elapsed,tmp);
+                }
+                else
+                {
+                    GameState  = GAMESTATE::Die;
+                    frogdeath->StartAnimation(0,6);
+                    frogdeath->SetPosition(frog->PosX(),frog->PosY());
 
-            //SDL_Delay(1500);
-        }
-        // std::cout << "Move sprite" << std::endl;
-        // if ( snake->AnimationDone()){
-        //     std::cout << "Animation Done" << std::endl;
-        //     snake->EndAnimation(2,0,200,_Elapsed);
+                    frogdeath->setRenderSprite(true);
+                    frog->setRenderSprite(false);
 
-        //     if (snake->EndAnimationDone()) {
-        //          std::cout << "En Animation done" << std::endl;
-        //         snake->StartAnimation(0,0,900,3,16,0);
-        //         snake->SetPosition(SnakeX,802);
-        //         SnakeX += 5;
-        //     }
-        // }
+                    audio->HaltMusic();
+                    audio->PlaySound(sound_FrogDeath,AUDIO_Channel_Death);
+                }
+
+                break;
+            case GAMESTATE::Floating: break;
+            case GAMESTATE::GameOver: break;
+            case GAMESTATE::TimeOut: break;
+            case GAMESTATE::Plunk:
+                audio->PlaySound(sound_Plunk,AUDIO_Channel_Plunck);
+
+                if (audio->PlaySoundFinished()){
+
+                }
+                break;
+            case GAMESTATE::Die:
+                // Frog death
+                bool animdone;
+                frogdeath->MoveSprite(0,6,64,64,200,0,0,_Elapsed,animdone);
+
+                if (frogdeath->AnimationDone()){
+                    GameState = GAMESTATE::RemoveFrog;
+                    frogdeath->setRenderSprite(false);
+                    frog->setRenderSprite(true);
+                    snake->SetPosition(_ResX,802);
+                }
+
+                break;
+
+            case GAMESTATE::RemoveFrog:
+                _FrogCount --;
+                GameState = GAMESTATE::StartUpFinished;
+                cout << "Frösche " << _FrogCount << endl;
+                break;
+            case GAMESTATE::Arrived: break;
+        }       
 
         if (SnakeX > _ResX)
             SnakeX = 0;
@@ -286,6 +328,7 @@ void TestEngine::Run(){
 bool TestEngine::InitUserObjects(){
 
     bool ret = true;
+
 
     if (AddTextDisplayWithBackground(100,100,0,"FPS Display with background")){
 
@@ -317,7 +360,7 @@ bool TestEngine::InitUserObjects(){
 
     frog = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/images/retrogames/frogger/Froggs8x4.png",_Shader);
     // Für Auflösung 1280x960 Für 64 pixel tiles
-    frog->SetPosition(608,802);
+    //frog->SetPosition(608,802);
     frog->InitTextureMap(8,4);
     frog->SetMoveArea(0,32,1280,876);
 
@@ -331,6 +374,12 @@ bool TestEngine::InitUserObjects(){
 
     snake ->StartAnimation(0,0,3000,3,5,0);
     SnakeX = 0;
+
+    // ---------------------------------------------
+    // frog - death
+    // ---------------------------------------------
+    frogdeath = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/frogdeath7x1_64x64.png",_Shader);
+    frogdeath->InitTextureMap(7,1);
 
     // Die untere Strasse Rendern:
     // instancen für sprites in einer schleife generieren.
@@ -362,7 +411,11 @@ bool TestEngine::InitUserObjects(){
     _TileX = 0;
     _TileY = 0;
     _EndTileX = 0; _EndTileY = 0;
+
+
     audio = new Audio;
+
+    audio->AddHandlder(SoundHandler,AUDIO_Channel_StartUp);
 
     // Background sound laden
     // audio->LoadMP3("/home/paul/workspace/sounds/retrogames/frogger/frogger.mp3",Sound_Background);
@@ -373,6 +426,8 @@ bool TestEngine::InitUserObjects(){
     sound_Hop =  audio->LoadWavMixSound("/home/paul/workspace/sounds/retrogames/frogger/pickupCoin.wav");
     sound_Startup = audio->LoadWavMixSound("/home/paul/workspace/sounds/retrogames/frogger/downloaded/sound-frogger-coin-in/sound-frogger-coin-in.wav");
     sound_FrogDeath = audio->LoadWavMixSound("/home/paul/workspace/Frogger/sounds/frogDeath.wav");
+    sound_Plunk = audio->LoadWavMixSound("/home/paul/workspace/Frogger/sounds/plunk.wav");
+
     // -----------------------
     // Mp3's
     // -----------------------
@@ -384,12 +439,16 @@ bool TestEngine::InitUserObjects(){
     return ret;
 }
 
-void TestEngine::StartBackgroundSound(){
-    audio->PlayBackrgoundSound(sound_Background);
+void TestEngine::SoundHandler(){
+    //Change Gamestate after startup sound
+ //   GameState = GAMESTATE::StartUpFinished;
 }
 
-void TestEngine::StartUp(){
-    audio->PlaySound(sound_Startup);
+void TestEngine::StartUp(){    
+    audio->PlaySound(sound_Startup,AUDIO_Channel_StartUp);
+    _FrogCount = 3;
+
+    // Splash screen usw anzeigen
 }
 
 bool TestEngine::AddTextDisplayWithBackground(int x, int y,int id,string name) {

@@ -12,17 +12,30 @@
 
 
 
-enum FrogState{
-    Background =0,
-    Startup,
-    Hop,
-    Plunk,
-    Die
+enum GAMESTATE{
+    Starting =0,        // Startupsound, spielstart
+    StartUpFinished,    // Splash screen weg, Endlos  sound staten
+    Run,
+    RemoveFrog,
+    Floating,
+    TimeOut,
+    Plunk,              // ins wasser plumpsen
+    Die,                // Autsch.... neuer Frosch
+    Arrived,             // Im ziel
+    GameOver
 };
 
 const int MAX_TILE_X = 20;
 const int MAX_TILE_Y = 15;
 
+const int AUDIO_Channel_Background  = 0;
+const int AUDIO_Channel_StartUp     = 1;
+const int AUDIO_Channel_Hop         = 2;
+const int AUDIO_Channel_Death       = 3;
+const int AUDIO_Channel_Plunck      = 4;
+
+
+static GAMESTATE GameState;
 
 class TestEngine : public ENGINE::GLFrameWork
 {
@@ -38,7 +51,6 @@ public:
     bool UserUpdate(KEYBOARDSTATE state);
     bool InitUserObjects();
     void StartUp();
-    void StartBackgroundSound();
 
     bool LoadSurface(std::string path);
 
@@ -54,7 +66,12 @@ protected:
     // unser hauptakteur: der Frosch
     // +++++++++++++++++++++++++++++++
     ENGINE::Sprite * frog;
+
+    // -------------------------------
+    // Enemies
+    // -------------------------------
     ENGINE::Sprite * snake;
+    ENGINE::Sprite * frogdeath;
 
     // +++++++++++++++++++++++++++++++
     // cars and snakes als tiles 64x64
@@ -66,15 +83,16 @@ protected:
     ENGINE::Sprite *FrogZiel[5];
 
     // sounds .wav
-    Wav8Bit Wav_Startup;
-    Wav8Bit Wav_Hop;
-    Wav8Bit Wav_Plunk;
-    Wav8Bit Wav_Squash;
+    // Wav8Bit Wav_Startup;
+    // Wav8Bit Wav_Hop;
+    // Wav8Bit Wav_Plunk;
+    // Wav8Bit Wav_Squash;
 
 
     Mix_Chunk* sound_Startup;
     Mix_Chunk* sound_Hop;
     Mix_Chunk* sound_FrogDeath;
+    Mix_Chunk* sound_Plunk;         // Ins Wasser geplumpst..
 
     // Sounds .mp3
     Mix_Music* sound_Background;
@@ -84,7 +102,13 @@ protected:
 
 private:
 
-    enum FrogState frogstate;
+    //static GAMESTATE _GameState;
+    static void SoundHandler();
+    void ChangeGameState(GAMESTATE state);
+
+    void RenderBackgroundSprites();
+
+    int _FrogCount;
     string keyboardtext;
 
     int _StepX;
@@ -100,3 +124,4 @@ private:
 };
 
 #endif // ENGINE_H
+

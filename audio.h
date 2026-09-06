@@ -5,6 +5,7 @@
 #include <map>
 #include <string>
 #include <atomic>
+#include <vartypes.h>
 
 
 #define PI2 6.28318530718
@@ -38,24 +39,26 @@ public:
     bool LoadWav(std::string path, Wav8Bit &wav);
 
     Mix_Music * LoadBackgroundSound(std::string path);
-
     Mix_Music * GetMusic(int id);
-
-
-
     // -------------------------------------------
     // Neu mit mix
     // -------------------------------------------
     Mix_Chunk * LoadWavMixSound(std::string path);
-    void PlaySound(Mix_Chunk * sound);
+    void PlaySound(Mix_Chunk * sound, int channel = 1);
     void PlayMp3(Mix_Chunk *music, bool endless = true);
+
     void PlayBackrgoundSound(Mix_Music * music,bool endless = true,int loops=0);
+    void HaltMusic(); // für background
 
     bool Mp3InitDone();
     bool InitAudioSpec(Wav8Bit &spec, int &audioid);
 
     void ReleaseAudioWav(Wav8Bit &wav,int audioid);
     void ReleaseAudioMP3(Mix_Music * music);
+
+    void AddHandlder(FP handler,int whichchannel);
+    bool PlaySoundFinished();
+
 
 
 protected:
@@ -69,10 +72,13 @@ protected:
     std::map<int,Wav8Bit> WavMap;
     std::map<int,Mp3struct> Mp3Map;
 
+    FP SoundHandler_Finished = nullptr;
+
 private :
 
     bool Mp3_Init_OK;
-
+    bool _SoundFinished;
+    int _ChanneltoListen;
 
     int _AudioId;
     void Init();

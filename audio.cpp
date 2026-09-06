@@ -45,6 +45,10 @@ void Audio::on_channel_finished(int channel){
     sound_finished = true;
 }
 
+
+bool Audio::PlaySoundFinished(){
+    return sound_finished;
+}
 void Audio::audiocallback(void* data,Uint8* stream,int len)
 {
     /*
@@ -108,6 +112,10 @@ void Audio::PlayBackrgoundSound(Mix_Music *music, bool endless, int loops){
         Mix_PlayMusic(music,-1);
     else
         Mix_PlayMusic(music,loops);
+}
+
+void Audio::HaltMusic(){
+    Mix_HaltMusic();
 }
 
 void Audio::PlayMp3(Mix_Chunk *music, bool endless){
@@ -196,43 +204,46 @@ void Audio::PlayMixChunckAsync(Mix_Chunk * chunck){
 
 }
 
-void Audio::PlaySound(Mix_Chunk *sound){
+void Audio::PlaySound(Mix_Chunk *sound, int channel){
 
     if (sound == nullptr)
         return;
-    // if (! sound_finished)
-    //     return;
 
-    Mix_PlayChannel(1,sound,0);
-    std::cout << "Channel " << finished_channel << std::endl;
+    _SoundFinished = false;
+
+    Mix_PlayChannel(channel,sound,0);
 
     if (sound_finished){
-        sound_finished = false;
-        std::cout << "Sound finished " << std::endl;
-    }
+        sound_finished = false;  // never touch this handler !!!
 
+         if (finished_channel == _ChanneltoListen){
+             if (SoundHandler_Finished != nullptr)
+                 SoundHandler_Finished();  // Handler feuern
+             _SoundFinished = true;
+
+         }
+
+        std::cout << "Sound finished " << std::endl;
+
+        std::cout << "Channel " << finished_channel << std::endl;
+    }
 }
+
+void Audio::AddHandlder(FP handler, int whichchannel){
+    SoundHandler_Finished = handler;
+    _ChanneltoListen = whichchannel; // Bei welchem channel lösen wir den Handler aus?
+}
+
+
 
 void Audio::Init(){
 
-    // int flags = MIX_INIT_MP3 | MIX_INIT_WAVPACK;
-    // if ((Mix_Init(flags) & flags) != flags) {
-    //     std::cout << "Mix nicht initialisiert(.mp3 " << Mix_GetError() << std::endl;
-
-    //     //Flag setzen
-    //     Mp3_Init_OK = false;
-    // }
-    // else
     Mp3_Init_OK = true;
-
-
+    _SoundFinished = false;
 
     if (OpenMixerDevice()) {
         std::cout << "Audio initialisiert " << std::endl;
         Mix_ChannelFinished(on_channel_finished);
-
-
-
 
     }
 }

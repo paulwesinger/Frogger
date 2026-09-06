@@ -11,6 +11,7 @@ ENGINE::Sprite::Sprite(int resx, int resy, Shader *sh)
 {
     _IsRunning = false;
     _AnimationDone = true;
+    _RenderSprite = true;
 }
 
 ENGINE::Sprite::Sprite(int resx, int resy, std::string path, Shader * sh)
@@ -18,6 +19,7 @@ ENGINE::Sprite::Sprite(int resx, int resy, std::string path, Shader * sh)
 {
     _IsRunning = false;
     _AnimationDone = true;
+    _RenderSprite = true;
 }
 
 ENGINE::Sprite::~Sprite(){
@@ -95,12 +97,20 @@ void ENGINE::Sprite::SetTimeToAnimate(uint64_t t){
     _TimeToAnimate = t;
 }
 
+void ENGINE::Sprite::setRenderSprite(bool render){
+    _RenderSprite = render;
+}
+
 bool ENGINE::Sprite::IsLocked(){
     return _IsLocked;
 }
 
 bool ENGINE::Sprite::IsRunning(){
     return _IsRunning;
+}
+
+sSize ENGINE::Sprite::SpriteSize(){
+    return _SpriteSize;
 }
 
 bool ENGINE::Sprite::IsColliding(sPoint p, sSize s){
@@ -110,22 +120,29 @@ bool ENGINE::Sprite::IsColliding(sPoint p, sSize s){
 }
 
 
-void ENGINE::Sprite::MoveSprite(int starttile,int lasttile, int tilesizeX, int tilesizeY, uint64_t timeperTile,int stepx,int stepy, uint64_t elapsed){
+void ENGINE::Sprite::MoveSprite(int starttile,int lasttile, int tilesizeX, int tilesizeY,
+                                uint64_t timeperTile,int stepx,int stepy, uint64_t elapsed,bool &animationdone){
 
     static uint64_t steptime =0;
-    static int currenttile = starttile;
-
     steptime += elapsed;
-    RenderFromAsset(currenttile,0);
+
+    if (_RenderSprite)
+        RenderFromAsset(_NextTile,0);
+
     if (steptime >= timeperTile){
-        currenttile ++;
+        _NextTile ++;
 
-        if (currenttile > lasttile) {  // restart from first image
-            currenttile = starttile;
+        if (_NextTile > lasttile) {  // restart from first image
+            _NextTile = starttile;
+            _AnimationDone = true;
+            animationdone = true;
         }
-
         steptime = 0;
     }
+    else
+        _AnimationDone = false;
+
+
     _Pos.x += stepx;
     _Pos.y += stepy;
 
@@ -244,7 +261,9 @@ void ENGINE::Sprite::MoveSprite(int pixelsX, int pixelsY, uint64_t timetoanimate
         time = 0;
         _NextTile = 0;
     }
-    RenderFromAsset(_NextTile,tiley);
+
+    if (_RenderSprite)
+        RenderFromAsset(_NextTile,tiley);
 }
 
 void ENGINE::Sprite::Animate(uint64_t elapsed, int pixelXperSecond, int pixelYperSecond,
@@ -375,9 +394,7 @@ void ENGINE::Sprite::EndAnimation(int endtileX, int endtileY, uint64_t delay,uin
         _EndAnimationDone = false;
       //  RenderFromAsset(endtileX,endtileY);
         time += elapsed;
-
         cout << "FrogPos X : "<< _Pos.x << "   FrogPos Y : "<< _Pos.y << std::endl;
-
     }
     else{
         time = 0;
@@ -390,6 +407,13 @@ bool ENGINE::Sprite::AnimationDone(){ return _AnimationDone; }
 
 bool ENGINE::Sprite::EndAnimationDone(){
     return _EndAnimationDone;
+}
+
+void ENGINE::Sprite::StartAnimation(int firsttile, int lasttile){
+    _AnimationDone = false;
+    _EndAnimationDone = false;
+    _NextTile = firsttile;
+    _EndTile = lasttile;
 }
 
 void ENGINE::Sprite::StartAnimation(int tileX, int tileY,uint64_t timetoanimation,int stepsPerMove,int pixelsX, int pixelsY){

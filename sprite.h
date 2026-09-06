@@ -30,18 +30,22 @@ public:
     void RenderFromAsset(int fromcol, int fromrow);
 
     void MoveSprite(int pixelsX, int pixelsY, uint64_t timetoanimate, int steps, uint64_t elapsed, int tilex, int tiley);
-    void MoveSprite(int starttile, int lasttile, int tilesizeX, int tilesizeY, uint64_t timeperTile, int stepx, int stepy, uint64_t elapsed);
+    void MoveSprite(int starttile, int lasttile, int tilesizeX, int tilesizeY, uint64_t timeperTile, int stepx, int stepy, uint64_t elapsed,bool &animationdone);
 
     void Animate(uint64_t elapsed, int pixelXperSecond, int pixelYperSecond, int fromTileX, int toTileX, int tileY);
     void InitTextureMap(int colums,int rows);
     bool AnimationDone();
     bool EndAnimationDone();
     void StartAnimation(int tileX, int tileY, uint64_t timetoanimatem, int stepsPerMove, int pixelsX, int pixelsY);
+    void StartAnimation(int firsttile, int lasttile);
     void EndAnimation(int endtileX, int endtileY, uint64_t delay, uint64_t elapsed);
 
     void SetPosition(int x, int y);
     void SetCountSequences(int count);
     void SetTimeToAnimate(uint64_t t);
+
+    sSize SpriteSize();
+    void setRenderSprite(bool render);
 
     // Collission detection
     bool IsColliding(sPoint p, sSize s);
@@ -67,9 +71,11 @@ private:
     sPoint _StartPos;
     bool _IsLocked;
     bool _IsRunning;
+    bool _RenderSprite;
 
     Bounds _Bounds;
     int _NextTile;
+    int _EndTile;
     int _CountSteps;
 
 
