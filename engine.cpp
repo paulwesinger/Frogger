@@ -199,130 +199,177 @@ void TestEngine::Run(){
     //LoadSurface("/home/paul/workspace/GLFrameWork/images/standard/errorAlpha.png");
     clock.Start();
 
-    StartUp();
+
     GameState = GAMESTATE::Starting;
 
     while (! _Quit) {
 
-        _Elapsed = clock.Elapsed(); //CLOCK::GameClock::Elapsed();
-        //   cout << "Elapsed: " << elapsed  << endl;
-        HandleMessage();
+        StartUp();
 
-        KEYBOARDSTATE state =  KeyState();
-        UserUpdate(state);// Nur mal testen
+        while (_FrogCount > 0  && ! _Quit){
 
-        //        std::this_thread::sleep_for(std::chrono::milliseconds(50));
-        // cout << "Key pressed " << keyboardtext <<  endl;
-        glDepthFunc(GL_LEQUAL);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glClearColor( _ClearColor.x, _ClearColor.y, _ClearColor.z, _ClearColor.w);
+            _Elapsed = clock.Elapsed(); //CLOCK::GameClock::Elapsed();
+            //   cout << "Elapsed: " << elapsed  << endl;
+            HandleMessage();
 
-        // +++++++++++++++++++++++++++++++++++
-        // Rendering 3D
-        // +++++++++++++++++++++++++++++++++++
-        Restore3D();
+            KEYBOARDSTATE state =  KeyState();
+            UserUpdate(state);// Nur mal testen
 
-        // +++++++++++++++++++++++++++++++++++
-        // Rendering 2D
-        // +++++++++++++++++++++++++++++++++++
-        Prepare2D();
+            //        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            // cout << "Key pressed " << keyboardtext <<  endl;
+            glDepthFunc(GL_LEQUAL);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glClearColor( _ClearColor.x, _ClearColor.y, _ClearColor.z, _ClearColor.w);
 
-        static string displayout;
-        displayout = clock.FPSasString(_Elapsed,displayout);
+            // +++++++++++++++++++++++++++++++++++
+            // Rendering 3D
+            // +++++++++++++++++++++++++++++++++++
+            Restore3D();
 
-        // _Displays.at(0)->SetText(displayout,0);
-        // _Displays.at(1)->SetText(keyboardtext,0);
+            // +++++++++++++++++++++++++++++++++++
+            // Rendering 2D
+            // +++++++++++++++++++++++++++++++++++
+            Prepare2D();
 
-        // for(ENGINE::RenderText* elems:_Displays)
-        //     elems->Draw();
+            static string displayout;
+            displayout = clock.FPSasString(_Elapsed,displayout);
 
-        // --------------------------------------
-        // Hintergrund und mauern immer rendern..
-        // --------------------------------------
+            // _Displays.at(0)->SetText(displayout,0);
+            // _Displays.at(1)->SetText(keyboardtext,0);
 
-        RenderBackgroundSprites();
+            // for(ENGINE::RenderText* elems:_Displays)
+            //     elems->Draw();
 
-        // Das ganze mal mit den states:
+            // --------------------------------------
+            // Hintergrund und mauern immer rendern..
+            // --------------------------------------
 
-        switch (GameState){
-            case GAMESTATE::Starting:
+            //RenderBackgroundSprites();
 
-                SDL_Delay(100);
 
-                if (audio->PlaySoundFinished())
-                    GameState = GAMESTATE::StartUpFinished;
-                break;
+            // Das ganze mal mit den states:
 
-            case GAMESTATE::StartUpFinished:
+            switch (GameState){
+                case GAMESTATE::Starting:
+
+                    FrogSplash->setRenderSprite(true);
+                    RenderSplashScreen();
+
+                    window->Render();
+
+                    SDL_Delay(100);
+
+                    if (audio->PlaySoundFinished())
+                        GameState = GAMESTATE::StartUpFinished;
+                    break;
+
+                case GAMESTATE::StartUpFinished:
+                    RenderBackgroundSprites();
+                    FrogSplash->setRenderSprite(false);
                     audio->PlayBackrgoundSound(sound_Background,1);
                     frog->SetPosition(608,802);
 
                     GameState= GAMESTATE::Run;
-                break;
-            case GAMESTATE::Run:
-                if ( ! frog->AnimationDone() ){
+                    break;
+                case GAMESTATE::Run:
 
-                    frog->MoveSprite(_StepX,_StepY,Frogger_TIME,Frogger_FRAMES,_Elapsed,_TileX,_TileY);
-                }
-                else{
-                    frog->RenderFromAsset(_EndTileX,_EndTileY);
-                }
+                    RenderBackgroundSprites();
 
-                if (! snake->IsColliding(frog->Pos(),frog->Size())) {
+                    if ( ! frog->AnimationDone() ){
 
-                    bool tmp;
-                    snake->MoveSprite(0,2,100,128,64,-4,0,_Elapsed,tmp);
-                }
-                else
-                {
-                    GameState  = GAMESTATE::Die;
-                    frogdeath->StartAnimation(0,6);
-                    frogdeath->SetPosition(frog->PosX(),frog->PosY());
+                        frog->MoveSprite(_StepX,_StepY,Frogger_TIME,Frogger_FRAMES,_Elapsed,_TileX,_TileY);
+                    }
+                    else{
+                        frog->RenderFromAsset(_EndTileX,_EndTileY);
+                    }
 
-                    frogdeath->setRenderSprite(true);
-                    frog->setRenderSprite(false);
+                    if (! snake->IsColliding(frog->Pos(),frog->Size())) {
 
+                        bool tmp;
+                        snake->MoveSprite(0,2,100,128,64,-4,0,_Elapsed,tmp);
+                    }
+                    else
+                    {
+                        GameState  = GAMESTATE::Die;
+                        frogdeath->StartAnimation(0,6);
+                        frogdeath->SetPosition(frog->PosX(),frog->PosY());
+
+                        frogdeath->setRenderSprite(true);
+                        frog->setRenderSprite(false);
+
+                        audio->HaltMusic();
+                        audio->PlaySound(sound_FrogDeath,AUDIO_Channel_Death);
+                    }
+
+                    break;
+                case GAMESTATE::Floating:
+                    RenderBackgroundSprites();
+                    break;
+
+                case GAMESTATE::TimeOut:
+                    RenderBackgroundSprites();
+                    break;
+                case GAMESTATE::Plunk:
+                    RenderBackgroundSprites();
+                    audio->PlaySound(sound_Plunk,AUDIO_Channel_Plunck);
+
+                    if (audio->PlaySoundFinished()){
+
+                    }
+                    break;
+                case GAMESTATE::Die:
+
+                    RenderBackgroundSprites();
+                    // Frog death
+                    bool animdone;
+                    frogdeath->MoveSprite(0,6,64,64,200,0,0,_Elapsed,animdone);
+
+                    if (frogdeath->AnimationDone()){
+                        GameState = GAMESTATE::RemoveFrog;
+                        frogdeath->setRenderSprite(false);
+                        frog->setRenderSprite(true);
+                        snake->SetPosition(_ResX,802);
+                    }
+
+                    break;
+
+                case GAMESTATE::RemoveFrog:
+                    RenderBackgroundSprites();
+                    _FrogCount --;
+                    GameState = GAMESTATE::StartUpFinished;
+                    cout << "Frösche " << _FrogCount << endl;
+
+                    if (_FrogCount == 0)
+                        GameState = GAMESTATE::GameOver;
+                    break;
+                case GAMESTATE::Arrived:
+                    RenderBackgroundSprites();
+                    break;
+
+                case GAMESTATE::GameOver:
                     audio->HaltMusic();
-                    audio->PlaySound(sound_FrogDeath,AUDIO_Channel_Death);
-                }
 
-                break;
-            case GAMESTATE::Floating: break;
-            case GAMESTATE::GameOver: break;
-            case GAMESTATE::TimeOut: break;
-            case GAMESTATE::Plunk:
-                audio->PlaySound(sound_Plunk,AUDIO_Channel_Plunck);
+                    // Abspann anzeigen
+                    // Score
 
-                if (audio->PlaySoundFinished()){
 
-                }
-                break;
-            case GAMESTATE::Die:
-                // Frog death
-                bool animdone;
-                frogdeath->MoveSprite(0,6,64,64,200,0,0,_Elapsed,animdone);
+                    RenderSplashScreen();
+                    SDL_Delay(2000);
 
-                if (frogdeath->AnimationDone()){
-                    GameState = GAMESTATE::RemoveFrog;
-                    frogdeath->setRenderSprite(false);
-                    frog->setRenderSprite(true);
-                    snake->SetPosition(_ResX,802);
-                }
 
-                break;
+                    break;
+            }
 
-            case GAMESTATE::RemoveFrog:
-                _FrogCount --;
-                GameState = GAMESTATE::StartUpFinished;
-                cout << "Frösche " << _FrogCount << endl;
-                break;
-            case GAMESTATE::Arrived: break;
-        }       
-
-        if (SnakeX > _ResX)
-            SnakeX = 0;
-        SwapWindow();
+            if (SnakeX > _ResX)
+                SnakeX = 0;
+            SwapWindow();
+        }
     }
+}
+
+void TestEngine::RenderSplashScreen(){
+    FrogSplash->setPos(100,100);
+    FrogSplash->RenderFromAsset(0,0);
 }
 
 bool TestEngine::InitUserObjects(){
@@ -412,6 +459,16 @@ bool TestEngine::InitUserObjects(){
     _TileY = 0;
     _EndTileX = 0; _EndTileY = 0;
 
+    // Splash Screen
+    FrogSplash = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/frogsplash2.png",_Shader);
+    FrogSplash->InitTextureMap(1,1);
+
+
+    // testwindow
+
+    window = new ENGINE::BaseObject2D(_ResX,_ResY,"/home/paul/workspace/Frogger/images/frogsplash2.png",_Shader);
+    window->setPos(200,200);
+
 
     audio = new Audio;
 
@@ -447,6 +504,7 @@ void TestEngine::SoundHandler(){
 void TestEngine::StartUp(){    
     audio->PlaySound(sound_Startup,AUDIO_Channel_StartUp);
     _FrogCount = 3;
+    GameState = GAMESTATE::Starting;
 
     // Splash screen usw anzeigen
 }

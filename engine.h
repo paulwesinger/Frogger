@@ -80,7 +80,12 @@ protected:
     ENGINE::Sprite * StreetBlocksBottom[20];
     ENGINE::Sprite * StreetBlocksMiddle[20];
 
-    ENGINE::Sprite *FrogZiel[5];
+    ENGINE::Sprite * FrogZiel[5];
+    ENGINE::Sprite * FrogSplash;
+
+    ENGINE::BaseObject2D * window;
+
+
 
     // sounds .wav
     // Wav8Bit Wav_Startup;
@@ -107,6 +112,7 @@ private:
     void ChangeGameState(GAMESTATE state);
 
     void RenderBackgroundSprites();
+    void RenderSplashScreen();
 
     int _FrogCount;
     string keyboardtext;
