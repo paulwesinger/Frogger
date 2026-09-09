@@ -204,13 +204,24 @@ void Audio::PlayMixChunckAsync(Mix_Chunk * chunck){
 
 }
 
+void Audio::ChunkVolume(Mix_Chunk *chunk, int vol){
+
+    if (chunk == nullptr)  return;
+    if (vol > 128 )
+        vol = 128;
+
+    if (vol < 0)
+        vol = 0;
+
+    Mix_VolumeChunk(chunk,vol);
+}
+
 void Audio::PlaySound(Mix_Chunk *sound, int channel){
 
     if (sound == nullptr)
         return;
 
     _SoundFinished = false;
-
     Mix_PlayChannel(channel,sound,0);
 
     if (sound_finished){
@@ -239,7 +250,7 @@ void Audio::AddHandlder(FP handler, int whichchannel){
 void Audio::Init(){
 
     Mp3_Init_OK = true;
-    _SoundFinished = false;
+    _SoundFinished = false;    
 
     if (OpenMixerDevice()) {
         std::cout << "Audio initialisiert " << std::endl;

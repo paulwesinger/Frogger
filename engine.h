@@ -81,9 +81,16 @@ protected:
     ENGINE::Sprite * StreetBlocksMiddle[20];
 
     ENGINE::Sprite * FrogZiel[5];
-    ENGINE::Sprite * FrogSplash;
 
-    ENGINE::BaseObject2D * window;
+    // ----------------------
+    // Holz, crocs und biber:
+    // ----------------------
+    ENGINE::Sprite* Baum_Row1[5];
+
+    // --------------------------
+    // Splash Screen
+    // --------------------------
+    ENGINE::BaseObject2D * _SplashScreen;
 
 
 
@@ -107,12 +114,21 @@ protected:
 
 private:
 
+    // ----------------------------------------
+    // X-Steps für cars, Bäume usw..
+    // ----------------------------------------
+    int Step_Trees;
+    int Step_Snake;
+
+
     //static GAMESTATE _GameState;
     static void SoundHandler();
     void ChangeGameState(GAMESTATE state);
 
     void RenderBackgroundSprites();
     void RenderSplashScreen();
+    void RenderWood();
+    void RenderFrog();
 
     int _FrogCount;
     string keyboardtext;

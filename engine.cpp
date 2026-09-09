@@ -47,6 +47,10 @@ TestEngine::~TestEngine(){
      for (int i =0; i<5; i++)
         delete FrogZiel[i];
 
+     for (int i =0; i<5; i++)
+         delete Baum_Row1[i];
+
+
     // wav freigeben
     Mix_FreeChunk(sound_Hop);
     Mix_FreeChunk(sound_Startup);
@@ -179,7 +183,7 @@ void TestEngine::RenderBackgroundSprites(){
         StreetBlocksBottom[i]->setPos(x,802);
         StreetBlocksBottom[i]->RenderFromAsset(8,0);
 
-        StreetBlocksMiddle[i]->setPos(x,348);
+        StreetBlocksMiddle[i]->setPos(x,418);
         StreetBlocksMiddle[i]->RenderFromAsset(8,0);
         x += 64;
     }
@@ -190,9 +194,50 @@ void TestEngine::RenderBackgroundSprites(){
         FrogZiel[i]->RenderFromAsset(0,0);
         x +=270;
     }
+
+
+
     FrogZiel[4]->setPos(1152,0);
     FrogZiel[4]->RenderFromAsset(0,0);
 }
+
+void TestEngine::RenderWood(){
+
+    bool tmp;
+    for (int i =0; i < 1;i++){
+
+       Baum_Row1[i]->MoveSprite(0,0,128,64,100,Step_Trees,0,_Elapsed,tmp);
+
+        if ( i == 0) {
+           if (Baum_Row1[i]->IsColliding(frog->Pos(),frog->SpriteSize()) )
+               GameState = GAMESTATE::Floating;
+           else
+               GameState=GAMESTATE::Run;
+        }
+    }
+}
+void TestEngine::RenderFrog(){
+    if ( ! frog->AnimationDone() ){
+
+        frog->MoveSprite(_StepX,_StepY,Frogger_TIME,Frogger_FRAMES,_Elapsed,_TileX,_TileY);
+    }
+    else{
+        if (GameState == GAMESTATE::Floating)    {
+            // checken, ob von links nach rechts oder umgekehrt,
+            // zum testen von links nach rechts...
+            sPoint p = frog->Pos();
+            p.x += Step_Trees;
+            frog->SetPosition(p.x,p.y);
+        }
+
+
+        // if (frog->PosY() < 350)
+        //     GameState = GAMESTATE::Plunk;
+
+        frog->RenderFromAsset(_EndTileX,_EndTileY);
+    }
+}
+
 
 void TestEngine::Run(){
     glEnable(GL_DEPTH_TEST);
@@ -252,10 +297,9 @@ void TestEngine::Run(){
             switch (GameState){
                 case GAMESTATE::Starting:
 
-                    FrogSplash->setRenderSprite(true);
                     RenderSplashScreen();
 
-                    window->Render();
+                    _SplashScreen->Render();
 
                     SDL_Delay(100);
 
@@ -264,8 +308,7 @@ void TestEngine::Run(){
                     break;
 
                 case GAMESTATE::StartUpFinished:
-                    RenderBackgroundSprites();
-                    FrogSplash->setRenderSprite(false);
+                    RenderBackgroundSprites();                  
                     audio->PlayBackrgoundSound(sound_Background,1);
                     frog->SetPosition(608,802);
 
@@ -274,19 +317,13 @@ void TestEngine::Run(){
                 case GAMESTATE::Run:
 
                     RenderBackgroundSprites();
-
-                    if ( ! frog->AnimationDone() ){
-
-                        frog->MoveSprite(_StepX,_StepY,Frogger_TIME,Frogger_FRAMES,_Elapsed,_TileX,_TileY);
-                    }
-                    else{
-                        frog->RenderFromAsset(_EndTileX,_EndTileY);
-                    }
+                    RenderWood();
+                    RenderFrog();
 
                     if (! snake->IsColliding(frog->Pos(),frog->Size())) {
 
                         bool tmp;
-                        snake->MoveSprite(0,2,100,128,64,-4,0,_Elapsed,tmp);
+                        snake->MoveSprite(0,2,100,128,64,Step_Snake,0,_Elapsed,tmp);
                     }
                     else
                     {
@@ -304,6 +341,8 @@ void TestEngine::Run(){
                     break;
                 case GAMESTATE::Floating:
                     RenderBackgroundSprites();
+                    RenderWood();
+                    RenderFrog();
                     break;
 
                 case GAMESTATE::TimeOut:
@@ -311,15 +350,17 @@ void TestEngine::Run(){
                     break;
                 case GAMESTATE::Plunk:
                     RenderBackgroundSprites();
+                    RenderWood();
+                    RenderFrog();
                     audio->PlaySound(sound_Plunk,AUDIO_Channel_Plunck);
-
                     if (audio->PlaySoundFinished()){
-
+                        GameState = GAMESTATE::Die;
                     }
                     break;
                 case GAMESTATE::Die:
 
                     RenderBackgroundSprites();
+                    RenderWood();
                     // Frog death
                     bool animdone;
                     frogdeath->MoveSprite(0,6,64,64,200,0,0,_Elapsed,animdone);
@@ -335,6 +376,7 @@ void TestEngine::Run(){
 
                 case GAMESTATE::RemoveFrog:
                     RenderBackgroundSprites();
+                    RenderWood();
                     _FrogCount --;
                     GameState = GAMESTATE::StartUpFinished;
                     cout << "Frösche " << _FrogCount << endl;
@@ -367,14 +409,20 @@ void TestEngine::Run(){
     }
 }
 
-void TestEngine::RenderSplashScreen(){
-    FrogSplash->setPos(100,100);
-    FrogSplash->RenderFromAsset(0,0);
+void TestEngine::RenderSplashScreen(){    
+    _SplashScreen -> Render();
 }
 
 bool TestEngine::InitUserObjects(){
 
     bool ret = true;
+
+    // ----------------------------------------------------------------------
+    // Step init, bei jedem höheren level erhöhen, erhöht die geschwindigkeit
+    // ----------------------------------------------------------------------
+    Step_Trees = 4;
+    Step_Snake = -4;  // Right to Left...
+
 
 
     if (AddTextDisplayWithBackground(100,100,0,"FPS Display with background")){
@@ -417,7 +465,7 @@ bool TestEngine::InitUserObjects(){
     // ---------------------------------------------
     snake = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Snakes3x1_128_64.png",_Shader);
     snake->InitTextureMap(3,1);
-    snake->SetPosition(0,802);
+    snake->SetPosition(_ResX,802);
 
     snake ->StartAnimation(0,0,3000,3,5,0);
     SnakeX = 0;
@@ -431,7 +479,7 @@ bool TestEngine::InitUserObjects(){
     // Die untere Strasse Rendern:
     // instancen für sprites in einer schleife generieren.
     for(int i = 0; i < MAX_TILE_X; i++){
-        StreetBlocksBottom[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/images/retrogames/frogger/CarsAndSnakes64x64.png",_Shader);
+        StreetBlocksBottom[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/CarsAndSnakes64x64.png",_Shader);
         StreetBlocksBottom[i]->InitTextureMap(9,4);
     }
     // instancen in einem array of sprites neu anlegen
@@ -439,7 +487,7 @@ bool TestEngine::InitUserObjects(){
     // Die obere Strasse Rendern:
     // instancen für sprites in einer schleife generieren.
     for(int i = 0; i < MAX_TILE_X; i++){
-        StreetBlocksMiddle[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/images/retrogames/frogger/CarsAndSnakes64x64.png",_Shader);
+        StreetBlocksMiddle[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/CarsAndSnakes64x64.png",_Shader);
         StreetBlocksMiddle[i]->InitTextureMap(9,4);
     }
 
@@ -452,22 +500,30 @@ bool TestEngine::InitUserObjects(){
         x +=150;
     }
 
-    // instancen in einem array of sprites neu anlegen
+    // -------------------------
+    // Bäume Row1
+    // -------------------------
+
+    x = 0;
+    for (int i =0; i < 5;i++){
+        Baum_Row1[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum192x64.png",_Shader);
+        Baum_Row1[i]->InitTextureMap(1,1);
+        Baum_Row1[i]->SetPosition(x,354);
+
+        Baum_Row1[i]->StartAnimation(0,0);
+
+        x+= 250;
+    }
+
 
     // Default settings at start
     _TileX = 0;
     _TileY = 0;
     _EndTileX = 0; _EndTileY = 0;
 
-    // Splash Screen
-    FrogSplash = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/frogsplash2.png",_Shader);
-    FrogSplash->InitTextureMap(1,1);
-
-
-    // testwindow
-
-    window = new ENGINE::BaseObject2D(_ResX,_ResY,"/home/paul/workspace/Frogger/images/frogsplash2.png",_Shader);
-    window->setPos(200,200);
+    // _SplashScreen
+    _SplashScreen = new ENGINE::BaseObject2D(_ResX,_ResY,"/home/paul/workspace/Frogger/images/frogsplash2.png",_Shader);
+    _SplashScreen->setPos(200,200);
 
 
     audio = new Audio;
@@ -484,6 +540,14 @@ bool TestEngine::InitUserObjects(){
     sound_Startup = audio->LoadWavMixSound("/home/paul/workspace/sounds/retrogames/frogger/downloaded/sound-frogger-coin-in/sound-frogger-coin-in.wav");
     sound_FrogDeath = audio->LoadWavMixSound("/home/paul/workspace/Frogger/sounds/frogDeath.wav");
     sound_Plunk = audio->LoadWavMixSound("/home/paul/workspace/Frogger/sounds/plunk.wav");
+
+    // --------------
+    // Change Volume:
+    // --------------
+    audio->ChunkVolume(sound_Hop,64);
+    audio->ChunkVolume(sound_Startup,64);
+    audio->ChunkVolume(sound_FrogDeath,64);
+    audio->ChunkVolume(sound_Plunk,64);
 
     // -----------------------
     // Mp3's

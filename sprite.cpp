@@ -12,6 +12,7 @@ ENGINE::Sprite::Sprite(int resx, int resy, Shader *sh)
     _IsRunning = false;
     _AnimationDone = true;
     _RenderSprite = true;
+    steptime = 0;
 }
 
 ENGINE::Sprite::Sprite(int resx, int resy, std::string path, Shader * sh)
@@ -20,6 +21,7 @@ ENGINE::Sprite::Sprite(int resx, int resy, std::string path, Shader * sh)
     _IsRunning = false;
     _AnimationDone = true;
     _RenderSprite = true;
+    steptime = 0;
 }
 
 ENGINE::Sprite::~Sprite(){
@@ -115,15 +117,15 @@ sSize ENGINE::Sprite::SpriteSize(){
 
 bool ENGINE::Sprite::IsColliding(sPoint p, sSize s){
 
-    return ((p.x >= _Pos.x && p.x <= _Pos.x + _SpriteSize.w)
-           && (p.y >= _Pos.y) && (p.y <= _Pos.y+_SpriteSize.h));
-}
+     int x1 = _Pos.x + _SpriteSize.w;
+     int y1 = _Pos.y + _SpriteSize.h;
 
+    return (p.x >= _Pos.x && p.x <= x1 && p.y >= _Pos.y && p.y <= y1);
+}
 
 void ENGINE::Sprite::MoveSprite(int starttile,int lasttile, int tilesizeX, int tilesizeY,
                                 uint64_t timeperTile,int stepx,int stepy, uint64_t elapsed,bool &animationdone){
 
-    static uint64_t steptime =0;
     steptime += elapsed;
 
     if (_RenderSprite)
@@ -492,8 +494,19 @@ void ENGINE::Sprite::SetMoveArea(int left, int top, int right, int bottom){
 
 void ENGINE::Sprite::RenderFromAsset(int fromcol, int fromrow)
 {
-    GLfloat w = _Size.w /_TileTextureColumns;
-    GLfloat h = _Size.h / _TileTextureRows;
+    GLfloat w ;
+    GLfloat h ;
+
+    if (_TileTextureColumns > 0){
+
+        w = _Size.w /_TileTextureColumns;
+        h = _Size.h / _TileTextureRows;
+    }
+    else{
+        w = _Size.w;
+        h = _Size.h;
+    }
+
 
     GLfloat px = static_cast<GLfloat>(Base::PosX());
     GLfloat py = static_cast<GLfloat>(Base::PosY());

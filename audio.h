@@ -59,15 +59,17 @@ public:
     void AddHandlder(FP handler,int whichchannel);
     bool PlaySoundFinished();
 
+    void ChunkVolume(Mix_Chunk* chunk,int vol);
+
 
 
 protected:
     // 8 Bit Wav:
-    Wav8Bit JumpSpec; // Ist eigentlich hitHurt.wav
-    // MP3:
-    Mix_Music* backgroundmusic;
-    Mix_Music* startup;
-    Mix_Music* frogdeath;
+    // Wav8Bit JumpSpec; // Ist eigentlich hitHurt.wav
+    // // MP3:
+    // Mix_Music* backgroundmusic;
+    // Mix_Music* startup;
+    // Mix_Music* frogdeath;
 
     std::map<int,Wav8Bit> WavMap;
     std::map<int,Mp3struct> Mp3Map;
