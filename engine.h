@@ -17,19 +17,21 @@ enum GAMESTATE{
     StartUpFinished,    // Splash screen weg, Endlos  sound staten
     Run,
     RemoveFrog,
-    Floating,
+    FloatingRight,
+    FloatingLeft,
     TimeOut,
     Plunk,              // ins wasser plumpsen
     Die,                // Autsch.... neuer Frosch
-    Arrived,             // Im ziel
-    GameOver
+    Arrived,            // Im ziel
+    GameOver,
+    Paused              // Zum testen, später wieder löschen
 };
 
 const int MAX_TILE_X = 20;
 const int MAX_TILE_Y = 15;
 
 const int AUDIO_Channel_Background  = 0;
-const int AUDIO_Channel_StartUp     = 1;
+const int AUDIO_Channel_StartUp     = 5;
 const int AUDIO_Channel_Hop         = 2;
 const int AUDIO_Channel_Death       = 3;
 const int AUDIO_Channel_Plunck      = 4;
@@ -92,15 +94,6 @@ protected:
     // --------------------------
     ENGINE::BaseObject2D * _SplashScreen;
 
-
-
-    // sounds .wav
-    // Wav8Bit Wav_Startup;
-    // Wav8Bit Wav_Hop;
-    // Wav8Bit Wav_Plunk;
-    // Wav8Bit Wav_Squash;
-
-
     Mix_Chunk* sound_Startup;
     Mix_Chunk* sound_Hop;
     Mix_Chunk* sound_FrogDeath;
@@ -120,10 +113,14 @@ private:
     int Step_Trees;
     int Step_Snake;
 
+    bool _Pause;
+    GAMESTATE _Oldstate;  // zum restaurieren nach _Pause
 
     //static GAMESTATE _GameState;
     static void SoundHandler();
     void ChangeGameState(GAMESTATE state);
+    int FrogInRow();// Die aktuelle "Zeile" vom Frosch...
+    void GetNewState();
 
     void RenderBackgroundSprites();
     void RenderSplashScreen();

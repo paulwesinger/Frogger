@@ -21,6 +21,8 @@ TestEngine::TestEngine(int resx,int resy)
     :GLFrameWork(resx,resy)
 {
     cout << "Ok" << endl;
+
+    _Pause = false;
 }
 
 TestEngine::~TestEngine(){
@@ -174,7 +176,26 @@ void TestEngine::HandleMessage(){
             audio->PlaySound(sound_Hop,AUDIO_Channel_Hop);
             cout << "Animation ends" << endl;
             break;
+
+
+        case BTN_UP_SPACE_KEY:
+        if (_Pause) {
+            GameState = _Oldstate; // State wieder herstellen
+
         }
+        else{
+            _Oldstate = GameState;
+            GameState = GAMESTATE::Paused;
+        }
+        _Pause = ! _Pause;  // Toggle the Pause state
+        break;
+    }
+}
+
+int TestEngine::FrogInRow(){
+    // anm.: 34 ist die obere Begrenzung des Bewegungsbereichs, 64 die Höhe des FroschSprite,
+    //    ergibt eine ganzzahl zwischen 0 und 11
+    return (frog->PosY() - 34) / 64;
 }
 
 void TestEngine::RenderBackgroundSprites(){
@@ -204,37 +225,100 @@ void TestEngine::RenderBackgroundSprites(){
 void TestEngine::RenderWood(){
 
     bool tmp;
-    for (int i =0; i < 1;i++){
-
-       Baum_Row1[i]->MoveSprite(0,0,128,64,100,Step_Trees,0,_Elapsed,tmp);
-
-        if ( i == 0) {
-           if (Baum_Row1[i]->IsColliding(frog->Pos(),frog->SpriteSize()) )
-               GameState = GAMESTATE::Floating;
-           else
-               GameState=GAMESTATE::Run;
-        }
+    for (int i =0; i < 5;i++){
+        // Erstmal alles rendern
+        Baum_Row1[i]->MoveSprite(0,0,128,64,100,Step_Trees,0,_Elapsed,tmp);
     }
+
+
+
 }
 void TestEngine::RenderFrog(){
     if ( ! frog->AnimationDone() ){
-
+        // Warten auf Animationsende
         frog->MoveSprite(_StepX,_StepY,Frogger_TIME,Frogger_FRAMES,_Elapsed,_TileX,_TileY);
     }
     else{
-        if (GameState == GAMESTATE::Floating)    {
+
+        GetNewState();
+
+        if (GameState == GAMESTATE::FloatingRight)    {
             // checken, ob von links nach rechts oder umgekehrt,
             // zum testen von links nach rechts...
-            sPoint p = frog->Pos();
+            sPoint p = frog->Pos();            
             p.x += Step_Trees;
             frog->SetPosition(p.x,p.y);
         }
+        else
+            if (GameState == GAMESTATE::FloatingLeft) {
+                sPoint p = frog->Pos();
+                p.x -= Step_Trees;
+                frog->SetPosition(p.x,p.y);
+            }
 
 
         // if (frog->PosY() < 350)
         //     GameState = GAMESTATE::Plunk;
 
         frog->RenderFromAsset(_EndTileX,_EndTileY);
+    }
+}
+
+void TestEngine::GetNewState(){
+
+    int frogrow = FrogInRow();
+
+    switch(frogrow)
+    {
+    case 0:
+        GameState = GAMESTATE::Arrived;
+
+        break;
+    case 1:
+        GameState = GAMESTATE::FloatingRight;
+        break ;
+    case 2:
+        GameState = GAMESTATE::FloatingLeft;
+        break;
+    case 3:
+        GameState = GAMESTATE::FloatingRight;
+        break;
+    case 4:
+        GameState = GAMESTATE::FloatingLeft;
+
+        break;
+
+    case 5:{
+            bool plunk = true;
+            for (int i =0; i< 3; i++) {
+                if (Baum_Row1[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
+                    GameState = GAMESTATE::FloatingRight;
+                    plunk = false;
+                }
+            }
+            if (plunk)
+                GameState = GAMESTATE::Plunk;
+            break;
+        }
+    case 6:
+        // Back on the street:
+        GameState = GAMESTATE::Run;
+        break;
+    case 7:
+
+
+        break;
+    case 8: break;
+    case 9:
+        break;
+
+    case 10:
+        break;
+    case 11:
+        break;
+    default:
+        break;
+
     }
 }
 
@@ -289,21 +373,21 @@ void TestEngine::Run(){
             // Hintergrund und mauern immer rendern..
             // --------------------------------------
 
-            //RenderBackgroundSprites();
-
-
             // Das ganze mal mit den states:
 
+
             switch (GameState){
+
+                case GAMESTATE::Paused:
+                    frog->RenderFromAsset(_EndTileX,_EndTileY);
+                    Baum_Row1[0]->RenderFromAsset(0,0);
+                break;
+
                 case GAMESTATE::Starting:
 
                     RenderSplashScreen();
 
-                    _SplashScreen->Render();
-
-                    SDL_Delay(100);
-
-                    if (audio->PlaySoundFinished())
+                    if (audio->PlaySoundFinished(AUDIO_Channel_StartUp))
                         GameState = GAMESTATE::StartUpFinished;
                     break;
 
@@ -319,6 +403,7 @@ void TestEngine::Run(){
                     RenderBackgroundSprites();
                     RenderWood();
                     RenderFrog();
+                 //   GetNewState();
 
                     if (! snake->IsColliding(frog->Pos(),frog->Size())) {
 
@@ -335,14 +420,23 @@ void TestEngine::Run(){
                         frog->setRenderSprite(false);
 
                         audio->HaltMusic();
+                        audio->ChannelToListen(AUDIO_Channel_Death);
                         audio->PlaySound(sound_FrogDeath,AUDIO_Channel_Death);
                     }
 
                     break;
-                case GAMESTATE::Floating:
+                case GAMESTATE::FloatingRight:
                     RenderBackgroundSprites();
                     RenderWood();
                     RenderFrog();
+               //     GetNewState();
+                    break;
+
+                case GAMESTATE::FloatingLeft:
+                    RenderBackgroundSprites();
+                    RenderWood();
+                    RenderFrog();
+                //    GetNewState();
                     break;
 
                 case GAMESTATE::TimeOut:
@@ -352,9 +446,13 @@ void TestEngine::Run(){
                     RenderBackgroundSprites();
                     RenderWood();
                     RenderFrog();
+                    audio->ChannelToListen(AUDIO_Channel_Plunck);
                     audio->PlaySound(sound_Plunk,AUDIO_Channel_Plunck);
-                    if (audio->PlaySoundFinished()){
-                        GameState = GAMESTATE::Die;
+
+                    if (audio->PlaySoundFinished(AUDIO_Channel_Plunck)){
+                        GameState = GAMESTATE::RemoveFrog;
+                        //frogdeath->StartAnimation(0,6);
+                        //frogdeath->SetPosition(frog->PosX(),frog->PosY());
                     }
                     break;
                 case GAMESTATE::Die:
@@ -386,6 +484,8 @@ void TestEngine::Run(){
                     break;
                 case GAMESTATE::Arrived:
                     RenderBackgroundSprites();
+                    RenderWood();
+                    RenderFrog();
                     break;
 
                 case GAMESTATE::GameOver:
@@ -396,7 +496,7 @@ void TestEngine::Run(){
 
 
                     RenderSplashScreen();
-                    SDL_Delay(2000);
+                    SDL_Delay(4000);
 
 
                     break;
@@ -512,8 +612,10 @@ bool TestEngine::InitUserObjects(){
 
         Baum_Row1[i]->StartAnimation(0,0);
 
-        x+= 250;
+        x+= 280;
     }
+
+
 
 
     // Default settings at start
@@ -544,17 +646,17 @@ bool TestEngine::InitUserObjects(){
     // --------------
     // Change Volume:
     // --------------
-    audio->ChunkVolume(sound_Hop,64);
-    audio->ChunkVolume(sound_Startup,64);
-    audio->ChunkVolume(sound_FrogDeath,64);
-    audio->ChunkVolume(sound_Plunk,64);
+    audio->ChunkVolume(sound_Hop,80);
+    audio->ChunkVolume(sound_Startup,100);
+    audio->ChunkVolume(sound_FrogDeath,80);
+    audio->ChunkVolume(sound_Plunk,80);
 
     // -----------------------
     // Mp3's
     // -----------------------
     // hintergrundsound laden, etwas nervig aber witzig...!!
     sound_Background = audio->LoadBackgroundSound("/home/paul/workspace/sounds/retrogames/frogger/AudacityModiyfied/EndlessBackground.mp3");
-
+    audio->MusicVolume(32);
 
 
     return ret;
@@ -562,10 +664,11 @@ bool TestEngine::InitUserObjects(){
 
 void TestEngine::SoundHandler(){
     //Change Gamestate after startup sound
- //   GameState = GAMESTATE::StartUpFinished;
+    //GameState = GAMESTATE::StartUpFinished;
 }
 
-void TestEngine::StartUp(){    
+void TestEngine::StartUp(){
+    audio->ChannelToListen(AUDIO_Channel_StartUp);
     audio->PlaySound(sound_Startup,AUDIO_Channel_StartUp);
     _FrogCount = 3;
     GameState = GAMESTATE::Starting;

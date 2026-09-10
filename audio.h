@@ -57,10 +57,12 @@ public:
     void ReleaseAudioMP3(Mix_Music * music);
 
     void AddHandlder(FP handler,int whichchannel);
-    bool PlaySoundFinished();
+    bool PlaySoundFinished(int channel);
 
     void ChunkVolume(Mix_Chunk* chunk,int vol);
+    void MusicVolume( int vol);
 
+    void ChannelToListen(int channel);
 
 
 protected:

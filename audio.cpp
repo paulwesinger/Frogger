@@ -46,8 +46,11 @@ void Audio::on_channel_finished(int channel){
 }
 
 
-bool Audio::PlaySoundFinished(){
-    return sound_finished;
+bool Audio::PlaySoundFinished(int channel){
+
+    if (finished_channel == channel)
+        return  true;//sound_finished;
+    return false;
 }
 void Audio::audiocallback(void* data,Uint8* stream,int len)
 {
@@ -204,6 +207,18 @@ void Audio::PlayMixChunckAsync(Mix_Chunk * chunck){
 
 }
 
+
+void Audio::MusicVolume(int vol){
+
+    if (vol > 128 )
+        vol = 128;
+
+    if (vol < 0)
+        vol = 0;
+
+    Mix_VolumeMusic(vol);
+}
+
 void Audio::ChunkVolume(Mix_Chunk *chunk, int vol){
 
     if (chunk == nullptr)  return;
@@ -216,6 +231,10 @@ void Audio::ChunkVolume(Mix_Chunk *chunk, int vol){
     Mix_VolumeChunk(chunk,vol);
 }
 
+void Audio::ChannelToListen(int channel){
+    _ChanneltoListen = channel;
+}
+
 void Audio::PlaySound(Mix_Chunk *sound, int channel){
 
     if (sound == nullptr)
@@ -224,15 +243,24 @@ void Audio::PlaySound(Mix_Chunk *sound, int channel){
     _SoundFinished = false;
     Mix_PlayChannel(channel,sound,0);
 
+    if (finished_channel == _ChanneltoListen){
+        if (SoundHandler_Finished != nullptr)
+            SoundHandler_Finished();  // Handler feuern
+        _SoundFinished = true;
+
+    }
+
+
+
     if (sound_finished){
         sound_finished = false;  // never touch this handler !!!
 
-         if (finished_channel == _ChanneltoListen){
-             if (SoundHandler_Finished != nullptr)
-                 SoundHandler_Finished();  // Handler feuern
-             _SoundFinished = true;
+         // if (finished_channel == _ChanneltoListen){
+         //     if (SoundHandler_Finished != nullptr)
+         //         SoundHandler_Finished();  // Handler feuern
+         //     _SoundFinished = true;
 
-         }
+         // }
 
         std::cout << "Sound finished " << std::endl;
 

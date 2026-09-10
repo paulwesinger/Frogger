@@ -520,7 +520,6 @@ void ENGINE::Sprite::RenderFromAsset(int fromcol, int fromrow)
     sTileTextureCoords tmp;
     tmp = tilecoordinats.at(index);
 
-
     GLfloat vertsTileMap[6][4] = {
         { px,     py  + h,        tmp.sx, tmp.sy + tmp.sHeight}, //0.0, 1.0},//0.0 },
         { px,     py,             tmp.sx, tmp.sy},      //0.0, 0.0},//1.0 },
