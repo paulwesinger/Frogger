@@ -36,7 +36,11 @@ const int AUDIO_Channel_Hop         = 2;
 const int AUDIO_Channel_Death       = 3;
 const int AUDIO_Channel_Plunck      = 4;
 
-const int TREES_PER_ROW             = 3;
+const int FLOATOBJECTS_PER_ROW_5           = 3;
+const int FLOATOBJECTS_PER_ROW_4           = 6;
+const int FLOATOBJECTS_PER_ROW_3           = 3;
+const int FLOATOBJECTS_PER_ROW_2           = 4;
+const int FLOATOBJECTS_PER_ROW_1           = 4;
 
 
 static GAMESTATE GameState;
@@ -60,6 +64,7 @@ public:
 
 
 protected:
+
     CLOCK::GameClock clock;
     Logger log;
     ENGINE::Base* Frogger;
@@ -89,7 +94,11 @@ protected:
     // ----------------------
     // Holz, crocs und biber:
     // ----------------------
-    ENGINE::Sprite* Baum_Row1[TREES_PER_ROW];
+    ENGINE::Sprite* Baum_Row5[FLOATOBJECTS_PER_ROW_5];
+    ENGINE::Sprite* Baum_Row4[FLOATOBJECTS_PER_ROW_4];
+    ENGINE::Sprite* Baum_Row3[FLOATOBJECTS_PER_ROW_3];
+    ENGINE::Sprite* Baum_Row2[FLOATOBJECTS_PER_ROW_2];
+    ENGINE::Sprite* Baum_Row1[FLOATOBJECTS_PER_ROW_1];
 
     // --------------------------
     // Splash Screen
@@ -116,7 +125,13 @@ private:
     // ----------------------------------------
     // X-Steps für cars, Bäume usw..
     // ----------------------------------------
-    int Step_Trees;
+    int Step_Trees_1;
+    int Step_Trees_2;
+    int Step_Trees_3;
+    int Step_Trees_4;
+    int Step_Trees_5;
+
+
     int Step_Snake;
 
     bool _Pause;
@@ -127,12 +142,16 @@ private:
     void ChangeGameState(GAMESTATE state);
     int FrogInRow();// Die aktuelle "Zeile" vom Frosch...
     void GetNewState();
+    void InitTreeRows();
+    void ReleaseTrees();
 
     void RenderBackgroundSprites();
     void RenderSplashScreen();
     void RenderWood();
     void RenderFrog();
     void RenderScore();
+    int GetFloatingStep();
+
 
     void StartDieAnimation(int starttile, int endtile); // Der Frosch darf nich leiden..
 

@@ -9,7 +9,7 @@
 
 
 const uint64_t Frogger_TIME = 100;
-const int Frogger_FRAMES = 5;
+const int Frogger_FRAMES = 2; //5;
 const uint64_t Frogger_END_DELAY = 100;
 
 const int STEP_X = 64;
@@ -49,8 +49,7 @@ TestEngine::~TestEngine(){
      for (int i =0; i<5; i++)
         delete FrogZiel[i];
 
-     for (int i =0; i < TREES_PER_ROW; i++)
-         delete Baum_Row1[i];
+    ReleaseTrees();
 
 
     // wav freigeben
@@ -60,6 +59,23 @@ TestEngine::~TestEngine(){
 
     // Mixer_Music freigeben
     Mix_FreeMusic(sound_Background);
+}
+
+void TestEngine::ReleaseTrees(){
+    for(int i = 0; i < FLOATOBJECTS_PER_ROW_1; i++)
+        delete Baum_Row1[i];
+
+    for(int i = 0; i < FLOATOBJECTS_PER_ROW_2; i++)
+        delete Baum_Row2[i];
+
+    for(int i = 0; i < FLOATOBJECTS_PER_ROW_3; i++)
+        delete Baum_Row3[i];
+
+    for(int i = 0; i < FLOATOBJECTS_PER_ROW_4; i++)
+        delete Baum_Row4[i];
+
+    for(int i = 0; i < FLOATOBJECTS_PER_ROW_5; i++)
+        delete Baum_Row5[i];
 }
 
 bool TestEngine::LoadSurface(string path){
@@ -225,14 +241,50 @@ void TestEngine::RenderBackgroundSprites(){
 void TestEngine::RenderWood(){
 
     bool tmp;
-    for (int i =0; i < TREES_PER_ROW;i++){
+    for (int i =0; i < FLOATOBJECTS_PER_ROW_1;i++){
         // Erstmal alles rendern
-        Baum_Row1[i]->MoveSprite(0,0,128,64,100,Step_Trees,0,_Elapsed,tmp);
+        Baum_Row1[i]->MoveSprite(0,0,128,64,100,Step_Trees_1,0,_Elapsed,tmp);
     }
 
+    for (int i =0; i < FLOATOBJECTS_PER_ROW_2;i++){
+        // Erstmal alles rendern
+        Baum_Row2[i]->MoveSprite(0,0,128,64,100,-Step_Trees_2,0,_Elapsed,tmp);
+    }
 
+    for (int i =0; i < FLOATOBJECTS_PER_ROW_3;i++){
+        // Erstmal alles rendern
+        Baum_Row3[i]->MoveSprite(0,0,128,64,100,Step_Trees_3,0,_Elapsed,tmp);
+    }
 
+    for (int i =0; i < FLOATOBJECTS_PER_ROW_4;i++){
+        // Erstmal alles rendern
+        Baum_Row4[i]->MoveSprite(0,0,128,64,100,-Step_Trees_4,0,_Elapsed,tmp);
+    }
+
+    for (int i =0; i < FLOATOBJECTS_PER_ROW_5;i++){
+        // Erstmal alles rendern
+        Baum_Row5[i]->MoveSprite(0,0,128,64,100,Step_Trees_5,0,_Elapsed,tmp);
+    }
 }
+
+int TestEngine::GetFloatingStep(){
+  int row = FrogInRow();
+
+    // default:
+    int ret = Step_Trees_1;
+    switch (row)
+    {
+        case 1: ret = Step_Trees_1; break;
+        case 2: ret = Step_Trees_2; break;
+        case 3: ret = Step_Trees_3; break;
+        case 4: ret = Step_Trees_4; break;
+        case 5: ret = Step_Trees_5; break;
+        default:
+            ret = Step_Trees_1; break;
+    }
+        return ret;
+}
+
 void TestEngine::RenderFrog(){
     if ( ! frog->AnimationDone() ){
         // Warten auf Animationsende
@@ -245,21 +297,16 @@ void TestEngine::RenderFrog(){
         if (GameState == GAMESTATE::FloatingRight)    {
             // checken, ob von links nach rechts oder umgekehrt,
             // zum testen von links nach rechts...
-            sPoint p = frog->Pos();            
-            p.x += Step_Trees;
+            sPoint p = frog->Pos();
+            p.x += GetFloatingStep();
             frog->SetPosition(p.x,p.y);
         }
         else
             if (GameState == GAMESTATE::FloatingLeft) {
                 sPoint p = frog->Pos();
-                p.x -= Step_Trees;
+                p.x -= GetFloatingStep();
                 frog->SetPosition(p.x,p.y);
             }
-
-
-        // if (frog->PosY() < 350)
-        //     GameState = GAMESTATE::Plunk;
-
         frog->RenderFromAsset(_EndTileX,_EndTileY);
     }
 }
@@ -271,7 +318,7 @@ void TestEngine::RenderScore(){
 void TestEngine::GetNewState(){
 
     int frogrow = FrogInRow();
-
+    bool plunk = true;
     switch(frogrow)
     {
     case 0:
@@ -279,22 +326,18 @@ void TestEngine::GetNewState(){
 
         break;
     case 1:
-        GameState = GAMESTATE::FloatingRight;
-        break ;
-    case 2:
-        GameState = GAMESTATE::FloatingLeft;
-        break;
-    case 3:
-        GameState = GAMESTATE::FloatingRight;
-        break;
-    case 4:
-        GameState = GAMESTATE::FloatingLeft;
-
-        break;
-
-    case 5:{
-            bool plunk = true;
-            for (int i =0; i< 3; i++) {
+    {
+        sPoint p = frog->Pos();
+        if (frog->PosX() > _ResX )
+        {
+            GameState = GAMESTATE::Die;
+            // Wir setzen den Frosch aber in den Bildbereich..
+            frog->setPos(_ResX - frog->SpriteSize().w ,p.y);
+            StartDieAnimation(4,6);
+        }
+        else
+        {
+            for (int i =0; i< FLOATOBJECTS_PER_ROW_1; i++) {
                 if (Baum_Row1[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
                     GameState = GAMESTATE::FloatingRight;
                     plunk = false;
@@ -302,9 +345,125 @@ void TestEngine::GetNewState(){
             }
             if (plunk) {
                 GameState = GAMESTATE::Plunk;
+                break;
             }
-            break;
+            else
+            GameState = GAMESTATE::FloatingRight;
         }
+    }
+        break;
+
+    case 2:
+    {
+        sPoint p = frog->Pos();
+        if (frog->PosX()- frog->SpriteSize().w <  -frog->SpriteSize().w){
+            GameState = GAMESTATE::Die;
+            // Wir setzen den Frosch aber in den Bildbereich..
+            frog->setPos(0,p.y);
+            StartDieAnimation(4,6);
+        }
+        else{
+
+            for (int i =0; i< FLOATOBJECTS_PER_ROW_2; i++) {
+                if (Baum_Row2[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
+                    GameState = GAMESTATE::FloatingLeft;
+                    plunk = false;
+                }
+            }
+            if (plunk) {
+                GameState = GAMESTATE::Plunk;
+                break;
+            }
+            else
+                GameState = GAMESTATE::FloatingLeft;
+        }
+    }
+        break;
+    case 3:
+    {
+        sPoint p = frog->Pos();
+        if (frog->PosX() > _ResX )
+        {
+            GameState = GAMESTATE::Die;
+            // Wir setzen den Frosch aber in den Bildbereich..
+            frog->setPos(_ResX - frog->SpriteSize().w ,p.y);
+            StartDieAnimation(4,6);
+        }
+        else
+        {
+            for (int i =0; i< FLOATOBJECTS_PER_ROW_3; i++) {
+                if (Baum_Row3[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
+                    GameState = GAMESTATE::FloatingRight;
+                    plunk = false;
+                }
+            }
+            if (plunk) {
+                GameState = GAMESTATE::Plunk;
+                break;
+            }
+            else
+                GameState = GAMESTATE::FloatingRight;
+        }
+    }
+        break;
+    case 4:
+    {
+        sPoint p = frog->Pos();
+        if (frog->PosX()- frog->SpriteSize().w <  -frog->SpriteSize().w){
+            GameState = GAMESTATE::Die;
+            // Wir setzen den Frosch aber in den Bildbereich..
+            frog->setPos(0,p.y);
+            StartDieAnimation(4,6);
+        }
+        else
+        {
+            for (int i =0; i< FLOATOBJECTS_PER_ROW_4; i++) {
+                if (Baum_Row4[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
+                    GameState = GAMESTATE::FloatingLeft;
+                    plunk = false;
+                }
+            }
+            if (plunk) {
+                GameState = GAMESTATE::Plunk;
+                break;
+            }
+            else
+                GameState = GAMESTATE::FloatingLeft;
+        }
+    }
+        break;
+
+    case 5:
+    {
+
+        // ----------------------------------------------
+        // Erstmal checken, ob wir den Bereich verlassen:
+        // ----------------------------------------------
+        sPoint p = frog->Pos();
+        if (frog->PosX() > _ResX )
+        {
+            GameState = GAMESTATE::Die;
+            // Wir setzen den Frosch aber in den Bildbereich..
+            frog->setPos(_ResX - frog->SpriteSize().w ,p.y);
+            StartDieAnimation(4,6);
+        }
+        else
+        {
+            for (int i =0; i< FLOATOBJECTS_PER_ROW_5; i++) {
+                if (Baum_Row5[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
+                    GameState = GAMESTATE::FloatingRight;
+                    plunk = false;
+                }
+            }
+            if (plunk) {
+                GameState = GAMESTATE::Plunk;
+                break;
+            }
+            else
+                GameState = GAMESTATE::FloatingRight;
+        }
+            break;
+    }
     case 6:
         // Back on the street:
         GameState = GAMESTATE::Run;
@@ -408,7 +567,7 @@ void TestEngine::Run(){
 
                 case GAMESTATE::Paused:
                     frog->RenderFromAsset(_EndTileX,_EndTileY);
-                    Baum_Row1[0]->RenderFromAsset(0,0);
+                    Baum_Row5[0]->RenderFromAsset(0,0);
 
 
                     cout << "Frogpos.x  " << frog->PosX() <<  endl;
@@ -497,7 +656,7 @@ void TestEngine::Run(){
                     RenderScore();
                     // Frog death
                     bool animdone;
-                    frogdeath->MoveSprite(0,6,64,64,200,0,0,_Elapsed,animdone);
+                    frogdeath->MoveSprite(0,6,64,64,150,0,0,_Elapsed,animdone);
 
                     if (frogdeath->AnimationDone()){
                         GameState = GAMESTATE::RemoveFrog;
@@ -556,7 +715,13 @@ bool TestEngine::InitUserObjects(){
     // ----------------------------------------------------------------------
     // Step init, bei jedem höheren level erhöhen, erhöht die geschwindigkeit
     // ----------------------------------------------------------------------
-    Step_Trees = 4;
+    Step_Trees_1 = 3;
+    Step_Trees_2 = 2;
+    Step_Trees_3 = 2;
+    Step_Trees_4 = 4;
+    Step_Trees_5 = 1;
+
+
     Step_Snake = -4;  // Right to Left...
 
 
@@ -637,22 +802,7 @@ bool TestEngine::InitUserObjects(){
         x +=150;
     }
 
-    // -------------------------
-    // Bäume Row1
-    // -------------------------
-
-    x = 0;
-    for (int i =0; i < TREES_PER_ROW;i++){
-        Baum_Row1[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum320x68.png",_Shader);
-        Baum_Row1[i]->InitTextureMap(1,1);
-        Baum_Row1[i]->SetPosition(x,352);
-        Baum_Row1[i]->StartAnimation(0,0);
-
-        x+= 450;
-    }
-
-
-
+    InitTreeRows();
 
     // Default settings at start
     _TileX = 0;
@@ -703,6 +853,56 @@ bool TestEngine::InitUserObjects(){
 
 
     return ret;
+}
+
+void TestEngine::InitTreeRows(){
+    // -------------------------
+    // Bäume Row1 - Row5
+    // -------------------------
+    int x = 0;
+    for (int i =0; i < FLOATOBJECTS_PER_ROW_5;i++){
+        Baum_Row5[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum320x68.png",_Shader);
+        Baum_Row5[i]->InitTextureMap(1,1);
+        Baum_Row5[i]->SetPosition(x,352);
+        Baum_Row5[i]->StartAnimation(0,0);
+        x+= 450;
+    }
+
+    x = 0;
+    for (int i =0; i < FLOATOBJECTS_PER_ROW_4;i++){
+        Baum_Row4[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum120x68.png",_Shader);
+        Baum_Row4[i]->InitTextureMap(1,1);
+        Baum_Row4[i]->SetPosition(x,290);
+        Baum_Row4[i]->StartAnimation(0,0);
+        x+= 250;
+    }
+
+    x = 0;
+    for (int i =0; i < FLOATOBJECTS_PER_ROW_3;i++){
+        Baum_Row3[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum320x68.png",_Shader);
+        Baum_Row3[i]->InitTextureMap(1,1);
+        Baum_Row3[i]->SetPosition(x,226);
+        Baum_Row3[i]->StartAnimation(0,0);
+        x+= 480;
+    }
+
+    x = 0;
+    for (int i =0; i < FLOATOBJECTS_PER_ROW_2;i++){
+        Baum_Row2[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum120x68.png",_Shader);
+        Baum_Row2[i]->InitTextureMap(1,1);
+        Baum_Row2[i]->SetPosition(x,162);
+        Baum_Row2[i]->StartAnimation(0,0);
+        x+= 400;
+    }
+
+    x = 0;
+    for (int i =0; i < FLOATOBJECTS_PER_ROW_1;i++){
+        Baum_Row1[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum120x68.png",_Shader);
+        Baum_Row1[i]->InitTextureMap(1,1);
+        Baum_Row1[i]->SetPosition(x,98);
+        Baum_Row1[i]->StartAnimation(0,0);
+        x+= 400;
+    }
 }
 
 void TestEngine::SoundHandler(){
