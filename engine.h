@@ -8,7 +8,7 @@
 #include <SDL.h>
 #include "audio.h"
 #include "sprite.h"
-
+#include "costumtext.h"
 
 
 
@@ -96,6 +96,10 @@ protected:
     // --------------------------
     ENGINE::BaseObject2D * _SplashScreen;
 
+    COSTUMTEXT::TextBase * _HighScore;
+    COSTUMTEXT::TextBase * _Score;
+    COSTUMTEXT::TextBase * _Time;
+
     Mix_Chunk* sound_Startup;
     Mix_Chunk* sound_Hop;
     Mix_Chunk* sound_FrogDeath;
@@ -128,6 +132,9 @@ private:
     void RenderSplashScreen();
     void RenderWood();
     void RenderFrog();
+    void RenderScore();
+
+    void StartDieAnimation(int starttile, int endtile); // Der Frosch darf nich leiden..
 
     int _FrogCount;
     string keyboardtext;

@@ -264,6 +264,10 @@ void TestEngine::RenderFrog(){
     }
 }
 
+void TestEngine::RenderScore(){
+    _Score->Render();
+}
+
 void TestEngine::GetNewState(){
 
     int frogrow = FrogInRow();
@@ -296,8 +300,9 @@ void TestEngine::GetNewState(){
                     plunk = false;
                 }
             }
-            if (plunk)
+            if (plunk) {
                 GameState = GAMESTATE::Plunk;
+            }
             break;
         }
     case 6:
@@ -313,13 +318,36 @@ void TestEngine::GetNewState(){
         break;
 
     case 10:
+
         break;
     case 11:
+
+        break;
+
+    case 12:
+
+
         break;
     default:
         break;
 
     }
+}
+
+void TestEngine::StartDieAnimation(int starttile, int endtile){
+
+    if (starttile < 0) starttile = 0;
+    if (endtile > 6) endtile = 6;
+
+    frogdeath->StartAnimation(starttile,endtile);
+    frogdeath->SetPosition(frog->PosX(),frog->PosY());
+
+    frogdeath->setRenderSprite(true);
+    frog->setRenderSprite(false);
+
+    audio->HaltMusic();
+    audio->ChannelToListen(AUDIO_Channel_Death);
+    audio->PlaySound(sound_FrogDeath,AUDIO_Channel_Death);
 }
 
 
@@ -381,6 +409,14 @@ void TestEngine::Run(){
                 case GAMESTATE::Paused:
                     frog->RenderFromAsset(_EndTileX,_EndTileY);
                     Baum_Row1[0]->RenderFromAsset(0,0);
+
+
+                    cout << "Frogpos.x  " << frog->PosX() <<  endl;
+                    cout << "Frogpos.y  " << frog->PosY() <<  endl;
+
+                    cout << "Snake .x  " << snake->PosX() <<  endl;
+                    cout << "Snake .y  " << snake->PosY() <<  endl;
+
                 break;
 
                 case GAMESTATE::Starting:
@@ -392,7 +428,8 @@ void TestEngine::Run(){
                     break;
 
                 case GAMESTATE::StartUpFinished:
-                    RenderBackgroundSprites();                  
+                    RenderBackgroundSprites();
+                    RenderScore();
                     audio->PlayBackrgoundSound(sound_Background,1);
                     frog->SetPosition(608,802);
 
@@ -403,6 +440,7 @@ void TestEngine::Run(){
                     RenderBackgroundSprites();
                     RenderWood();
                     RenderFrog();
+                    RenderScore();
                  //   GetNewState();
 
                     if (! snake->IsColliding(frog->Pos(),frog->Size())) {
@@ -413,15 +451,7 @@ void TestEngine::Run(){
                     else
                     {
                         GameState  = GAMESTATE::Die;
-                        frogdeath->StartAnimation(0,6);
-                        frogdeath->SetPosition(frog->PosX(),frog->PosY());
-
-                        frogdeath->setRenderSprite(true);
-                        frog->setRenderSprite(false);
-
-                        audio->HaltMusic();
-                        audio->ChannelToListen(AUDIO_Channel_Death);
-                        audio->PlaySound(sound_FrogDeath,AUDIO_Channel_Death);
+                        StartDieAnimation(0,6);
                     }
 
                     break;
@@ -429,6 +459,7 @@ void TestEngine::Run(){
                     RenderBackgroundSprites();
                     RenderWood();
                     RenderFrog();
+                    RenderScore();
                //     GetNewState();
                     break;
 
@@ -436,29 +467,34 @@ void TestEngine::Run(){
                     RenderBackgroundSprites();
                     RenderWood();
                     RenderFrog();
+                    RenderScore();
                 //    GetNewState();
                     break;
 
                 case GAMESTATE::TimeOut:
                     RenderBackgroundSprites();
+                    RenderScore();
                     break;
                 case GAMESTATE::Plunk:
                     RenderBackgroundSprites();
                     RenderWood();
-                    RenderFrog();
+                 //   RenderFrog();
+                    RenderScore();
                     audio->ChannelToListen(AUDIO_Channel_Plunck);
                     audio->PlaySound(sound_Plunk,AUDIO_Channel_Plunck);
 
                     if (audio->PlaySoundFinished(AUDIO_Channel_Plunck)){
-                        GameState = GAMESTATE::RemoveFrog;
-                        //frogdeath->StartAnimation(0,6);
-                        //frogdeath->SetPosition(frog->PosX(),frog->PosY());
+
+                        GameState = GAMESTATE::Die;
+                        StartDieAnimation(4,6);
+
                     }
                     break;
                 case GAMESTATE::Die:
 
                     RenderBackgroundSprites();
                     RenderWood();
+                    RenderScore();
                     // Frog death
                     bool animdone;
                     frogdeath->MoveSprite(0,6,64,64,200,0,0,_Elapsed,animdone);
@@ -475,6 +511,7 @@ void TestEngine::Run(){
                 case GAMESTATE::RemoveFrog:
                     RenderBackgroundSprites();
                     RenderWood();
+                    RenderScore();
                     _FrogCount --;
                     GameState = GAMESTATE::StartUpFinished;
                     cout << "Frösche " << _FrogCount << endl;
@@ -495,7 +532,8 @@ void TestEngine::Run(){
                     // Score
 
 
-                    RenderSplashScreen();                    
+                    RenderSplashScreen();
+                    RenderScore();
 
                     break;
             }
@@ -561,9 +599,10 @@ bool TestEngine::InitUserObjects(){
     // ---------------------------------------------
     // Snake
     // ---------------------------------------------
-    snake = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Snakes3x1_128_64.png",_Shader);
+    snake = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Snakes3x1_128_68.png",_Shader);
     snake->InitTextureMap(3,1);
-    snake->SetPosition(_ResX,802);
+    snake->SetPosition(_ResX,800);
+    snake->setInstanceName("<SNAKE>");
 
     snake ->StartAnimation(0,0,3000,3,5,0);
     SnakeX = 0;
@@ -604,10 +643,9 @@ bool TestEngine::InitUserObjects(){
 
     x = 0;
     for (int i =0; i < TREES_PER_ROW;i++){
-        Baum_Row1[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum192x64.png",_Shader);
+        Baum_Row1[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum320x68.png",_Shader);
         Baum_Row1[i]->InitTextureMap(1,1);
-        Baum_Row1[i]->SetPosition(x,354);
-
+        Baum_Row1[i]->SetPosition(x,352);
         Baum_Row1[i]->StartAnimation(0,0);
 
         x+= 450;
@@ -625,6 +663,13 @@ bool TestEngine::InitUserObjects(){
     _SplashScreen = new ENGINE::BaseObject2D(_ResX,_ResY,"/home/paul/workspace/Frogger/images/frogsplash2.png",_Shader);
     _SplashScreen->setPos(200,200);
 
+    // ------------------------------------------
+    // Score, Highscore, Time
+    // ------------------------------------------
+
+    _Score = new COSTUMTEXT::TextBase(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Text32x32_19_2.png",_Shader);
+    _Score->InitTextureMap(20,2);
+    _Score->setPos(_ResX / 2 -300,_ResY-70);
 
     audio = new Audio;
 
