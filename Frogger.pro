@@ -8,6 +8,7 @@ CONFIG += c++17 cmdline
 
 SOURCES += \
         audio.cpp \
+        costumtext.cpp \
         engine.cpp \
         main.cpp \
         sprite.cpp
@@ -27,6 +28,7 @@ DEPENDPATH += $$PWD/../../../../usr/include/GL
 HEADERS += \
     audio.h \
     audio.h \
+    costumtext.h \
     engine.h \
     matrix2d.h \
     sprite.h \

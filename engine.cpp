@@ -49,7 +49,7 @@ TestEngine::~TestEngine(){
      for (int i =0; i<5; i++)
         delete FrogZiel[i];
 
-     for (int i =0; i<5; i++)
+     for (int i =0; i < TREES_PER_ROW; i++)
          delete Baum_Row1[i];
 
 
@@ -225,7 +225,7 @@ void TestEngine::RenderBackgroundSprites(){
 void TestEngine::RenderWood(){
 
     bool tmp;
-    for (int i =0; i < 5;i++){
+    for (int i =0; i < TREES_PER_ROW;i++){
         // Erstmal alles rendern
         Baum_Row1[i]->MoveSprite(0,0,128,64,100,Step_Trees,0,_Elapsed,tmp);
     }
@@ -495,9 +495,7 @@ void TestEngine::Run(){
                     // Score
 
 
-                    RenderSplashScreen();
-                    SDL_Delay(4000);
-
+                    RenderSplashScreen();                    
 
                     break;
             }
@@ -605,14 +603,14 @@ bool TestEngine::InitUserObjects(){
     // -------------------------
 
     x = 0;
-    for (int i =0; i < 5;i++){
+    for (int i =0; i < TREES_PER_ROW;i++){
         Baum_Row1[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum192x64.png",_Shader);
         Baum_Row1[i]->InitTextureMap(1,1);
         Baum_Row1[i]->SetPosition(x,354);
 
         Baum_Row1[i]->StartAnimation(0,0);
 
-        x+= 280;
+        x+= 450;
     }
 
 

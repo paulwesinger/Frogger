@@ -36,6 +36,8 @@ const int AUDIO_Channel_Hop         = 2;
 const int AUDIO_Channel_Death       = 3;
 const int AUDIO_Channel_Plunck      = 4;
 
+const int TREES_PER_ROW             = 3;
+
 
 static GAMESTATE GameState;
 
@@ -87,7 +89,7 @@ protected:
     // ----------------------
     // Holz, crocs und biber:
     // ----------------------
-    ENGINE::Sprite* Baum_Row1[5];
+    ENGINE::Sprite* Baum_Row1[TREES_PER_ROW];
 
     // --------------------------
     // Splash Screen

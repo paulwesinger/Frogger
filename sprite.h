@@ -64,7 +64,7 @@ protected:
     float _TileHeight;
     sSize _SpriteSize;
 
-private:
+
     int _TileTextureRows;
     int _TileTextureColumns;
 
@@ -85,7 +85,7 @@ private:
     bool _AnimationDone;
     bool _EndAnimationDone;
     uint64_t _TimeToAnimate;
-
+private:
     uint64_t steptime = 0;
     uint64_t time = 0;
 

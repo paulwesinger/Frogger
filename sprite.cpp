@@ -53,13 +53,13 @@ void ENGINE::Sprite::InitTextureMap(int colums, int rows){
     _TileWidth = 1.0f / ftw;
     _TileHeight =  1.0f / fth;
 
-    //     ftexX             ftexX
+                                //     ftexX             ftexX
     float ftexX = 1.0f / ftw;//         |-----------------|-----------------|--
     float ftexY = 1.0f / fth;//         |                 |                 |
-    //      |ftexY            |                 |
-    //      |                 |                 |
-    //      |-----------------|-----------------|--
-    //      |                 |                 |
+                                //      |ftexY            |                 |
+                                //      |                 |                 |
+                                //      |-----------------|-----------------|--
+                                //      |                 |                 |
     /*
 Ursprung: Liegt unten links bei (0.0, 0.0).
 Ecken:Unten links: (0.0, 0.0)
@@ -120,7 +120,14 @@ bool ENGINE::Sprite::IsColliding(sPoint p, sSize s){
      int x1 = _Pos.x + _SpriteSize.w;
      int y1 = _Pos.y + _SpriteSize.h;
 
-    return (p.x >= _Pos.x && p.x <= x1 && p.y >= _Pos.y && p.y <= y1);
+
+
+     return  ((p.x >= _Pos.x && p.x <= x1) && (p.y >= _Pos.y && p.y <= y1)) ||
+              ((p.x+s.w >= _Pos.x && p.x + s.w <= x1)  &&  (p.y >= _Pos.y && p.y <= y1));
+
+
+    //return ((p.x >= _Pos.x && p.x <= x1) && (p.y >= _Pos.y && p.y <= y1) ||
+    //        ));
 }
 
 void ENGINE::Sprite::MoveSprite(int starttile,int lasttile, int tilesizeX, int tilesizeY,
