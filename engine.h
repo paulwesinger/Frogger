@@ -144,6 +144,7 @@ private:
     void GetNewState();
     void InitTreeRows();
     void ReleaseTrees();
+    void InitTextMap();
 
     void RenderBackgroundSprites();
     void RenderSplashScreen();

@@ -51,6 +51,10 @@ TestEngine::~TestEngine(){
 
     ReleaseTrees();
 
+    delete _Score;
+    delete _HighScore;
+    delete _Time;
+
 
     // wav freigeben
     Mix_FreeChunk(sound_Hop);
@@ -312,7 +316,9 @@ void TestEngine::RenderFrog(){
 }
 
 void TestEngine::RenderScore(){
-    _Score->Render();
+    //_Score->Render();
+    //_HighScore->Render();
+    _Time->RenderText("TIME",sPoint(_ResX/2,_ResY -70));
 }
 
 void TestEngine::GetNewState(){
@@ -708,6 +714,59 @@ void TestEngine::RenderSplashScreen(){
     _SplashScreen -> Render();
 }
 
+void TestEngine::InitTextMap(){
+
+    // Zeile 0
+     _Score->AddCharToMap('0',0,0);
+     _Score->AddCharToMap('1',1,0);
+     _Score->AddCharToMap('2',2,0);
+     _Score->AddCharToMap('3',3,0);
+     _Score->AddCharToMap('4',4,0);
+     _Score->AddCharToMap('5',5,0);
+
+     _Score->AddCharToMap('6',6,0);
+     _Score->AddCharToMap('7',7,0);
+     _Score->AddCharToMap('8',8,0);
+     _Score->AddCharToMap('9',9,0);
+     _Score->AddCharToMap('A',10,0);
+     _Score->AddCharToMap('B',11,0);
+
+     _Score->AddCharToMap('C',12,0);
+     _Score->AddCharToMap('D',13,0);
+     _Score->AddCharToMap('E',14,0);
+     _Score->AddCharToMap('F',15,0);
+     _Score->AddCharToMap('G',16,0);
+     _Score->AddCharToMap('H',17,0);
+     _Score->AddCharToMap('I',18,0);
+
+
+     // Zeile 1
+     _Score->AddCharToMap('J',0,1);
+     _Score->AddCharToMap('K',1,1);
+     _Score->AddCharToMap('L',2,1);
+     _Score->AddCharToMap('M',3,1);
+     _Score->AddCharToMap('N',4,1);
+     _Score->AddCharToMap('O',5,1);
+
+     _Score->AddCharToMap('P',6,1);
+     _Score->AddCharToMap('Q',7,1);
+     _Score->AddCharToMap('R',8,1);
+     _Score->AddCharToMap('S',9,1);
+     _Score->AddCharToMap('T',10,1);
+     _Score->AddCharToMap('U',11,1);
+
+     _Score->AddCharToMap('V',12,1);
+     _Score->AddCharToMap('W',13,1);
+     _Score->AddCharToMap('X',14,1);
+     _Score->AddCharToMap('Y',15,1);
+     _Score->AddCharToMap('Z',16,1);
+     _Score->AddCharToMap('-',17,1);
+     _Score->AddCharToMap('c',18,1); // copright
+
+     _HighScore->AddMapToMap(_Score->GetCharacters());
+     _Time->AddMapToMap(_Score->GetCharacters());
+}
+
 bool TestEngine::InitUserObjects(){
 
     bool ret = true;
@@ -818,8 +877,23 @@ bool TestEngine::InitUserObjects(){
     // ------------------------------------------
 
     _Score = new COSTUMTEXT::TextBase(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Text32x32_19_2.png",_Shader);
-    _Score->InitTextureMap(20,2);
+    _Score->InitTextureMap(19,2);
     _Score->setPos(_ResX / 2 -300,_ResY-70);
+
+
+    _HighScore = new COSTUMTEXT::TextBase(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Text32x32_19_2.png",_Shader);
+    _HighScore->InitTextureMap(19,2);
+    _HighScore->setPos(_ResX - 200,_ResY-70);
+
+    _Time = new COSTUMTEXT::TextBase(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Text32x32_19_2.png",_Shader);
+    _Time->InitTextureMap(19,2);
+    _Time->setPos(_ResX / 2 -300,0);
+
+    _Time->AddText("TIME");
+
+
+
+    InitTextMap();
 
     audio = new Audio;
 
