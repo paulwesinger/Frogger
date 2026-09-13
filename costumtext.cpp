@@ -27,6 +27,7 @@ bool COSTUMTEXT::TextBase::UpdateText(std::string text, int index){
     if (index >= _StringList.size() || index < 0  || _StringList.empty() ) return false;
 
     _StringList[index] = text;
+    return true;
 }
 
 void COSTUMTEXT::TextBase::AddText(std::string text){
@@ -51,16 +52,25 @@ std::map<char,sPoint> COSTUMTEXT::TextBase::GetCharacters(){
     return _Characters;
 }
 
-void COSTUMTEXT::TextBase::RenderText(std::string text, sPoint pos){
+void COSTUMTEXT::TextBase::RenderText(sPoint pos){
+
+    if (_StringList.empty() ) return;
 
     setPos(pos.x,pos.y);
     int x = pos.x;
-    for(char c: text){
+    int y = pos.y;
 
-        sPoint p = _Characters[c];
-        RenderFromAsset(p.x,p.y);
-        x += SpriteSize().w;
-        setPos(x,pos.y);
+    for(const std::string &st: _StringList) {
+        for(char c: st){
+
+            sPoint p = _Characters[c];
+            setPos(x,y);
+            RenderFromAsset(p.x,p.y);
+            x += SpriteSize().w;
+
+        }
+        x = pos.x;
+        y+= SpriteSize().h;
     }
 }
 

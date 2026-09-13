@@ -22,7 +22,7 @@ namespace  COSTUMTEXT {
         TextBase(int resx, int resy, Shader *sh);
         TextBase(int resx, int resy, std::string path, Shader *sh);
         ~TextBase();
-        void RenderText(std::string text,sPoint pos);
+        void RenderText(sPoint pos);
 
         //vorhanden string ändern
         bool UpdateText(std::string text,int index);

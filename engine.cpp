@@ -318,7 +318,7 @@ void TestEngine::RenderFrog(){
 void TestEngine::RenderScore(){
     //_Score->Render();
     //_HighScore->Render();
-    _Time->RenderText("TIME",sPoint(_ResX/2,_ResY -70));
+    _Time->RenderText(sPoint(_ResX/2,_ResY -90));
 }
 
 void TestEngine::GetNewState(){
@@ -605,6 +605,18 @@ void TestEngine::Run(){
                     RenderBackgroundSprites();
                     RenderWood();
                     RenderFrog();
+
+
+                    countelapse += _Elapsed;
+                    if (countelapse >= 1000){
+                        countelapse = 0;
+                        counter--;
+
+                        stCounter = std::to_string(counter);
+                        _Time->UpdateText(stCounter,1);
+
+                    }
+
                     RenderScore();
                  //   GetNewState();
 
@@ -890,6 +902,7 @@ bool TestEngine::InitUserObjects(){
     _Time->setPos(_ResX / 2 -300,0);
 
     _Time->AddText("TIME");
+    _Time->AddText(stCounter);
 
 
 

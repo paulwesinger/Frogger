@@ -169,6 +169,12 @@ private:
     int _EndTileY;
 
     int SnakeX;
+
+    //TEst Countdown
+    uint64_t countelapse = 0;
+    int counter = 100;
+    std::string stCounter = "100";
+
 };
 
 #endif // ENGINE_H
