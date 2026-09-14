@@ -598,6 +598,7 @@ void TestEngine::Run(){
                     audio->PlayBackrgoundSound(sound_Background,1);
                     frog->SetPosition(608,802);
 
+                    _ResetTimeCounter(_GameLevel);
                     GameState= GAMESTATE::Run;
                     break;
                 case GAMESTATE::Run:
@@ -610,9 +611,8 @@ void TestEngine::Run(){
                     countelapse += _Elapsed;
                     if (countelapse >= 1000){
                         countelapse = 0;
-                        counter--;
-
-                        stCounter = std::to_string(counter);
+                        _TimeCounter--;
+                        stCounter = std::to_string(_TimeCounter);
                         _Time->UpdateText(stCounter,1);
 
                     }
@@ -681,6 +681,8 @@ void TestEngine::Run(){
                         frogdeath->setRenderSprite(false);
                         frog->setRenderSprite(true);
                         snake->SetPosition(_ResX,802);
+
+
                     }
 
                     break;
@@ -704,6 +706,8 @@ void TestEngine::Run(){
 
                 case GAMESTATE::GameOver:
                     audio->HaltMusic();
+
+                    // Todo: für jdes höhere level ein kürzer zeitspanne! ?
 
                     // Abspann anzeigen
                     // Score
@@ -779,6 +783,22 @@ void TestEngine::InitTextMap(){
      _Time->AddMapToMap(_Score->GetCharacters());
 }
 
+void TestEngine::_ResetTimeCounter(GAMELEVEL level){
+
+    switch (level) {
+    case GAMELEVEL::Level_1: _TimeCounter = TIMELEVEL_1; break;
+    case GAMELEVEL::Level_2: _TimeCounter = TIMELEVEL_2; break;
+    case GAMELEVEL::Level_3: _TimeCounter = TIMELEVEL_3; break;
+    case GAMELEVEL::Level_4: _TimeCounter = TIMELEVEL_4; break;/// usw... an jeden level anpassen !! je höher , je kürzer
+    case GAMELEVEL::Level_5: _TimeCounter = TIMELEVEL_5; break;
+
+    default:
+        _TimeCounter = TIMELEVEL_5;
+        break;
+    }
+}
+
+
 bool TestEngine::InitUserObjects(){
 
     bool ret = true;
@@ -794,7 +814,7 @@ bool TestEngine::InitUserObjects(){
 
 
     Step_Snake = -4;  // Right to Left...
-
+    _GameLevel = GAMELEVEL::Level_1;
 
 
     if (AddTextDisplayWithBackground(100,100,0,"FPS Display with background")){
@@ -1002,7 +1022,8 @@ void TestEngine::StartUp(){
     audio->PlaySound(sound_Startup,AUDIO_Channel_StartUp);
     _FrogCount = 3;
     GameState = GAMESTATE::Starting;
-
+    _GameLevel = GAMELEVEL::Level_1;
+    _ResetTimeCounter(_GameLevel);
     // Splash screen usw anzeigen
 }
 

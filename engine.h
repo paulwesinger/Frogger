@@ -27,6 +27,14 @@ enum GAMESTATE{
     Paused              // Zum testen, später wieder löschen
 };
 
+enum GAMELEVEL{
+    Level_1 = 1,
+    Level_2,
+    Level_3,
+    Level_4,
+    Level_5    // usw.. todo: Levelnamen für jeden level
+};
+
 const int MAX_TILE_X = 20;
 const int MAX_TILE_Y = 15;
 
@@ -41,6 +49,14 @@ const int FLOATOBJECTS_PER_ROW_4           = 6;
 const int FLOATOBJECTS_PER_ROW_3           = 3;
 const int FLOATOBJECTS_PER_ROW_2           = 4;
 const int FLOATOBJECTS_PER_ROW_1           = 4;
+
+const int TIMELEVEL_1 = 120;
+const int TIMELEVEL_2 = 100;
+const int TIMELEVEL_3 = 90;
+const int TIMELEVEL_4 = 80;
+const int TIMELEVEL_5 = 70;
+
+
 
 
 static GAMESTATE GameState;
@@ -65,8 +81,13 @@ public:
 
 protected:
 
+    void _ResetTimeCounter(GAMELEVEL level);
+
     CLOCK::GameClock clock;
     Logger log;
+
+    GAMELEVEL _GameLevel;
+
     ENGINE::Base* Frogger;
     std::vector<ENGINE::Base*> Holz;
     Audio * audio;
@@ -172,7 +193,7 @@ private:
 
     //TEst Countdown
     uint64_t countelapse = 0;
-    int counter = 100;
+    int _TimeCounter = 100;
     std::string stCounter = "100";
 
 };
