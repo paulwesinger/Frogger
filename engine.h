@@ -78,10 +78,11 @@ public:
 
     bool LoadSurface(std::string path);
 
-
 protected:
 
     void _ResetTimeCounter(GAMELEVEL level);
+    void _ResetScore();
+    string _Score2String();
 
     CLOCK::GameClock clock;
     Logger log;
@@ -152,7 +153,8 @@ private:
     int Step_Trees_4;
     int Step_Trees_5;
 
-
+    int _gameScore;
+    int _gameHighScore;
     int Step_Snake;
 
     bool _Pause;

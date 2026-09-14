@@ -114,7 +114,6 @@ bool TestEngine::UserUpdate(KEYBOARDSTATE state){
             if (frog->EndAnimationDone())
                 frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
 
-
         }
         break;
     }
@@ -133,7 +132,7 @@ bool TestEngine::UserUpdate(KEYBOARDSTATE state){
             if (frog->EndAnimationDone())
                 frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
 
-            cout << "Animation started" << endl;
+
         }
         break;
 
@@ -149,7 +148,8 @@ bool TestEngine::UserUpdate(KEYBOARDSTATE state){
             frog->EndAnimation(_EndTileX,_EndTileY,Frogger_END_DELAY,_Elapsed);
 
             if (frog->EndAnimationDone())
-                frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);            
+                frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
+
         }
         break;
 
@@ -167,7 +167,7 @@ bool TestEngine::UserUpdate(KEYBOARDSTATE state){
             if (frog->EndAnimationDone())
                 frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
 
-            cout << "Animation started" << endl;
+
         }
         break;
 
@@ -195,6 +195,8 @@ void TestEngine::HandleMessage(){
             frog->EndAnimation(_TileX,_TileY,Frogger_END_DELAY,_Elapsed);
             audio->PlaySound(sound_Hop,AUDIO_Channel_Hop);
             cout << "Animation ends" << endl;
+
+            _gameScore += 10;
             break;
 
 
@@ -316,7 +318,10 @@ void TestEngine::RenderFrog(){
 }
 
 void TestEngine::RenderScore(){
-    //_Score->Render();
+
+    _Score->UpdateText(_Score2String(),1);
+    _Score->RenderText(sPoint(50,_ResY -90));
+
     _HighScore->RenderText("0-I-J-c",sPoint(_ResX-260,_ResY -90));
     _Time->RenderText(sPoint(_ResX/2,_ResY -90));
 }
@@ -702,6 +707,7 @@ void TestEngine::Run(){
                     RenderBackgroundSprites();
                     RenderWood();
                     RenderFrog();
+                    RenderScore();
                     break;
 
                 case GAMESTATE::GameOver:
@@ -798,6 +804,14 @@ void TestEngine::_ResetTimeCounter(GAMELEVEL level){
     }
 }
 
+void TestEngine::_ResetScore(){
+    _gameScore = 0;
+}
+
+string TestEngine::_Score2String(){
+
+    return std::to_string(_gameScore);
+}
 
 bool TestEngine::InitUserObjects(){
 
@@ -815,6 +829,8 @@ bool TestEngine::InitUserObjects(){
 
     Step_Snake = -4;  // Right to Left...
     _GameLevel = GAMELEVEL::Level_1;
+    _gameScore = 0;
+    _gameHighScore = 0; // später aus datei lesen.
 
 
     if (AddTextDisplayWithBackground(100,100,0,"FPS Display with background")){
@@ -885,16 +901,12 @@ bool TestEngine::InitUserObjects(){
     }
 
     // Frog Destination:
-    x = 0;
     for(int i=0; i< 5; i++){
         FrogZiel[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/FrogZiel.png",_Shader);
         FrogZiel[i]->InitTextureMap(1,1);
-
-        x +=150;
     }
 
     InitTreeRows();
-
     // Default settings at start
     _TileX = 0;
     _TileY = 0;
@@ -902,7 +914,7 @@ bool TestEngine::InitUserObjects(){
 
     // _SplashScreen
     _SplashScreen = new ENGINE::BaseObject2D(_ResX,_ResY,"/home/paul/workspace/Frogger/images/frogsplash2.png",_Shader);
-    _SplashScreen->setPos(200,200);
+    _SplashScreen->setPos(325,250);
 
     // ------------------------------------------
     // Score, Highscore, Time
@@ -911,6 +923,9 @@ bool TestEngine::InitUserObjects(){
     _Score = new COSTUMTEXT::TextBase(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Text32x32_19_2.png",_Shader);
     _Score->InitTextureMap(19,2);
     _Score->setPos(_ResX / 2 -300,_ResY-70);
+
+    _Score->AddText("SCORE");
+    _Score->AddText(_Score2String());
 
 
     _HighScore = new COSTUMTEXT::TextBase(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Text32x32_19_2.png",_Shader);
@@ -1024,6 +1039,7 @@ void TestEngine::StartUp(){
     GameState = GAMESTATE::Starting;
     _GameLevel = GAMELEVEL::Level_1;
     _ResetTimeCounter(_GameLevel);
+    _ResetScore();
     // Splash screen usw anzeigen
 }
 
