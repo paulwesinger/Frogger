@@ -48,7 +48,7 @@ const int FLOATOBJECTS_PER_ROW_5           = 3;
 const int FLOATOBJECTS_PER_ROW_4           = 6;
 const int FLOATOBJECTS_PER_ROW_3           = 3;
 const int FLOATOBJECTS_PER_ROW_2           = 4;
-const int FLOATOBJECTS_PER_ROW_1           = 4;
+const int FLOATOBJECTS_PER_ROW_1           = 3;
 
 const int TIMELEVEL_1 = 120;
 const int TIMELEVEL_2 = 100;

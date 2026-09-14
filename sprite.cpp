@@ -120,32 +120,14 @@ bool ENGINE::Sprite::IsColliding(sPoint p, sSize s){
     int x1 = _Pos.x + SpriteSize().w;
     int y1 = _Pos.y + SpriteSize().h;
 
-     bool ret = ((p.x > _Pos.x-s.w && p.x < x1) && (p.y >= _Pos.y && p.y <= y1));
+    int spritemiddleX = s.w/2 + p.x;
+    int spritemiddleY = s.h/2 + p.y;
 
-        //((p.x - SpriteSize().w  > _Pos.x && p.x < x1) && (p.y >= _Pos.y && p.y <= y1)) ;
-              //((p.x+SpriteSize().w >= _Pos.x && p.x + s.w <= x1)  &&  (p.y >= _Pos.y && p.y <= y1));
-
-
-     if (ret == true) {
-
-        std::cout << "Sprite Name : " << _InstanceName << std::endl;
-        std::cout<< "p.x  " << p.x << std::endl;
-        std::cout<< "_Pos.x  " << _Pos.x << std::endl;
-        std::cout<< "X1 " << x1 << std::endl;
-        std::cout<< "Spritesize.w  " << _SpriteSize.w << std::endl;
-
-
-
-     }
-
-
+     bool ret = ((spritemiddleX >= _Pos.x && spritemiddleX  < x1 ) &&
+                (spritemiddleY >= _Pos.y && spritemiddleY <= y1));
 
      return ret;
             //((p.x+s.w >= _Pos.x && p.x + s.w <= x1)  &&  (p.y >= _Pos.y && p.y <= y1));
-
-
-    //return ((p.x >= _Pos.x && p.x <= x1) && (p.y >= _Pos.y && p.y <= y1) ||
-    //        ));
 }
 
 void ENGINE::Sprite::MoveSprite(int starttile,int lasttile, int tilesizeX, int tilesizeY,

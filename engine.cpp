@@ -806,11 +806,11 @@ bool TestEngine::InitUserObjects(){
     // ----------------------------------------------------------------------
     // Step init, bei jedem höheren level erhöhen, erhöht die geschwindigkeit
     // ----------------------------------------------------------------------
-    Step_Trees_1 = 3;
+    Step_Trees_1 = 1;
     Step_Trees_2 = 2;
     Step_Trees_3 = 2;
     Step_Trees_4 = 4;
-    Step_Trees_5 = 1;
+    Step_Trees_5 = 3;
 
 
     Step_Snake = -4;  // Right to Left...
@@ -972,7 +972,7 @@ void TestEngine::InitTreeRows(){
         Baum_Row5[i]->InitTextureMap(1,1);
         Baum_Row5[i]->SetPosition(x,352);
         Baum_Row5[i]->StartAnimation(0,0);
-        x+= 450;
+        x+= 480;
     }
 
     x = 0;
@@ -1004,11 +1004,11 @@ void TestEngine::InitTreeRows(){
 
     x = 0;
     for (int i =0; i < FLOATOBJECTS_PER_ROW_1;i++){
-        Baum_Row1[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum120x68.png",_Shader);
+        Baum_Row1[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum320x68.png",_Shader);
         Baum_Row1[i]->InitTextureMap(1,1);
         Baum_Row1[i]->SetPosition(x,98);
         Baum_Row1[i]->StartAnimation(0,0);
-        x+= 400;
+        x+= 420;
     }
 }
 
