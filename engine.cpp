@@ -362,7 +362,7 @@ void TestEngine::GetNewState(){
     case 2:
     {
         sPoint p = frog->Pos();
-        if (frog->PosX()- frog->SpriteSize().w <  -frog->SpriteSize().w){
+        if (frog->PosX() <  -frog->SpriteSize().w){
             GameState = GAMESTATE::Die;
             // Wir setzen den Frosch aber in den Bildbereich..
             frog->setPos(0,p.y);
@@ -620,7 +620,7 @@ void TestEngine::Run(){
                     RenderScore();
                  //   GetNewState();
 
-                    if (! snake->IsColliding(frog->Pos(),frog->Size())) {
+                    if (! snake->IsColliding(frog->Pos(),frog->SpriteSize())) {
 
                         bool tmp;
                         snake->MoveSprite(0,2,100,128,64,Step_Snake,0,_Elapsed,tmp);
@@ -845,7 +845,7 @@ bool TestEngine::InitUserObjects(){
     //     Holz.push_back(obj);
     // }
 
-    frog = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/images/retrogames/frogger/Froggs8x4.png",_Shader);
+    frog = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Froggs8x4.png",_Shader);
     // Für Auflösung 1280x960 Für 64 pixel tiles
     //frog->SetPosition(608,802);
     frog->InitTextureMap(8,4);

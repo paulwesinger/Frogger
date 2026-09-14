@@ -117,11 +117,13 @@ sSize ENGINE::Sprite::SpriteSize(){
 
 bool ENGINE::Sprite::IsColliding(sPoint p, sSize s){
 
-     int x1 = _Pos.x + _SpriteSize.w;
-     int y1 = _Pos.y + _SpriteSize.h;
+    int x1 = _Pos.x + SpriteSize().w;
+    int y1 = _Pos.y + SpriteSize().h;
 
-    bool ret = ((p.x >= _Pos.x && p.x <= x1) && (p.y >= _Pos.y && p.y <= y1));// &&
-             //((p.x+s.w >= _Pos.x && p.x + s.w <= x1)  &&  (p.y >= _Pos.y && p.y <= y1));
+     bool ret = ((p.x > _Pos.x-s.w && p.x < x1) && (p.y >= _Pos.y && p.y <= y1));
+
+        //((p.x - SpriteSize().w  > _Pos.x && p.x < x1) && (p.y >= _Pos.y && p.y <= y1)) ;
+              //((p.x+SpriteSize().w >= _Pos.x && p.x + s.w <= x1)  &&  (p.y >= _Pos.y && p.y <= y1));
 
 
      if (ret == true) {
