@@ -317,7 +317,7 @@ void TestEngine::RenderFrog(){
 
 void TestEngine::RenderScore(){
     //_Score->Render();
-    //_HighScore->Render();
+    _HighScore->RenderText("0-I-J-c",sPoint(_ResX-260,_ResY -90));
     _Time->RenderText(sPoint(_ResX/2,_ResY -90));
 }
 

@@ -52,6 +52,18 @@ std::map<char,sPoint> COSTUMTEXT::TextBase::GetCharacters(){
     return _Characters;
 }
 
+void COSTUMTEXT::TextBase::RenderText(std::string text, sPoint pos){
+
+    setPos(pos.x,pos.y);
+    int x = pos.x;
+    for(char c: text){
+        sPoint p = _Characters[c];
+        setPos(x,pos.y);
+        RenderFromAsset(p.x,p.y);
+        x += SpriteSize().w;
+    }
+}
+
 void COSTUMTEXT::TextBase::RenderText(sPoint pos){
 
     if (_StringList.empty() ) return;
