@@ -12,8 +12,9 @@ const uint64_t Frogger_TIME = 100;
 const int Frogger_FRAMES = 2; //5;
 const uint64_t Frogger_END_DELAY = 100;
 
-const int STEP_X = 64;
-const int STEP_Y = 64;
+const int STEP_X_FROG = 64;
+const int STEP_Y_FROG = 64;
+
 
 
 
@@ -46,8 +47,20 @@ TestEngine::~TestEngine(){
     for(int i=0; i< MAX_TILE_X; i++)
         delete StreetBlocksMiddle[i];
 
-     for (int i =0; i<5; i++)
+     for (int i =0; i<FROG_DESTINATIONS; i++)
         delete FrogZiel[i];
+
+     for (int i =0; i<WALLS; i++)
+         delete Walls[i];
+
+    for (int i =0; i<TURTLES_ROW_2; i++)
+        delete turtlesRow2[i];
+
+    for (int i =0; i<TURTLES_ROW_4; i++)
+        delete turtlesRow4[i];
+
+
+
 
     ReleaseTrees();
 
@@ -103,7 +116,7 @@ bool TestEngine::UserUpdate(KEYBOARDSTATE state){
     case  BTN_PRESS_UP_KEY:{
         keyboardtext = "Up Key";
 
-        _StepX = 0; _StepY = -STEP_Y;
+        _StepXFrog = 0; _StepYFrog = -STEP_Y_FROG;
         _TileX = 1;
         _TileY = 0;
         _EndTileX = 0; _EndTileY = 0;
@@ -112,7 +125,7 @@ bool TestEngine::UserUpdate(KEYBOARDSTATE state){
             frog->EndAnimation(_EndTileX,_EndTileY,Frogger_END_DELAY,_Elapsed);
 
             if (frog->EndAnimationDone())
-                frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
+                frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepXFrog,_StepYFrog);
 
         }
         break;
@@ -121,7 +134,7 @@ bool TestEngine::UserUpdate(KEYBOARDSTATE state){
     case BTN_PRESS_DOWN_KEY:
         keyboardtext = "Down Key"; 
 
-        _StepX = 0; _StepY = STEP_Y;
+        _StepXFrog = 0; _StepYFrog = STEP_Y_FROG;
         _TileX = 5;
         _TileY = 0;
         _EndTileX = 4; _EndTileY = 0;
@@ -130,7 +143,7 @@ bool TestEngine::UserUpdate(KEYBOARDSTATE state){
             frog->EndAnimation(_EndTileX,_EndTileY,Frogger_END_DELAY,_Elapsed);
 
             if (frog->EndAnimationDone())
-                frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
+                frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepXFrog,_StepYFrog);
 
 
         }
@@ -139,7 +152,7 @@ bool TestEngine::UserUpdate(KEYBOARDSTATE state){
     case BTN_PRESS_LEFT_KEY:
         keyboardtext = "Left Key";  
 
-        _StepX = -STEP_X; _StepY = 0;
+        _StepXFrog = -STEP_X_FROG; _StepYFrog = 0;
         _TileX = 3;
         _TileY = 0;
         _EndTileX = 2; _EndTileY = 0;
@@ -148,7 +161,7 @@ bool TestEngine::UserUpdate(KEYBOARDSTATE state){
             frog->EndAnimation(_EndTileX,_EndTileY,Frogger_END_DELAY,_Elapsed);
 
             if (frog->EndAnimationDone())
-                frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
+                frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepXFrog,_StepYFrog);
 
         }
         break;
@@ -156,7 +169,7 @@ bool TestEngine::UserUpdate(KEYBOARDSTATE state){
     case BTN_PRESS_RIGHT_KEY:
         keyboardtext = "Right Key";
 
-        _StepX = STEP_X; _StepY = 0;
+        _StepXFrog = STEP_X_FROG; _StepYFrog = 0;
         _TileX = 7;
         _TileY = 0;
         _EndTileX = 6; _EndTileY = 0;
@@ -165,7 +178,7 @@ bool TestEngine::UserUpdate(KEYBOARDSTATE state){
             frog->EndAnimation(_EndTileX,_EndTileY,Frogger_END_DELAY,_Elapsed);
 
             if (frog->EndAnimationDone())
-                frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepX,_StepY);
+                frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepXFrog,_StepYFrog);
 
 
         }
@@ -176,8 +189,8 @@ bool TestEngine::UserUpdate(KEYBOARDSTATE state){
         break;
     default:
         keyboardtext = "No Key";
-        _StepX = 0;
-        _StepY = 0;
+        _StepXFrog = 0;
+        _StepYFrog = 0;
         break;
     }
 
@@ -231,17 +244,19 @@ void TestEngine::RenderBackgroundSprites(){
         x += 64;
     }
 
-    x=0;
-    for(int i=0; i< 4; i++){
+    x=48;
+    for(int i=0; i< FROG_DESTINATIONS - 1; i++){
         FrogZiel[i]->setPos(x,0);
         FrogZiel[i]->RenderFromAsset(0,0);
         x +=270;
     }
 
+    Walls[0]->Render();
 
 
-    FrogZiel[4]->setPos(1152,0);
-    FrogZiel[4]->RenderFromAsset(0,0);
+
+    FrogZiel[FROG_DESTINATIONS-1]->setPos(1152,0);
+    FrogZiel[FROG_DESTINATIONS-1]->RenderFromAsset(0,0);
 }
 
 void TestEngine::RenderWood(){
@@ -252,20 +267,20 @@ void TestEngine::RenderWood(){
         Baum_Row1[i]->MoveSprite(0,0,128,64,100,Step_Trees_1,0,_Elapsed,tmp);
     }
 
-    for (int i =0; i < FLOATOBJECTS_PER_ROW_2;i++){
-        // Erstmal alles rendern
-        Baum_Row2[i]->MoveSprite(0,0,128,64,100,-Step_Trees_2,0,_Elapsed,tmp);
-    }
+    // for (int i =0; i < FLOATOBJECTS_PER_ROW_2;i++){
+    //     // Erstmal alles rendern
+    //     Baum_Row2[i]->MoveSprite(0,0,128,64,100,-Step_Turtles_2,0,_Elapsed,tmp);
+    // }
 
     for (int i =0; i < FLOATOBJECTS_PER_ROW_3;i++){
         // Erstmal alles rendern
         Baum_Row3[i]->MoveSprite(0,0,128,64,100,Step_Trees_3,0,_Elapsed,tmp);
     }
 
-    for (int i =0; i < FLOATOBJECTS_PER_ROW_4;i++){
-        // Erstmal alles rendern
-        Baum_Row4[i]->MoveSprite(0,0,128,64,100,-Step_Trees_4,0,_Elapsed,tmp);
-    }
+    // for (int i =0; i < FLOATOBJECTS_PER_ROW_4;i++){
+    //     // Erstmal alles rendern
+    //     Baum_Row4[i]->MoveSprite(0,0,128,64,100,-Step_Turtles_4,0,_Elapsed,tmp);
+    // }
 
     for (int i =0; i < FLOATOBJECTS_PER_ROW_5;i++){
         // Erstmal alles rendern
@@ -281,9 +296,9 @@ int TestEngine::GetFloatingStep(){
     switch (row)
     {
         case 1: ret = Step_Trees_1; break;
-        case 2: ret = Step_Trees_2; break;
+        case 2: ret = _StepXTurtlesRow2; break;
         case 3: ret = Step_Trees_3; break;
-        case 4: ret = Step_Trees_4; break;
+        case 4: ret = _StepXTurtlesRow4; break;
         case 5: ret = Step_Trees_5; break;
         default:
             ret = Step_Trees_1; break;
@@ -294,7 +309,7 @@ int TestEngine::GetFloatingStep(){
 void TestEngine::RenderFrog(){
     if ( ! frog->AnimationDone() ){
         // Warten auf Animationsende
-        frog->MoveSprite(_StepX,_StepY,Frogger_TIME,Frogger_FRAMES,_Elapsed,_TileX,_TileY);
+        frog->MoveSprite(_StepXFrog,_StepYFrog,Frogger_TIME,Frogger_FRAMES,_Elapsed,_TileX,_TileY);
     }
     else{
 
@@ -317,6 +332,46 @@ void TestEngine::RenderFrog(){
     }
 }
 
+void TestEngine::RenderTurtles(){
+
+    bool tmp;
+    for (int i=0;i<TURTLES_ROW_2; i++){
+        if ( ! turtlesRow2[i]->AnimationDone() ){
+            // Warten auf Animationsende
+
+            if (i == 4 || i == 5 || i == 6)
+                turtlesRow2[i]->MoveSprite(0,9,64,64,300,-_StepXTurtlesRow2,0,_Elapsed,tmp);
+            else
+                turtlesRow2[i]->MoveSprite(0,2,64,64,300,-_StepXTurtlesRow2,0,_Elapsed,tmp);
+        }
+        else{
+            turtlesRow2[i]->StartAnimation(0,9);
+            sPoint p = turtlesRow2[i]->Pos();
+            p.x -= _StepXTurtlesRow2;
+            turtlesRow2[i]->SetPosition(p.x,p.y);
+            turtlesRow2[i]->RenderFromAsset(0,0);
+        }
+
+    }
+
+    for (int i=0;i<TURTLES_ROW_4; i++){
+        if ( ! turtlesRow4[i]->AnimationDone() ){
+            // Warten auf Animationsende
+            turtlesRow4[i]->MoveSprite(0,9,64,64,800,-_StepXTurtlesRow4,0,_Elapsed,tmp);
+
+        }
+        else{
+            turtlesRow4[i]->StartAnimation(0,9);
+            sPoint p = turtlesRow4[i]->Pos();
+            p.x -= _StepXTurtlesRow4;
+            turtlesRow4[i]->SetPosition(p.x,p.y);
+            turtlesRow4[i]->RenderFromAsset(0,0);
+        }
+    }
+}
+
+
+
 void TestEngine::RenderScore(){
 
     _Score->UpdateText(_Score2String(),1);
@@ -329,15 +384,36 @@ void TestEngine::RenderScore(){
 void TestEngine::GetNewState(){
 
     int frogrow = FrogInRow();
-    bool plunk = true;
+
     switch(frogrow)
     {
-    case 0:
-        GameState = GAMESTATE::Arrived;
+    case 0: {
 
+        bool arrived =false;
+        for (int i =0; i< FROG_DESTINATIONS-1; i++) {
+            if (FrogZiel[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
+                arrived = true;
+                break;
+            }
+        }
+
+        if (arrived){
+            GameState = GAMESTATE::Arrived;
+        }
+        else {
+
+            GameState = GAMESTATE::Die;
+            StartDieAnimation(4,6);
+        }
+
+
+
+    }
         break;
+
     case 1:
     {
+        bool plunk = true;
         sPoint p = frog->Pos();
         if (frog->PosX() > _ResX )
         {
@@ -366,6 +442,7 @@ void TestEngine::GetNewState(){
 
     case 2:
     {
+        bool plunk = true;
         sPoint p = frog->Pos();
         if (frog->PosX() <  -frog->SpriteSize().w){
             GameState = GAMESTATE::Die;
@@ -375,8 +452,9 @@ void TestEngine::GetNewState(){
         }
         else{
 
-            for (int i =0; i< FLOATOBJECTS_PER_ROW_2; i++) {
-                if (Baum_Row2[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
+            for (int i =0; i< TURTLES_ROW_2; i++) {
+                if (turtlesRow2[i]->IsColliding(frog->Pos(),frog->SpriteSize()) &&
+                    turtlesRow2[i]->GetCurrentTile() != TURTLE_DIVING_TILE ) {
                     GameState = GAMESTATE::FloatingLeft;
                     plunk = false;
                 }
@@ -392,6 +470,7 @@ void TestEngine::GetNewState(){
         break;
     case 3:
     {
+        bool plunk = true;
         sPoint p = frog->Pos();
         if (frog->PosX() > _ResX )
         {
@@ -419,6 +498,7 @@ void TestEngine::GetNewState(){
         break;
     case 4:
     {
+        bool plunk = true;
         sPoint p = frog->Pos();
         if (frog->PosX()- frog->SpriteSize().w <  -frog->SpriteSize().w){
             GameState = GAMESTATE::Die;
@@ -428,8 +508,10 @@ void TestEngine::GetNewState(){
         }
         else
         {
-            for (int i =0; i< FLOATOBJECTS_PER_ROW_4; i++) {
-                if (Baum_Row4[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
+            for (int i =0; i< TURTLES_ROW_4; i++) {
+                if (turtlesRow4[i]->IsColliding(frog->Pos(),frog->SpriteSize())  &&
+                    turtlesRow2[i]->GetCurrentTile() != TURTLE_DIVING_TILE) {
+
                     GameState = GAMESTATE::FloatingLeft;
                     plunk = false;
                 }
@@ -446,7 +528,7 @@ void TestEngine::GetNewState(){
 
     case 5:
     {
-
+        bool plunk = true;
         // ----------------------------------------------
         // Erstmal checken, ob wir den Bereich verlassen:
         // ----------------------------------------------
@@ -611,6 +693,7 @@ void TestEngine::Run(){
                     RenderBackgroundSprites();
                     RenderWood();
                     RenderFrog();
+                    RenderTurtles();
 
 
                     countelapse += _Elapsed;
@@ -638,19 +721,21 @@ void TestEngine::Run(){
 
                     break;
                 case GAMESTATE::FloatingRight:
-                    RenderBackgroundSprites();
-                    RenderWood();
-                    RenderFrog();
-                    RenderScore();
-               //     GetNewState();
-                    break;
+               //      RenderBackgroundSprites();
+               //      RenderWood();
+               //      RenderFrog();
+               //      RenderScore();
+               //      RenderTurtles();
+               // //     GetNewState();
+               //      break;
 
                 case GAMESTATE::FloatingLeft:
                     RenderBackgroundSprites();
                     RenderWood();
                     RenderFrog();
                     RenderScore();
-                //    GetNewState();
+                    RenderTurtles();
+
                     break;
 
                 case GAMESTATE::TimeOut:
@@ -659,9 +744,9 @@ void TestEngine::Run(){
                     break;
                 case GAMESTATE::Plunk:
                     RenderBackgroundSprites();
-                    RenderWood();
-                 //   RenderFrog();
+                    RenderWood();                 
                     RenderScore();
+                    RenderTurtles();
                     audio->ChannelToListen(AUDIO_Channel_Plunck);
                     audio->PlaySound(sound_Plunk,AUDIO_Channel_Plunck);
 
@@ -677,6 +762,7 @@ void TestEngine::Run(){
                     RenderBackgroundSprites();
                     RenderWood();
                     RenderScore();
+                    RenderTurtles();
                     // Frog death
                     bool animdone;
                     frogdeath->MoveSprite(0,6,64,64,150,0,0,_Elapsed,animdone);
@@ -696,6 +782,7 @@ void TestEngine::Run(){
                     RenderBackgroundSprites();
                     RenderWood();
                     RenderScore();
+                    RenderTurtles();
                     _FrogCount --;
                     GameState = GAMESTATE::StartUpFinished;
                     cout << "Frösche " << _FrogCount << endl;
@@ -708,6 +795,13 @@ void TestEngine::Run(){
                     RenderWood();
                     RenderFrog();
                     RenderScore();
+                    RenderTurtles();
+
+                    // Arrived Animation einfügen
+                    _gameScore += 100;
+                    SDL_Delay(1000);// ersetzen durch anim
+                    GameState = GAMESTATE::StartUpFinished;
+
                     break;
 
                 case GAMESTATE::GameOver:
@@ -821,13 +915,14 @@ bool TestEngine::InitUserObjects(){
     // Step init, bei jedem höheren level erhöhen, erhöht die geschwindigkeit
     // ----------------------------------------------------------------------
     Step_Trees_1 = 1;
-    Step_Trees_2 = 2;
     Step_Trees_3 = 2;
-    Step_Trees_4 = 4;
     Step_Trees_5 = 3;
 
-
     Step_Snake = -4;  // Right to Left...
+
+    _StepXTurtlesRow2 = 3;
+    _StepXTurtlesRow4 = 2;
+
     _GameLevel = GAMELEVEL::Level_1;
     _gameScore = 0;
     _gameHighScore = 0; // später aus datei lesen.
@@ -904,6 +999,50 @@ bool TestEngine::InitUserObjects(){
     for(int i=0; i< 5; i++){
         FrogZiel[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/FrogZiel.png",_Shader);
         FrogZiel[i]->InitTextureMap(1,1);
+    }
+
+
+    // ----------------------------------
+    // Mauer stücke
+    // ----------------------------------
+    for (int i = 0; i< WALLS; i++){
+        Walls[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Mauer.png",_Shader);
+        Walls[i] -> InitTextureMap(1,1);
+    }
+
+    // Mauern und ziele positionieren !!
+    Walls[0] -> setPos(0,0);
+
+    // ----------------------------------
+    // Schildkröten
+    // ----------------------------------
+
+    x = 0;
+    for (int i =0; i< TURTLES_ROW_2; i++){
+        turtlesRow2[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Turtles10x1_64x64.png",_Shader);
+        turtlesRow2[i]->InitTextureMap(10,1);
+
+        turtlesRow2[i]->SetPosition(x,162);
+        turtlesRow2[i]->StartAnimation(0,0);
+
+        if (i == 2 || i== 5)
+            x += 256;
+        else
+            x += 64;
+    }
+
+    x = 64;
+    for (int i =0; i< TURTLES_ROW_4; i++){
+        turtlesRow4[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Turtles10x1_64x64.png",_Shader);
+        turtlesRow4[i]->InitTextureMap(10,1);
+
+        turtlesRow4[i]->SetPosition(x,290);
+        turtlesRow4[i]->StartAnimation(0,0);
+
+        if (i == 2 || i == 4)
+            x += 256;
+        else
+            x += 64;
     }
 
     InitTreeRows();

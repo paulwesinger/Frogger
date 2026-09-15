@@ -130,6 +130,11 @@ bool ENGINE::Sprite::IsColliding(sPoint p, sSize s){
             //((p.x+s.w >= _Pos.x && p.x + s.w <= x1)  &&  (p.y >= _Pos.y && p.y <= y1));
 }
 
+
+int ENGINE::Sprite::GetCurrentTile(){
+    return _NextTile;
+}
+
 void ENGINE::Sprite::MoveSprite(int starttile,int lasttile, int tilesizeX, int tilesizeY,
                                 uint64_t timeperTile,int stepx,int stepy, uint64_t elapsed,bool &animationdone){
 
@@ -139,12 +144,25 @@ void ENGINE::Sprite::MoveSprite(int starttile,int lasttile, int tilesizeX, int t
         RenderFromAsset(_NextTile,0);
 
     if (steptime >= timeperTile){
-        _NextTile ++;
 
-        if (_NextTile > lasttile) {  // restart from first image
-            _NextTile = starttile;
-            _AnimationDone = true;
-            animationdone = true;
+        if ( ! _AnimateReverse) {
+
+            _NextTile ++;
+
+            if (_NextTile > lasttile) {  // restart from first image
+                _NextTile = starttile;
+                _AnimationDone = true;
+                animationdone = true;
+            }
+        }
+        else{
+            _NextTile --;
+
+            if (_NextTile < starttile) {  // restart from first image
+                _NextTile = lasttile;
+                _AnimationDone = true;
+                animationdone = true;
+            }
         }
         steptime = 0;
     }
@@ -421,8 +439,19 @@ bool ENGINE::Sprite::EndAnimationDone(){
 void ENGINE::Sprite::StartAnimation(int firsttile, int lasttile){
     _AnimationDone = false;
     _EndAnimationDone = false;
-    _NextTile = firsttile;
-    _EndTile = lasttile;
+
+    // Check for revert animation:
+    if (lasttile >= firsttile){
+        _NextTile = firsttile;
+        _EndTile = lasttile;
+        _AnimateReverse = false;
+    }
+    else{
+        _NextTile = lasttile;
+        _EndTile = firsttile;
+        _AnimateReverse = true;
+    }
+
 }
 
 void ENGINE::Sprite::StartAnimation(int tileX, int tileY,uint64_t timetoanimation,int stepsPerMove,int pixelsX, int pixelsY){

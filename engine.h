@@ -35,6 +35,16 @@ enum GAMELEVEL{
     Level_5    // usw.. todo: Levelnamen für jeden level
 };
 
+struct sFrogDestination{
+    // borders
+    int left;
+    int top;
+    int right;
+    int bottom;
+    sFrogDestination(){ left=0; top = 0; right=0;bottom=0;}
+    sFrogDestination(int _left, int _top, int _right, int bottom) :  left(_left), top(_top), right(_right), bottom(bottom)  {}
+};
+
 const int MAX_TILE_X = 20;
 const int MAX_TILE_Y = 15;
 
@@ -44,11 +54,18 @@ const int AUDIO_Channel_Hop         = 2;
 const int AUDIO_Channel_Death       = 3;
 const int AUDIO_Channel_Plunck      = 4;
 
-const int FLOATOBJECTS_PER_ROW_5           = 3;
-const int FLOATOBJECTS_PER_ROW_4           = 6;
-const int FLOATOBJECTS_PER_ROW_3           = 3;
-const int FLOATOBJECTS_PER_ROW_2           = 4;
-const int FLOATOBJECTS_PER_ROW_1           = 3;
+const int FLOATOBJECTS_PER_ROW_5            = 3;
+const int FLOATOBJECTS_PER_ROW_4            = 6;
+const int FLOATOBJECTS_PER_ROW_3            = 3;
+const int FLOATOBJECTS_PER_ROW_2            = 4;
+const int FLOATOBJECTS_PER_ROW_1            = 3;
+
+const int TURTLES_ROW_2                     = 9;
+const int TURTLES_ROW_4                     = 7;
+
+// Ziel Bereiche:
+const int FROG_DESTINATIONS                 = 5;
+const int WALLS                             = 10;
 
 const int TIMELEVEL_1 = 120;
 const int TIMELEVEL_2 = 100;
@@ -56,6 +73,7 @@ const int TIMELEVEL_3 = 90;
 const int TIMELEVEL_4 = 80;
 const int TIMELEVEL_5 = 70;
 
+const int TURTLE_DIVING_TILE                = 5;
 
 
 
@@ -111,7 +129,8 @@ protected:
     ENGINE::Sprite * StreetBlocksBottom[20];
     ENGINE::Sprite * StreetBlocksMiddle[20];
 
-    ENGINE::Sprite * FrogZiel[5];
+    ENGINE::Sprite * FrogZiel[FROG_DESTINATIONS];
+    ENGINE::Sprite * Walls[WALLS];
 
     // ----------------------
     // Holz, crocs und biber:
@@ -121,6 +140,12 @@ protected:
     ENGINE::Sprite* Baum_Row3[FLOATOBJECTS_PER_ROW_3];
     ENGINE::Sprite* Baum_Row2[FLOATOBJECTS_PER_ROW_2];
     ENGINE::Sprite* Baum_Row1[FLOATOBJECTS_PER_ROW_1];
+
+    // ----------------------
+    // Schildkröten:
+    // ----------------------
+    ENGINE::Sprite* turtlesRow2[TURTLES_ROW_2];
+    ENGINE::Sprite* turtlesRow4[TURTLES_ROW_4];
 
     // --------------------------
     // Splash Screen
@@ -148,10 +173,15 @@ private:
     // X-Steps für cars, Bäume usw..
     // ----------------------------------------
     int Step_Trees_1;
-    int Step_Trees_2;
     int Step_Trees_3;
-    int Step_Trees_4;
     int Step_Trees_5;
+
+    int _StepXFrog;
+    int _StepYFrog;
+
+    int _StepXTurtlesRow2;
+    int _StepXTurtlesRow4;
+
 
     int _gameScore;
     int _gameHighScore;
@@ -174,6 +204,7 @@ private:
     void RenderWood();
     void RenderFrog();
     void RenderScore();
+    void RenderTurtles();
     int GetFloatingStep();
 
 
@@ -182,14 +213,13 @@ private:
     int _FrogCount;
     string keyboardtext;
 
-    int _StepX;
-    int _StepY;
-
     int _TileX;
     int _TileY;
 
     int _EndTileX;
     int _EndTileY;
+
+    bool _AnimateReverse = false;
 
     int SnakeX;
 

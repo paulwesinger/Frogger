@@ -49,7 +49,7 @@ public:
 
     // Collission detection
     bool IsColliding(sPoint p, sSize s);
-
+    int GetCurrentTile();
 
     // Bewegungsgrenzen
     void SetMoveArea(int left, int top,int right, int bottom);
@@ -88,6 +88,8 @@ protected:
 private:
     uint64_t steptime = 0;
     uint64_t time = 0;
+
+    bool _AnimateReverse = false;
 
     // Die grösse des sprites in tilesize
 
