@@ -149,7 +149,7 @@ void ENGINE::Sprite::MoveSprite(int starttile,int lasttile, int tilesizeX, int t
 
             _NextTile ++;
 
-            if (_NextTile > lasttile) {  // restart from first image
+            if (_NextTile >= lasttile) {  // restart from first image
                 _NextTile = starttile;
                 _AnimationDone = true;
                 animationdone = true;
@@ -158,7 +158,7 @@ void ENGINE::Sprite::MoveSprite(int starttile,int lasttile, int tilesizeX, int t
         else{
             _NextTile --;
 
-            if (_NextTile < starttile) {  // restart from first image
+            if (_NextTile <= starttile) {  // restart from first image
                 _NextTile = lasttile;
                 _AnimationDone = true;
                 animationdone = true;

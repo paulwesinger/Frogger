@@ -504,6 +504,8 @@ void TestEngine::GetNewState(){
         if (arrived){
             GameState = GAMESTATE::Arrived;
 
+            audio->HaltMusic();
+
             FrogArrived[indexFrogArrived]->StartAnimation(0,1);
 
             audio->ChannelToListen(AUDIO_CHANNEL_EXTRA);
@@ -936,23 +938,15 @@ void TestEngine::Run(){
                         RenderVehicles();
                         RenderArrivedFrogs();
                         RenderFrog();
-                        // Arrived Animation einfügen
                         _gameScore += 100;
+                        bool tmp;
 
+                        FrogArrived[indexFrogArrived]->MoveSprite(0,1,64,72,300,0,0,_Elapsed,tmp);
 
-                        // sound im getnew state starten
-                        // hie abfangen und dann gamestate setzen
-                        // bool tmp;
-                        // if (! FrogArrived[indexFrogArrived]->AnimationDone())
-                        //     FrogArrived[indexFrogArrived]->MoveSprite(0,1,64,72,700,0,0,_Elapsed,tmp);
-                        // else{
+                        if ( FrogArrived[indexFrogArrived]->AnimationDone()) {
                             FrogArrived[indexFrogArrived]->RenderFromAsset(1,0);
-                            audio->ChannelToListen(AUDIO_CHANNEL_EXTRA);
-                            audio->PlaySound(sound_Extra,AUDIO_CHANNEL_EXTRA);
-
-                            if (audio->PlaySoundFinished(AUDIO_CHANNEL_EXTRA))
-                                GameState = GAMESTATE::StartUpFinished;
-                       // }
+                            GameState = GAMESTATE::StartUpFinished;
+                        }
 
                    }
                     break;
