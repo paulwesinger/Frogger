@@ -28,15 +28,6 @@ TestEngine::TestEngine(int resx,int resy)
 
 TestEngine::~TestEngine(){
 
-
-    // if (! Holz.empty()) {
-    //     for (ENGINE::Base *elem:Holz)
-    //     {
-    //         delete elem;
-    //     }
-    //     Holz.clear();
-    // }
-
     delete frog;
     delete snake;
     delete frogdeath;
@@ -59,9 +50,6 @@ TestEngine::~TestEngine(){
     for (int i =0; i<TURTLES_ROW_4; i++)
         delete turtlesRow4[i];
 
-
-
-
     ReleaseTrees();
 
     delete _Score;
@@ -82,14 +70,8 @@ void TestEngine::ReleaseTrees(){
     for(int i = 0; i < FLOATOBJECTS_PER_ROW_1; i++)
         delete Baum_Row1[i];
 
-    // for(int i = 0; i < FLOATOBJECTS_PER_ROW_2; i++)
-    //     delete Baum_Row2[i];
-
     for(int i = 0; i < FLOATOBJECTS_PER_ROW_3; i++)
         delete Baum_Row3[i];
-
-    // for(int i = 0; i < FLOATOBJECTS_PER_ROW_4; i++)
-    //     delete Baum_Row4[i];
 
     for(int i = 0; i < FLOATOBJECTS_PER_ROW_5; i++)
         delete Baum_Row5[i];
@@ -267,20 +249,10 @@ void TestEngine::RenderWood(){
         Baum_Row1[i]->MoveSprite(0,0,128,64,100,Step_Trees_1,0,_Elapsed,tmp);
     }
 
-    // for (int i =0; i < FLOATOBJECTS_PER_ROW_2;i++){
-    //     // Erstmal alles rendern
-    //     Baum_Row2[i]->MoveSprite(0,0,128,64,100,-Step_Turtles_2,0,_Elapsed,tmp);
-    // }
-
     for (int i =0; i < FLOATOBJECTS_PER_ROW_3;i++){
         // Erstmal alles rendern
         Baum_Row3[i]->MoveSprite(0,0,128,64,100,Step_Trees_3,0,_Elapsed,tmp);
     }
-
-    // for (int i =0; i < FLOATOBJECTS_PER_ROW_4;i++){
-    //     // Erstmal alles rendern
-    //     Baum_Row4[i]->MoveSprite(0,0,128,64,100,-Step_Turtles_4,0,_Elapsed,tmp);
-    // }
 
     for (int i =0; i < FLOATOBJECTS_PER_ROW_5;i++){
         // Erstmal alles rendern
@@ -362,10 +334,6 @@ void TestEngine::RenderTurtles(){
                 turtlesRow4[i]->MoveSprite(0,2,64,64,300,-_StepXTurtlesRow4,0,_Elapsed,tmp);
             else
                 turtlesRow4[i]->MoveSprite(0,9,64,64,300,-_StepXTurtlesRow4,0,_Elapsed,tmp);
-
-
-            //turtlesRow4[i]->MoveSprite(0,9,64,64,800,-_StepXTurtlesRow4,0,_Elapsed,tmp);
-
         }
         else{
             turtlesRow4[i]->StartAnimation(0,9);
@@ -412,9 +380,6 @@ void TestEngine::GetNewState(){
             GameState = GAMESTATE::Die;
             StartDieAnimation(4,6);
         }
-
-
-
     }
         break;
 
@@ -503,6 +468,7 @@ void TestEngine::GetNewState(){
         }
     }
         break;
+
     case 4:
     {
         bool plunk = true;
@@ -563,6 +529,7 @@ void TestEngine::GetNewState(){
                 GameState = GAMESTATE::FloatingRight;
         }
             break;
+
     }
     case 6:
         // Back on the street:
@@ -614,7 +581,6 @@ void TestEngine::Run(){
     glEnable(GL_DEPTH_TEST);
     //LoadSurface("/home/paul/workspace/GLFrameWork/images/standard/errorAlpha.png");
     clock.Start();
-
 
     GameState = GAMESTATE::Starting;
 
@@ -712,7 +678,6 @@ void TestEngine::Run(){
                     }
 
                     RenderScore();
-                 //   GetNewState();
 
                     if (! snake->IsColliding(frog->Pos(),frog->SpriteSize())) {
 
@@ -944,14 +909,6 @@ bool TestEngine::InitUserObjects(){
     }
 
     int x = 0;
-    // for (int i =0; i<5; i++){
-    //     ENGINE::Base* obj = new ENGINE::BaseObject2D(_ResX,_ResY,"/home/paul/workspace/GLFrameWork/images/Holztexture/Wood.png",_Shader);
-
-    //     obj->setPos(x,400);
-    //     obj->setSize(150,40);
-    //     x+=200;
-    //     Holz.push_back(obj);
-    // }
 
     frog = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Froggs8x4.png",_Shader);
     // Für Auflösung 1280x960 Für 64 pixel tiles
@@ -1055,14 +1012,12 @@ bool TestEngine::InitUserObjects(){
     // ------------------------------------------
     // Score, Highscore, Time
     // ------------------------------------------
-
     _Score = new COSTUMTEXT::TextBase(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Text32x32_19_2.png",_Shader);
     _Score->InitTextureMap(19,2);
     _Score->setPos(_ResX / 2 -300,_ResY-70);
 
     _Score->AddText("SCORE");
     _Score->AddText(_Score2String());
-
 
     _HighScore = new COSTUMTEXT::TextBase(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Text32x32_19_2.png",_Shader);
     _HighScore->InitTextureMap(19,2);
@@ -1074,8 +1029,6 @@ bool TestEngine::InitUserObjects(){
 
     _Time->AddText("TIME");
     _Time->AddText(stCounter);
-
-
 
     InitTextMap();
 
@@ -1126,15 +1079,6 @@ void TestEngine::InitTreeRows(){
         x+= 480;
     }
 
-    // x = 0;
-    // for (int i =0; i < FLOATOBJECTS_PER_ROW_4;i++){
-    //     Baum_Row4[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum120x68.png",_Shader);
-    //     Baum_Row4[i]->InitTextureMap(1,1);
-    //     Baum_Row4[i]->SetPosition(x,290);
-    //     Baum_Row4[i]->StartAnimation(0,0);
-    //     x+= 250;
-    // }
-
     x = 0;
     for (int i =0; i < FLOATOBJECTS_PER_ROW_3;i++){
         Baum_Row3[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum320x68.png",_Shader);
@@ -1143,15 +1087,6 @@ void TestEngine::InitTreeRows(){
         Baum_Row3[i]->StartAnimation(0,0);
         x+= 480;
     }
-
-    // x = 0;
-    // for (int i =0; i < FLOATOBJECTS_PER_ROW_2;i++){
-    //     Baum_Row2[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum120x68.png",_Shader);
-    //     Baum_Row2[i]->InitTextureMap(1,1);
-    //     Baum_Row2[i]->SetPosition(x,162);
-    //     Baum_Row2[i]->StartAnimation(0,0);
-    //     x+= 400;
-    // }
 
     x = 0;
     for (int i =0; i < FLOATOBJECTS_PER_ROW_1;i++){
@@ -1194,7 +1129,6 @@ bool TestEngine::AddTextDisplay(int x, int y, int id, string name){
         log.loginfo("Display erstellt","TestEngine");
         return true;
     }
-
     return false;
 }
 

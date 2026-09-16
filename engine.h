@@ -136,9 +136,7 @@ protected:
     // Holz, crocs und biber:
     // ----------------------
     ENGINE::Sprite* Baum_Row5[FLOATOBJECTS_PER_ROW_5];
-    //ENGINE::Sprite* Baum_Row4[FLOATOBJECTS_PER_ROW_4];
-    ENGINE::Sprite* Baum_Row3[FLOATOBJECTS_PER_ROW_3];
-    //ENGINE::Sprite* Baum_Row2[FLOATOBJECTS_PER_ROW_2];
+    ENGINE::Sprite* Baum_Row3[FLOATOBJECTS_PER_ROW_3];    
     ENGINE::Sprite* Baum_Row1[FLOATOBJECTS_PER_ROW_1];
 
     // ----------------------
@@ -190,7 +188,6 @@ private:
     bool _Pause;
     GAMESTATE _Oldstate;  // zum restaurieren nach _Pause
 
-    //static GAMESTATE _GameState;
     static void SoundHandler();
     void ChangeGameState(GAMESTATE state);
     int FrogInRow();// Die aktuelle "Zeile" vom Frosch...
