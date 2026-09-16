@@ -63,6 +63,16 @@ const int FLOATOBJECTS_PER_ROW_1            = 3;
 const int TURTLES_ROW_2                     = 9;
 const int TURTLES_ROW_4                     = 8;
 
+// Vehicles
+const int VEHICLES_PER_ROW_7                = 5;
+const int VEHICLES_PER_ROW_8                = 6;
+const int VEHICLES_PER_ROW_9                = 4;
+const int VEHICLES_PER_ROW_10               = 5;
+const int VEHICLES_PER_ROW_11               = 4;
+
+
+
+
 // Ziel Bereiche:
 const int FROG_DESTINATIONS                 = 5;
 const int WALLS                             = 10;
@@ -145,6 +155,19 @@ protected:
     ENGINE::Sprite* turtlesRow2[TURTLES_ROW_2];
     ENGINE::Sprite* turtlesRow4[TURTLES_ROW_4];
 
+    // ----------------------
+    // Fahrzeuge:
+    // ----------------------
+    ENGINE::Sprite* Vehicle_Row7[VEHICLES_PER_ROW_7];
+    // Der 2.Teil des lkw...
+     ENGINE::Sprite* Vehicle_Row7_2[VEHICLES_PER_ROW_7];
+
+
+    ENGINE::Sprite* Vehicle_Row8[VEHICLES_PER_ROW_8];
+    ENGINE::Sprite* Vehicle_Row9[VEHICLES_PER_ROW_9];
+    ENGINE::Sprite* Vehicle_Row10[VEHICLES_PER_ROW_10];
+    ENGINE::Sprite* Vehicle_Row11[VEHICLES_PER_ROW_11];
+
     // --------------------------
     // Splash Screen
     // --------------------------
@@ -180,6 +203,12 @@ private:
     int _StepXTurtlesRow2;
     int _StepXTurtlesRow4;
 
+    int _StepVehicleRow11;
+    int _StepVehicleRow10;
+    int _StepVehicleRow9;
+    int _StepVehicleRow8;
+    int _StepVehicleRow7;
+
 
     int _gameScore;
     int _gameHighScore;
@@ -195,6 +224,8 @@ private:
     void InitTreeRows();
     void ReleaseTrees();
     void InitTextMap();
+    void InitVehicles();
+    void ReleaseVehicles();
 
     void RenderBackgroundSprites();
     void RenderSplashScreen();
@@ -202,6 +233,7 @@ private:
     void RenderFrog();
     void RenderScore();
     void RenderTurtles();
+    void RenderVehicles();
     int GetFloatingStep();
 
 

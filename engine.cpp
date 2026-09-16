@@ -51,6 +51,7 @@ TestEngine::~TestEngine(){
         delete turtlesRow4[i];
 
     ReleaseTrees();
+    ReleaseVehicles();
 
     delete _Score;
     delete _HighScore;
@@ -75,6 +76,25 @@ void TestEngine::ReleaseTrees(){
 
     for(int i = 0; i < FLOATOBJECTS_PER_ROW_5; i++)
         delete Baum_Row5[i];
+}
+
+void TestEngine::ReleaseVehicles(){
+    for(int i = 0; i < VEHICLES_PER_ROW_11; i++)
+        delete Vehicle_Row11[i];
+
+    for(int i = 0; i < VEHICLES_PER_ROW_10; i++)
+        delete Vehicle_Row10[i];
+
+    for(int i = 0; i < VEHICLES_PER_ROW_9; i++)
+        delete Vehicle_Row9[i];
+
+    for(int i = 0; i < VEHICLES_PER_ROW_8; i++)
+        delete Vehicle_Row8[i];
+
+    for(int i = 0; i < VEHICLES_PER_ROW_7; i++) {
+        delete Vehicle_Row7[i];
+        delete Vehicle_Row7_2[i];
+    }
 }
 
 bool TestEngine::LoadSurface(string path){
@@ -301,6 +321,95 @@ void TestEngine::RenderFrog(){
                 frog->SetPosition(p.x,p.y);
             }
         frog->RenderFromAsset(_EndTileX,_EndTileY);
+    }
+}
+
+void TestEngine::RenderVehicles(){
+    bool tmp;
+    for (int i=0;i<VEHICLES_PER_ROW_11; i++){
+        if ( ! Vehicle_Row11[i]->AnimationDone() ){
+            // Warten auf Animationsende
+                Vehicle_Row11[i]->MoveSprite(3,3,64,64,100,_StepVehicleRow11,0,_Elapsed,tmp);
+
+        }
+        else{
+            Vehicle_Row11[i]->StartAnimation(3,3);
+            sPoint p = Vehicle_Row11[i]->Pos();
+            p.x += _StepVehicleRow11;
+            Vehicle_Row11[i]->SetPosition(p.x,p.y);
+            Vehicle_Row11[i]->RenderFromAsset(3,0);
+        }
+
+    }
+
+    for (int i=0;i<VEHICLES_PER_ROW_10; i++){
+        if ( ! Vehicle_Row10[i]->AnimationDone() ){
+            // Warten auf Animationsende
+            Vehicle_Row10[i]->MoveSprite(1,1,64,64,100,-_StepVehicleRow10,0,_Elapsed,tmp);
+
+        }
+        else{
+            Vehicle_Row10[i]->StartAnimation(1,1);
+            sPoint p = Vehicle_Row10[i]->Pos();
+            p.x += _StepVehicleRow10;
+            Vehicle_Row10[i]->SetPosition(p.x,p.y);
+            Vehicle_Row10[i]->RenderFromAsset(1,0);
+        }
+    }
+
+    for (int i=0;i<VEHICLES_PER_ROW_9; i++){
+        if ( ! Vehicle_Row9[i]->AnimationDone() ){
+            // Warten auf Animationsende
+            Vehicle_Row9[i]->MoveSprite(2,2,64,64,100,_StepVehicleRow9,0,_Elapsed,tmp);
+
+        }
+        else{
+            Vehicle_Row9[i]->StartAnimation(2,2);
+            sPoint p = Vehicle_Row9[i]->Pos();
+            p.x += _StepVehicleRow9;
+            Vehicle_Row9[i]->SetPosition(p.x,p.y);
+            Vehicle_Row9[i]->RenderFromAsset(2,0);
+        }
+
+    }
+
+    for (int i=0;i<VEHICLES_PER_ROW_8; i++){
+        if ( ! Vehicle_Row8[i]->AnimationDone() ){
+            // Warten auf Animationsende
+            Vehicle_Row8[i]->MoveSprite(0,0,64,64,100,-_StepVehicleRow8,0,_Elapsed,tmp);
+
+        }
+        else{
+            Vehicle_Row8[i]->StartAnimation(0,0);
+            sPoint p = Vehicle_Row8[i]->Pos();
+            p.x += _StepVehicleRow8;
+            Vehicle_Row8[i]->SetPosition(p.x,p.y);
+            Vehicle_Row8[i]->RenderFromAsset(0,0);
+        }
+    }
+
+
+    for (int i=0;i<VEHICLES_PER_ROW_7; i++){
+        if ( ! Vehicle_Row7[i]->AnimationDone() ){
+            // Warten auf Animationsende
+            Vehicle_Row7[i]->MoveSprite(4,4,64,64,100,-_StepVehicleRow7,0,_Elapsed,tmp);
+            Vehicle_Row7_2[i]->MoveSprite(4,4,64,64,100,-_StepVehicleRow7,0,_Elapsed,tmp);
+
+        }
+        else{
+            Vehicle_Row7[i]->StartAnimation(4,4);
+            sPoint p = Vehicle_Row7[i]->Pos();
+            p.x += -_StepVehicleRow7;
+            Vehicle_Row7[i]->SetPosition(p.x,p.y);
+            Vehicle_Row7[i]->RenderFromAsset(4,0);
+
+
+            Vehicle_Row7_2[i]->StartAnimation(5,5);
+            p = Vehicle_Row7_2[i]->Pos();
+            p.x += -_StepVehicleRow7;
+            Vehicle_Row7_2[i]->SetPosition(p.x,p.y);
+            Vehicle_Row7_2[i]->RenderFromAsset(5,0);
+        }
     }
 }
 
@@ -536,18 +645,48 @@ void TestEngine::GetNewState(){
         GameState = GAMESTATE::Run;
         break;
     case 7:
-
+        for (int i =0; i< VEHICLES_PER_ROW_7; i++) {
+            if (Vehicle_Row7[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
+                GameState = GAMESTATE::Die;
+                StartDieAnimation(0,6);
+            }
+        }
 
         break;
-    case 8: break;
+    case 8:
+        for (int i =0; i< VEHICLES_PER_ROW_8; i++) {
+            if (Vehicle_Row8[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
+                GameState = GAMESTATE::Die;
+                StartDieAnimation(0,6);
+            }
+        }
+        break;
     case 9:
+        for (int i =0; i< VEHICLES_PER_ROW_9; i++) {
+            if (Vehicle_Row9[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
+                GameState = GAMESTATE::Die;
+                StartDieAnimation(0,6);
+            }
+        }
         break;
 
     case 10:
+        for (int i =0; i< VEHICLES_PER_ROW_10; i++) {
+            if (Vehicle_Row10[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
+                GameState = GAMESTATE::Die;
+                StartDieAnimation(0,6);
+            }
+        }
 
         break;
     case 11:
 
+        for (int i =0; i< VEHICLES_PER_ROW_11; i++) {
+            if (Vehicle_Row11[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
+                GameState = GAMESTATE::Die;
+                StartDieAnimation(0,6);
+            }
+        }
         break;
 
     case 12:
@@ -666,6 +805,7 @@ void TestEngine::Run(){
                     RenderBackgroundSprites();
                     RenderWood();                   
                     RenderTurtles();
+                    RenderVehicles();
                     RenderFrog();
 
                     countelapse += _Elapsed;
@@ -697,6 +837,7 @@ void TestEngine::Run(){
                     RenderWood();
                     RenderScore();
                     RenderTurtles();
+                    RenderVehicles();
                     RenderFrog();
 
                     break;
@@ -709,6 +850,7 @@ void TestEngine::Run(){
                     RenderBackgroundSprites();
                     RenderWood();                 
                     RenderScore();
+                    RenderVehicles();
                     RenderTurtles();
                     audio->ChannelToListen(AUDIO_Channel_Plunck);
                     audio->PlaySound(sound_Plunk,AUDIO_Channel_Plunck);
@@ -726,6 +868,7 @@ void TestEngine::Run(){
                     RenderWood();
                     RenderScore();
                     RenderTurtles();
+                    RenderVehicles();
                     // Frog death
                     bool animdone;
                     frogdeath->MoveSprite(0,6,64,64,150,0,0,_Elapsed,animdone);
@@ -746,6 +889,7 @@ void TestEngine::Run(){
                     RenderWood();
                     RenderScore();
                     RenderTurtles();
+                    RenderVehicles();
                     _FrogCount --;
                     GameState = GAMESTATE::StartUpFinished;
                     cout << "Frösche " << _FrogCount << endl;
@@ -758,6 +902,7 @@ void TestEngine::Run(){
                     RenderWood();                    
                     RenderScore();
                     RenderTurtles();
+                    RenderVehicles();
                     RenderFrog();
                     // Arrived Animation einfügen
                     _gameScore += 100;
@@ -882,8 +1027,14 @@ bool TestEngine::InitUserObjects(){
 
     Step_Snake = -4;  // Right to Left...
 
-    _StepXTurtlesRow2 = 3;
-    _StepXTurtlesRow4 = 2;
+    _StepXTurtlesRow2   = 3;
+    _StepXTurtlesRow4   = 2;
+
+    _StepVehicleRow11   = 1;
+    _StepVehicleRow10   = 3;
+    _StepVehicleRow9    = 4;
+    _StepVehicleRow8    = 2;
+    _StepVehicleRow7    = 2;
 
     _GameLevel = GAMELEVEL::Level_1;
     _gameScore = 0;
@@ -1000,6 +1151,8 @@ bool TestEngine::InitUserObjects(){
     }
 
     InitTreeRows();
+
+    InitVehicles();
     // Default settings at start
     _TileX = 0;
     _TileY = 0;
@@ -1064,6 +1217,64 @@ bool TestEngine::InitUserObjects(){
 
 
     return ret;
+}
+
+void TestEngine::InitVehicles(){
+    int x = 0;
+    for (int i =0; i < VEHICLES_PER_ROW_11;i++){
+        Vehicle_Row11[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Vehicles6x1_64x64.png",_Shader);
+        Vehicle_Row11[i]->InitTextureMap(6,1);
+        Vehicle_Row11[i]->SetPosition(x,738);
+        Vehicle_Row11[i]->StartAnimation(3,3);
+        x+= 250;
+    }
+
+    x = 0;
+    for (int i =0; i < VEHICLES_PER_ROW_10;i++){
+        Vehicle_Row10[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Vehicles6x1_64x64.png",_Shader);
+        Vehicle_Row10[i]->InitTextureMap(6,1);
+        Vehicle_Row10[i]->SetPosition(x,674);
+        Vehicle_Row10[i]->StartAnimation(1,1);
+        x+= 190;
+    }
+
+    x = 0;
+    for (int i =0; i < VEHICLES_PER_ROW_9;i++){
+        Vehicle_Row9[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Vehicles6x1_64x64.png",_Shader);
+        Vehicle_Row9[i]->InitTextureMap(6,1);
+        Vehicle_Row9[i]->SetPosition(x,610);
+        Vehicle_Row9[i]->StartAnimation(2,2);
+        x+= 270;
+    }
+
+    x = 0;
+    for (int i =0; i < VEHICLES_PER_ROW_8;i++){
+        Vehicle_Row8[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Vehicles6x1_64x64.png",_Shader);
+        Vehicle_Row8[i]->InitTextureMap(6,1);
+        Vehicle_Row8[i]->SetPosition(x,546);
+        Vehicle_Row8[i]->StartAnimation(0,0);
+        x+= 300;
+    }
+
+    x = 0;
+    for (int i =0; i < VEHICLES_PER_ROW_7;i++){
+        Vehicle_Row7[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Vehicles6x1_64x64.png",_Shader);
+        Vehicle_Row7[i]->InitTextureMap(6,1);
+        Vehicle_Row7[i]->SetPosition(x,482);
+        Vehicle_Row7[i]->StartAnimation(4,4);
+        x+= 260;
+    }
+
+    x = 64;
+    for (int i =0; i < VEHICLES_PER_ROW_7;i++){
+        Vehicle_Row7_2[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Vehicles6x1_64x64.png",_Shader);
+        Vehicle_Row7_2[i]->InitTextureMap(6,1);
+        Vehicle_Row7_2[i]->SetPosition(x,482);
+        Vehicle_Row7_2[i]->StartAnimation(5,5);
+        x+= 260;
+    }
+
+
 }
 
 void TestEngine::InitTreeRows(){
