@@ -61,7 +61,7 @@ const int FLOATOBJECTS_PER_ROW_2            = 4;
 const int FLOATOBJECTS_PER_ROW_1            = 3;
 
 const int TURTLES_ROW_2                     = 9;
-const int TURTLES_ROW_4                     = 7;
+const int TURTLES_ROW_4                     = 8;
 
 // Ziel Bereiche:
 const int FROG_DESTINATIONS                 = 5;
@@ -136,9 +136,9 @@ protected:
     // Holz, crocs und biber:
     // ----------------------
     ENGINE::Sprite* Baum_Row5[FLOATOBJECTS_PER_ROW_5];
-    ENGINE::Sprite* Baum_Row4[FLOATOBJECTS_PER_ROW_4];
+    //ENGINE::Sprite* Baum_Row4[FLOATOBJECTS_PER_ROW_4];
     ENGINE::Sprite* Baum_Row3[FLOATOBJECTS_PER_ROW_3];
-    ENGINE::Sprite* Baum_Row2[FLOATOBJECTS_PER_ROW_2];
+    //ENGINE::Sprite* Baum_Row2[FLOATOBJECTS_PER_ROW_2];
     ENGINE::Sprite* Baum_Row1[FLOATOBJECTS_PER_ROW_1];
 
     // ----------------------

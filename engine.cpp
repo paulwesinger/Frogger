@@ -82,14 +82,14 @@ void TestEngine::ReleaseTrees(){
     for(int i = 0; i < FLOATOBJECTS_PER_ROW_1; i++)
         delete Baum_Row1[i];
 
-    for(int i = 0; i < FLOATOBJECTS_PER_ROW_2; i++)
-        delete Baum_Row2[i];
+    // for(int i = 0; i < FLOATOBJECTS_PER_ROW_2; i++)
+    //     delete Baum_Row2[i];
 
     for(int i = 0; i < FLOATOBJECTS_PER_ROW_3; i++)
         delete Baum_Row3[i];
 
-    for(int i = 0; i < FLOATOBJECTS_PER_ROW_4; i++)
-        delete Baum_Row4[i];
+    // for(int i = 0; i < FLOATOBJECTS_PER_ROW_4; i++)
+    //     delete Baum_Row4[i];
 
     for(int i = 0; i < FLOATOBJECTS_PER_ROW_5; i++)
         delete Baum_Row5[i];
@@ -339,7 +339,7 @@ void TestEngine::RenderTurtles(){
         if ( ! turtlesRow2[i]->AnimationDone() ){
             // Warten auf Animationsende
 
-            if (i == 4 || i == 5 || i == 6)
+            if (i == 3 || i == 4 || i == 5)
                 turtlesRow2[i]->MoveSprite(0,9,64,64,300,-_StepXTurtlesRow2,0,_Elapsed,tmp);
             else
                 turtlesRow2[i]->MoveSprite(0,2,64,64,300,-_StepXTurtlesRow2,0,_Elapsed,tmp);
@@ -357,7 +357,14 @@ void TestEngine::RenderTurtles(){
     for (int i=0;i<TURTLES_ROW_4; i++){
         if ( ! turtlesRow4[i]->AnimationDone() ){
             // Warten auf Animationsende
-            turtlesRow4[i]->MoveSprite(0,9,64,64,800,-_StepXTurtlesRow4,0,_Elapsed,tmp);
+
+            if (i == 3 ||  i == 4)
+                turtlesRow4[i]->MoveSprite(0,2,64,64,300,-_StepXTurtlesRow4,0,_Elapsed,tmp);
+            else
+                turtlesRow4[i]->MoveSprite(0,9,64,64,300,-_StepXTurtlesRow4,0,_Elapsed,tmp);
+
+
+            //turtlesRow4[i]->MoveSprite(0,9,64,64,800,-_StepXTurtlesRow4,0,_Elapsed,tmp);
 
         }
         else{
@@ -510,7 +517,7 @@ void TestEngine::GetNewState(){
         {
             for (int i =0; i< TURTLES_ROW_4; i++) {
                 if (turtlesRow4[i]->IsColliding(frog->Pos(),frog->SpriteSize())  &&
-                    turtlesRow2[i]->GetCurrentTile() != TURTLE_DIVING_TILE) {
+                    turtlesRow4[i]->GetCurrentTile() != TURTLE_DIVING_TILE) {
 
                     GameState = GAMESTATE::FloatingLeft;
                     plunk = false;
@@ -691,10 +698,9 @@ void TestEngine::Run(){
                 case GAMESTATE::Run:
 
                     RenderBackgroundSprites();
-                    RenderWood();
-                    RenderFrog();
+                    RenderWood();                   
                     RenderTurtles();
-
+                    RenderFrog();
 
                     countelapse += _Elapsed;
                     if (countelapse >= 1000){
@@ -721,20 +727,12 @@ void TestEngine::Run(){
 
                     break;
                 case GAMESTATE::FloatingRight:
-               //      RenderBackgroundSprites();
-               //      RenderWood();
-               //      RenderFrog();
-               //      RenderScore();
-               //      RenderTurtles();
-               // //     GetNewState();
-               //      break;
-
                 case GAMESTATE::FloatingLeft:
                     RenderBackgroundSprites();
                     RenderWood();
-                    RenderFrog();
                     RenderScore();
                     RenderTurtles();
+                    RenderFrog();
 
                     break;
 
@@ -792,11 +790,10 @@ void TestEngine::Run(){
                     break;
                 case GAMESTATE::Arrived:
                     RenderBackgroundSprites();
-                    RenderWood();
-                    RenderFrog();
+                    RenderWood();                    
                     RenderScore();
                     RenderTurtles();
-
+                    RenderFrog();
                     // Arrived Animation einfügen
                     _gameScore += 100;
                     SDL_Delay(1000);// ersetzen durch anim
@@ -1025,7 +1022,7 @@ bool TestEngine::InitUserObjects(){
         turtlesRow2[i]->SetPosition(x,162);
         turtlesRow2[i]->StartAnimation(0,0);
 
-        if (i == 2 || i== 5)
+        if (i == 3 || i== 6)
             x += 256;
         else
             x += 64;
@@ -1039,7 +1036,7 @@ bool TestEngine::InitUserObjects(){
         turtlesRow4[i]->SetPosition(x,290);
         turtlesRow4[i]->StartAnimation(0,0);
 
-        if (i == 2 || i == 4)
+        if (i == 3 || i == 5)
             x += 256;
         else
             x += 64;
@@ -1129,14 +1126,14 @@ void TestEngine::InitTreeRows(){
         x+= 480;
     }
 
-    x = 0;
-    for (int i =0; i < FLOATOBJECTS_PER_ROW_4;i++){
-        Baum_Row4[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum120x68.png",_Shader);
-        Baum_Row4[i]->InitTextureMap(1,1);
-        Baum_Row4[i]->SetPosition(x,290);
-        Baum_Row4[i]->StartAnimation(0,0);
-        x+= 250;
-    }
+    // x = 0;
+    // for (int i =0; i < FLOATOBJECTS_PER_ROW_4;i++){
+    //     Baum_Row4[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum120x68.png",_Shader);
+    //     Baum_Row4[i]->InitTextureMap(1,1);
+    //     Baum_Row4[i]->SetPosition(x,290);
+    //     Baum_Row4[i]->StartAnimation(0,0);
+    //     x+= 250;
+    // }
 
     x = 0;
     for (int i =0; i < FLOATOBJECTS_PER_ROW_3;i++){
@@ -1147,14 +1144,14 @@ void TestEngine::InitTreeRows(){
         x+= 480;
     }
 
-    x = 0;
-    for (int i =0; i < FLOATOBJECTS_PER_ROW_2;i++){
-        Baum_Row2[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum120x68.png",_Shader);
-        Baum_Row2[i]->InitTextureMap(1,1);
-        Baum_Row2[i]->SetPosition(x,162);
-        Baum_Row2[i]->StartAnimation(0,0);
-        x+= 400;
-    }
+    // x = 0;
+    // for (int i =0; i < FLOATOBJECTS_PER_ROW_2;i++){
+    //     Baum_Row2[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum120x68.png",_Shader);
+    //     Baum_Row2[i]->InitTextureMap(1,1);
+    //     Baum_Row2[i]->SetPosition(x,162);
+    //     Baum_Row2[i]->StartAnimation(0,0);
+    //     x+= 400;
+    // }
 
     x = 0;
     for (int i =0; i < FLOATOBJECTS_PER_ROW_1;i++){
