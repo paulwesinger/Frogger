@@ -38,8 +38,10 @@ TestEngine::~TestEngine(){
     for(int i=0; i< MAX_TILE_X; i++)
         delete StreetBlocksMiddle[i];
 
-     for (int i =0; i<FROG_DESTINATIONS; i++)
+    for (int i =0; i<FROG_DESTINATIONS; i++){
         delete FrogZiel[i];
+        delete FrogArrived[i];
+    }
 
      for (int i =0; i<WALLS; i++)
          delete Walls[i];
@@ -49,6 +51,7 @@ TestEngine::~TestEngine(){
 
     for (int i =0; i<TURTLES_ROW_4; i++)
         delete turtlesRow4[i];
+
 
     ReleaseTrees();
     ReleaseVehicles();
@@ -62,6 +65,7 @@ TestEngine::~TestEngine(){
     Mix_FreeChunk(sound_Hop);
     Mix_FreeChunk(sound_Startup);
     Mix_FreeChunk(sound_FrogDeath);
+    Mix_FreeChunk(sound_Extra);
 
     // Mixer_Music freigeben
     Mix_FreeMusic(sound_Background);
@@ -233,6 +237,20 @@ int TestEngine::FrogInRow(){
     // anm.: 34 ist die obere Begrenzung des Bewegungsbereichs, 64 die Höhe des FroschSprite,
     //    ergibt eine ganzzahl zwischen 0 und 11
     return (frog->PosY() - 34) / 64;
+}
+
+void TestEngine::RenderArrivedFrogs(){
+    int x = 48;
+    bool tmp;
+    for (int i = 0 ; i < FROG_DESTINATIONS;i++){
+
+        FrogArrived[i]->setPos(x,30);
+        // zum testen:
+        if (i % 2 == 0) {
+                FrogArrived[i]->RenderFromAsset(1,0);
+        }
+        x+=270;
+    }
 }
 
 void TestEngine::RenderBackgroundSprites(){
@@ -474,15 +492,22 @@ void TestEngine::GetNewState(){
     case 0: {
 
         bool arrived =false;
+
         for (int i =0; i< FROG_DESTINATIONS-1; i++) {
             if (FrogZiel[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
                 arrived = true;
+                indexFrogArrived = i;
                 break;
             }
         }
 
         if (arrived){
             GameState = GAMESTATE::Arrived;
+
+            FrogArrived[indexFrogArrived]->StartAnimation(0,1);
+
+            audio->ChannelToListen(AUDIO_CHANNEL_EXTRA);
+            audio->PlaySound(sound_Extra,AUDIO_CHANNEL_EXTRA);
         }
         else {
 
@@ -806,6 +831,7 @@ void TestEngine::Run(){
                     RenderWood();                   
                     RenderTurtles();
                     RenderVehicles();
+                    RenderArrivedFrogs();
                     RenderFrog();
 
                     countelapse += _Elapsed;
@@ -838,6 +864,7 @@ void TestEngine::Run(){
                     RenderScore();
                     RenderTurtles();
                     RenderVehicles();
+                    RenderArrivedFrogs();
                     RenderFrog();
 
                     break;
@@ -852,6 +879,7 @@ void TestEngine::Run(){
                     RenderScore();
                     RenderVehicles();
                     RenderTurtles();
+                    RenderArrivedFrogs();
                     audio->ChannelToListen(AUDIO_Channel_Plunck);
                     audio->PlaySound(sound_Plunk,AUDIO_Channel_Plunck);
 
@@ -869,6 +897,7 @@ void TestEngine::Run(){
                     RenderScore();
                     RenderTurtles();
                     RenderVehicles();
+                    RenderArrivedFrogs();
                     // Frog death
                     bool animdone;
                     frogdeath->MoveSprite(0,6,64,64,150,0,0,_Elapsed,animdone);
@@ -890,6 +919,7 @@ void TestEngine::Run(){
                     RenderScore();
                     RenderTurtles();
                     RenderVehicles();
+                    RenderArrivedFrogs();
                     _FrogCount --;
                     GameState = GAMESTATE::StartUpFinished;
                     cout << "Frösche " << _FrogCount << endl;
@@ -897,18 +927,34 @@ void TestEngine::Run(){
                     if (_FrogCount == 0)
                         GameState = GAMESTATE::GameOver;
                     break;
-                case GAMESTATE::Arrived:
-                    RenderBackgroundSprites();
-                    RenderWood();                    
-                    RenderScore();
-                    RenderTurtles();
-                    RenderVehicles();
-                    RenderFrog();
-                    // Arrived Animation einfügen
-                    _gameScore += 100;
-                    SDL_Delay(1000);// ersetzen durch anim
-                    GameState = GAMESTATE::StartUpFinished;
+                case GAMESTATE::Arrived:{
 
+                        RenderBackgroundSprites();
+                        RenderWood();
+                        RenderScore();
+                        RenderTurtles();
+                        RenderVehicles();
+                        RenderArrivedFrogs();
+                        RenderFrog();
+                        // Arrived Animation einfügen
+                        _gameScore += 100;
+
+
+                        // sound im getnew state starten
+                        // hie abfangen und dann gamestate setzen
+                        // bool tmp;
+                        // if (! FrogArrived[indexFrogArrived]->AnimationDone())
+                        //     FrogArrived[indexFrogArrived]->MoveSprite(0,1,64,72,700,0,0,_Elapsed,tmp);
+                        // else{
+                            FrogArrived[indexFrogArrived]->RenderFromAsset(1,0);
+                            audio->ChannelToListen(AUDIO_CHANNEL_EXTRA);
+                            audio->PlaySound(sound_Extra,AUDIO_CHANNEL_EXTRA);
+
+                            if (audio->PlaySoundFinished(AUDIO_CHANNEL_EXTRA))
+                                GameState = GAMESTATE::StartUpFinished;
+                       // }
+
+                   }
                     break;
 
                 case GAMESTATE::GameOver:
@@ -1101,9 +1147,14 @@ bool TestEngine::InitUserObjects(){
     }
 
     // Frog Destination:
-    for(int i=0; i< 5; i++){
+    for(int i=0; i< FROG_DESTINATIONS; i++){
         FrogZiel[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/FrogZiel.png",_Shader);
         FrogZiel[i]->InitTextureMap(1,1);
+    }
+
+    for(int i=0; i< FROG_DESTINATIONS; i++){
+        FrogArrived[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/ArraivedFrogs128x72_2_1.png",_Shader);
+        FrogArrived[i]->InitTextureMap(2,1);
     }
 
 
@@ -1113,6 +1164,10 @@ bool TestEngine::InitUserObjects(){
     for (int i = 0; i< WALLS; i++){
         Walls[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Mauer.png",_Shader);
         Walls[i] -> InitTextureMap(1,1);
+
+
+
+
     }
 
     // Mauern und ziele positionieren !!
@@ -1151,8 +1206,8 @@ bool TestEngine::InitUserObjects(){
     }
 
     InitTreeRows();
-
     InitVehicles();
+
     // Default settings at start
     _TileX = 0;
     _TileY = 0;
@@ -1199,6 +1254,7 @@ bool TestEngine::InitUserObjects(){
     sound_Startup = audio->LoadWavMixSound("/home/paul/workspace/sounds/retrogames/frogger/downloaded/sound-frogger-coin-in/sound-frogger-coin-in.wav");
     sound_FrogDeath = audio->LoadWavMixSound("/home/paul/workspace/Frogger/sounds/frogDeath.wav");
     sound_Plunk = audio->LoadWavMixSound("/home/paul/workspace/Frogger/sounds/plunk.wav");
+    sound_Extra = audio->LoadWavMixSound("/home/paul/workspace/Frogger/sounds/frog-extra.wav");
 
     // --------------
     // Change Volume:
@@ -1322,6 +1378,8 @@ void TestEngine::StartUp(){
     _GameLevel = GAMELEVEL::Level_1;
     _ResetTimeCounter(_GameLevel);
     _ResetScore();
+
+    _frogsArrived = 0;
     // Splash screen usw anzeigen
 }
 

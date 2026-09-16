@@ -53,6 +53,7 @@ const int AUDIO_Channel_StartUp     = 5;
 const int AUDIO_Channel_Hop         = 2;
 const int AUDIO_Channel_Death       = 3;
 const int AUDIO_Channel_Plunck      = 4;
+const int AUDIO_CHANNEL_EXTRA       = 5;
 
 const int FLOATOBJECTS_PER_ROW_5            = 3;
 const int FLOATOBJECTS_PER_ROW_4            = 6;
@@ -69,8 +70,6 @@ const int VEHICLES_PER_ROW_8                = 6;
 const int VEHICLES_PER_ROW_9                = 4;
 const int VEHICLES_PER_ROW_10               = 5;
 const int VEHICLES_PER_ROW_11               = 4;
-
-
 
 
 // Ziel Bereiche:
@@ -162,11 +161,14 @@ protected:
     // Der 2.Teil des lkw...
      ENGINE::Sprite* Vehicle_Row7_2[VEHICLES_PER_ROW_7];
 
-
     ENGINE::Sprite* Vehicle_Row8[VEHICLES_PER_ROW_8];
     ENGINE::Sprite* Vehicle_Row9[VEHICLES_PER_ROW_9];
     ENGINE::Sprite* Vehicle_Row10[VEHICLES_PER_ROW_10];
     ENGINE::Sprite* Vehicle_Row11[VEHICLES_PER_ROW_11];
+
+
+    // Der Frog ist im ziel
+    ENGINE::Sprite* FrogArrived[VEHICLES_PER_ROW_7];
 
     // --------------------------
     // Splash Screen
@@ -181,6 +183,7 @@ protected:
     Mix_Chunk* sound_Hop;
     Mix_Chunk* sound_FrogDeath;
     Mix_Chunk* sound_Plunk;         // Ins Wasser geplumpst..
+    Mix_Chunk* sound_Extra;
 
     // Sounds .mp3
     Mix_Music* sound_Background;
@@ -214,6 +217,9 @@ private:
     int _gameHighScore;
     int Step_Snake;
 
+    int _frogsArrived;
+    int indexFrogArrived = 0;
+
     bool _Pause;
     GAMESTATE _Oldstate;  // zum restaurieren nach _Pause
 
@@ -234,6 +240,7 @@ private:
     void RenderScore();
     void RenderTurtles();
     void RenderVehicles();
+    void RenderArrivedFrogs();
     int GetFloatingStep();
 
 
