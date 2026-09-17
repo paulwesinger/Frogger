@@ -45,6 +45,15 @@ struct sFrogDestination{
     sFrogDestination(int _left, int _top, int _right, int bottom) :  left(_left), top(_top), right(_right), bottom(bottom)  {}
 };
 
+struct sFrogArrived{
+    sPoint position;
+    bool arrived;
+    bool haveTodie;
+
+    sFrogArrived(){arrived = false; haveTodie = false;  position = sPoint(0,0);}
+    sFrogArrived(sPoint _p, bool _arrived,bool _hastodie) : arrived(_arrived),position(_p), haveTodie(_hastodie){}
+};
+
 const int MAX_TILE_X = 20;
 const int MAX_TILE_Y = 15;
 
@@ -110,6 +119,7 @@ protected:
     void _ResetTimeCounter(GAMELEVEL level);
     void _ResetScore();
     string _Score2String();
+    void ResetGame();
 
     CLOCK::GameClock clock;
     Logger log;
@@ -137,6 +147,8 @@ protected:
     // +++++++++++++++++++++++++++++++
     ENGINE::Sprite * StreetBlocksBottom[20];
     ENGINE::Sprite * StreetBlocksMiddle[20];
+
+    sFrogArrived FrogArrivedDestinatons [FROG_DESTINATIONS] ;
 
     ENGINE::Sprite * FrogZiel[FROG_DESTINATIONS];
     ENGINE::Sprite * Walls[WALLS];
@@ -217,10 +229,11 @@ private:
     int _gameHighScore;
     int Step_Snake;
 
-    int _frogsArrived;
     int indexFrogArrived = 0;
 
     bool _Pause;
+    bool _DontRunAgain;
+
     GAMESTATE _Oldstate;  // zum restaurieren nach _Pause
 
     static void SoundHandler();

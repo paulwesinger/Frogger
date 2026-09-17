@@ -240,16 +240,14 @@ int TestEngine::FrogInRow(){
 }
 
 void TestEngine::RenderArrivedFrogs(){
-    int x = 48;
-    bool tmp;
+
     for (int i = 0 ; i < FROG_DESTINATIONS;i++){
 
-        FrogArrived[i]->setPos(x,30);
-        // zum testen:
-        if (i % 2 == 0) {
-                FrogArrived[i]->RenderFromAsset(1,0);
+        FrogArrived[i]->setPos(FrogArrivedDestinatons[i].position.x,30);
+        if ( FrogArrivedDestinatons[i].arrived){
+            FrogArrived[i]->setPos(FrogArrivedDestinatons[i].position.x,FrogArrivedDestinatons[i].position.y);
+            FrogArrived[i]->RenderFromAsset(1,0);
         }
-        x+=270;
     }
 }
 
@@ -491,31 +489,54 @@ void TestEngine::GetNewState(){
     {
     case 0: {
 
-        bool arrived =false;
+        // Flag für einmaligen durchlauf ! sonst wird gleich die DieAninmation dazu geliefert...
+        if (_DontRunAgain)  break;
 
-        for (int i =0; i< FROG_DESTINATIONS-1; i++) {
-            if (FrogZiel[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
-                arrived = true;
-                indexFrogArrived = i;
-                break;
-            }
+        bool iscolliding = false;
+        for (int i =0; i< FROG_DESTINATIONS; i++) {
+                if (FrogZiel[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) { // Colliding with ziel sprite
+
+                    iscolliding = true;
+
+                    if ( ! FrogArrivedDestinatons[i].arrived) {
+
+                        indexFrogArrived = i;
+                        FrogArrivedDestinatons[i].arrived = true;
+                        FrogArrivedDestinatons[i].haveTodie = false;
+
+
+                        GameState = GAMESTATE::Arrived;
+
+                        audio->HaltMusic();
+
+                        FrogArrived[indexFrogArrived]->StartAnimation(0,1);
+
+                        audio->ChannelToListen(AUDIO_CHANNEL_EXTRA);
+                        audio->PlaySound(sound_Extra,AUDIO_CHANNEL_EXTRA);
+
+
+                    }
+                    else {
+                        // sorry, besetzt..
+                        GameState = GAMESTATE::Die;
+                        StartDieAnimation(4,6);
+                    }
+
+                    break;
+                }
+
+
         }
 
-        if (arrived){
-            GameState = GAMESTATE::Arrived;
-
-            audio->HaltMusic();
-
-            FrogArrived[indexFrogArrived]->StartAnimation(0,1);
-
-            audio->ChannelToListen(AUDIO_CHANNEL_EXTRA);
-            audio->PlaySound(sound_Extra,AUDIO_CHANNEL_EXTRA);
-        }
-        else {
-
+        if ( ! iscolliding){
+            // Sprung gegen die Wand...
             GameState = GAMESTATE::Die;
             StartDieAnimation(4,6);
         }
+
+
+        _DontRunAgain = true;
+
     }
         break;
 
@@ -742,6 +763,16 @@ void TestEngine::StartDieAnimation(int starttile, int endtile){
     audio->PlaySound(sound_FrogDeath,AUDIO_Channel_Death);
 }
 
+void TestEngine::ResetGame(){
+    _ResetScore();
+    _ResetTimeCounter(_GameLevel);
+
+    audio->PlayBackrgoundSound(sound_Background,1);
+    // Auf Startpositon
+    frog->SetPosition(608,802);
+
+    _DontRunAgain = false;
+}
 
 void TestEngine::Run(){
     glEnable(GL_DEPTH_TEST);
@@ -819,12 +850,13 @@ void TestEngine::Run(){
                     break;
 
                 case GAMESTATE::StartUpFinished:
-                    RenderBackgroundSprites();
-                    RenderScore();
-                    audio->PlayBackrgoundSound(sound_Background,1);
-                    frog->SetPosition(608,802);
+                    //RenderBackgroundSprites();
+                    // RenderScore();
+                    // audio->PlayBackrgoundSound(sound_Background,1);
+                    // frog->SetPosition(608,802);
 
-                    _ResetTimeCounter(_GameLevel);
+                    //_ResetTimeCounter(_GameLevel);
+                    ResetGame();
                     GameState= GAMESTATE::Run;
                     break;
                 case GAMESTATE::Run:
@@ -941,14 +973,29 @@ void TestEngine::Run(){
                         _gameScore += 100;
                         bool tmp;
 
-                        FrogArrived[indexFrogArrived]->MoveSprite(0,1,64,72,300,0,0,_Elapsed,tmp);
-
-                        if ( FrogArrived[indexFrogArrived]->AnimationDone()) {
-                            FrogArrived[indexFrogArrived]->RenderFromAsset(1,0);
-                            GameState = GAMESTATE::StartUpFinished;
+                        //FrogArrived[indexFrogArrived]->MoveSprite(0,1,64,72,300,0,0,_Elapsed,tmp);
+                        if (!  FrogArrived[indexFrogArrived]->AnimationDone()) {
+                            FrogArrived[indexFrogArrived]->MoveSprite(0,1,64,72,300,0,0,_Elapsed,tmp);
                         }
+                        else {
 
-                   }
+                            if (FrogArrivedDestinatons[indexFrogArrived].arrived) {
+
+                            //    FrogArrived[indexFrogArrived]->MoveSprite(0,1,64,72,300,0,0,_Elapsed,tmp);
+
+                            //  if ( FrogArrived[indexFrogArrived]->AnimationDone()) {
+                                FrogArrived[indexFrogArrived]->RenderFromAsset(1,0);
+                                GameState = GAMESTATE::StartUpFinished;
+                            }
+                            else
+                            if (FrogArrivedDestinatons[indexFrogArrived].haveTodie) {
+                                GameState = GAMESTATE::Die;
+                                StartDieAnimation(4,6);
+                            }
+                        }
+                }
+
+
                     break;
 
                 case GAMESTATE::GameOver:
@@ -1144,11 +1191,23 @@ bool TestEngine::InitUserObjects(){
     for(int i=0; i< FROG_DESTINATIONS; i++){
         FrogZiel[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/FrogZiel.png",_Shader);
         FrogZiel[i]->InitTextureMap(1,1);
+
+
+
     }
 
+    x = 54;
     for(int i=0; i< FROG_DESTINATIONS; i++){
         FrogArrived[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/ArraivedFrogs128x72_2_1.png",_Shader);
         FrogArrived[i]->InitTextureMap(2,1);
+
+
+        FrogArrivedDestinatons[i].arrived = false; //i %  2 == 0;
+        FrogArrivedDestinatons[i].haveTodie = true;
+
+        FrogArrivedDestinatons[i].position = sPoint(x,34);
+
+        x += 270;
     }
 
 
@@ -1158,10 +1217,6 @@ bool TestEngine::InitUserObjects(){
     for (int i = 0; i< WALLS; i++){
         Walls[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Mauer.png",_Shader);
         Walls[i] -> InitTextureMap(1,1);
-
-
-
-
     }
 
     // Mauern und ziele positionieren !!
@@ -1373,7 +1428,9 @@ void TestEngine::StartUp(){
     _ResetTimeCounter(_GameLevel);
     _ResetScore();
 
-    _frogsArrived = 0;
+    for (int i =0; i< FROG_DESTINATIONS; i++){ // alle angekommenen Frösche wiederrauswerfen...
+        FrogArrivedDestinatons[i].arrived = false;
+    }
     // Splash screen usw anzeigen
 }
 
