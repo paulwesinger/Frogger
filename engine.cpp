@@ -263,7 +263,7 @@ void TestEngine::RenderBackgroundSprites(){
     }
 
     x=48;
-    for(int i=0; i< FROG_DESTINATIONS - 1; i++){
+    for(int i=0; i< FROG_DESTINATIONS; i++){
         FrogZiel[i]->setPos(x,0);
         FrogZiel[i]->RenderFromAsset(0,0);
         x +=270;
@@ -273,8 +273,8 @@ void TestEngine::RenderBackgroundSprites(){
 
 
 
-    FrogZiel[FROG_DESTINATIONS-1]->setPos(1152,0);
-    FrogZiel[FROG_DESTINATIONS-1]->RenderFromAsset(0,0);
+    // FrogZiel[FROG_DESTINATIONS-1]->setPos(1152,0);
+    // FrogZiel[FROG_DESTINATIONS-1]->RenderFromAsset(0,0);
 }
 
 void TestEngine::RenderWood(){
@@ -694,7 +694,9 @@ void TestEngine::GetNewState(){
         break;
     case 7:
         for (int i =0; i< VEHICLES_PER_ROW_7; i++) {
-            if (Vehicle_Row7[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
+            if ((Vehicle_Row7[i]->IsColliding(frog->Pos(),frog->SpriteSize()) )||
+
+                (Vehicle_Row7_2[i]->IsColliding(frog->Pos(),frog->SpriteSize())) )  {
                 GameState = GAMESTATE::Die;
                 StartDieAnimation(0,6);
             }
@@ -1196,14 +1198,14 @@ bool TestEngine::InitUserObjects(){
 
     }
 
-    x = 54;
+    x = 64;
     for(int i=0; i< FROG_DESTINATIONS; i++){
         FrogArrived[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/ArraivedFrogs128x72_2_1.png",_Shader);
         FrogArrived[i]->InitTextureMap(2,1);
 
 
-        FrogArrivedDestinatons[i].arrived = false; //i %  2 == 0;
-        FrogArrivedDestinatons[i].haveTodie = true;
+        FrogArrivedDestinatons[i].arrived = true; //i %  2 == 0;
+        FrogArrivedDestinatons[i].haveTodie = false;
 
         FrogArrivedDestinatons[i].position = sPoint(x,34);
 
@@ -1429,7 +1431,7 @@ void TestEngine::StartUp(){
     _ResetScore();
 
     for (int i =0; i< FROG_DESTINATIONS; i++){ // alle angekommenen Frösche wiederrauswerfen...
-        FrogArrivedDestinatons[i].arrived = false;
+        FrogArrivedDestinatons[i].arrived = true;
     }
     // Splash screen usw anzeigen
 }
