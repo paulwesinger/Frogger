@@ -16,8 +16,6 @@ const int STEP_X_FROG = 64;
 const int STEP_Y_FROG = 64;
 
 
-
-
 TestEngine::TestEngine(int resx,int resy)
     :GLFrameWork(resx,resy)
 {
@@ -231,6 +229,21 @@ void TestEngine::HandleMessage(){
         _Pause = ! _Pause;  // Toggle the Pause state
         break;
     }
+}
+
+
+// ----------------------------------------------------
+// Handler für SDL_Timer, init
+// ----------------------------------------------------
+Uint32 TestEngine::_TimerCallback(Uint32, void *){
+   //  std::cout << "Timer triggered" << std::endl;
+}
+
+void TestEngine::InitTimer(Uint32 interval){
+
+
+ //   TimerID_Croc=  SDL_AddTimer(interval,_TimerCallback,nullptr);
+    // usw....
 }
 
 int TestEngine::FrogInRow(){
@@ -773,6 +786,7 @@ void TestEngine::ResetGame(){
     // Auf Startpositon
     frog->SetPosition(608,802);
 
+    snake->SetPosition(_SnakePos.x,_SnakePos.y);//  _ResX, 800);
     _DontRunAgain = false;
 }
 
@@ -852,12 +866,6 @@ void TestEngine::Run(){
                     break;
 
                 case GAMESTATE::StartUpFinished:
-                    //RenderBackgroundSprites();
-                    // RenderScore();
-                    // audio->PlayBackrgoundSound(sound_Background,1);
-                    // frog->SetPosition(608,802);
-
-                    //_ResetTimeCounter(_GameLevel);
                     ResetGame();
                     GameState= GAMESTATE::Run;
                     break;
@@ -974,18 +982,12 @@ void TestEngine::Run(){
                         RenderFrog();
                         _gameScore += 100;
                         bool tmp;
-
-                        //FrogArrived[indexFrogArrived]->MoveSprite(0,1,64,72,300,0,0,_Elapsed,tmp);
                         if (!  FrogArrived[indexFrogArrived]->AnimationDone()) {
                             FrogArrived[indexFrogArrived]->MoveSprite(0,1,64,72,300,0,0,_Elapsed,tmp);
                         }
                         else {
 
                             if (FrogArrivedDestinatons[indexFrogArrived].arrived) {
-
-                            //    FrogArrived[indexFrogArrived]->MoveSprite(0,1,64,72,300,0,0,_Elapsed,tmp);
-
-                            //  if ( FrogArrived[indexFrogArrived]->AnimationDone()) {
                                 FrogArrived[indexFrogArrived]->RenderFromAsset(1,0);
                                 GameState = GAMESTATE::StartUpFinished;
                             }
@@ -1115,6 +1117,7 @@ bool TestEngine::InitUserObjects(){
     Step_Trees_5 = 3;
 
     Step_Snake = -4;  // Right to Left...
+    _SnakePos = sPoint(_ResX,800);
 
     _StepXTurtlesRow2   = 3;
     _StepXTurtlesRow4   = 2;
@@ -1259,6 +1262,7 @@ bool TestEngine::InitUserObjects(){
     InitTreeRows();
     InitVehicles();
 
+
     // Default settings at start
     _TileX = 0;
     _TileY = 0;
@@ -1321,6 +1325,12 @@ bool TestEngine::InitUserObjects(){
     // hintergrundsound laden, etwas nervig aber witzig...!!
     sound_Background = audio->LoadBackgroundSound("/home/paul/workspace/sounds/retrogames/frogger/AudacityModiyfied/EndlessBackground.mp3");
     audio->MusicVolume(32);
+
+    // -------------------------
+    // Timer
+    // -------------------------
+    InitTimer(1000);
+
 
 
     return ret;
@@ -1431,7 +1441,7 @@ void TestEngine::StartUp(){
     _ResetScore();
 
     for (int i =0; i< FROG_DESTINATIONS; i++){ // alle angekommenen Frösche wiederrauswerfen...
-        FrogArrivedDestinatons[i].arrived = true;
+        FrogArrivedDestinatons[i].arrived = false;
     }
     // Splash screen usw anzeigen
 }

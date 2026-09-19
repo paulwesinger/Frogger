@@ -95,6 +95,10 @@ const int TURTLE_DIVING_TILE                = 5;
 
 
 
+
+
+
+
 static GAMESTATE GameState;
 
 class TestEngine : public ENGINE::GLFrameWork
@@ -116,10 +120,19 @@ public:
 
 protected:
 
+    void InitTimer(Uint32 interval);
+
     void _ResetTimeCounter(GAMELEVEL level);
     void _ResetScore();
     string _Score2String();
     void ResetGame();
+
+    static Uint32 _TimerCallback(Uint32,void*);
+    // ID's für TimerSnapshots:
+    SDL_TimerID TimerID_Snake;
+    SDL_TimerID TimerID_Croc;
+
+    sPoint _SnakePos;
 
     CLOCK::GameClock clock;
     Logger log;
