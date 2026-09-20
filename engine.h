@@ -66,7 +66,7 @@ const int AUDIO_CHANNEL_EXTRA       = 5;
 
 const int FLOATOBJECTS_PER_ROW_5            = 3;
 const int FLOATOBJECTS_PER_ROW_4            = 6;
-const int FLOATOBJECTS_PER_ROW_3            = 3;
+const int FLOATOBJECTS_PER_ROW_3            = 4;
 const int FLOATOBJECTS_PER_ROW_2            = 4;
 const int FLOATOBJECTS_PER_ROW_1            = 3;
 
@@ -172,6 +172,8 @@ protected:
     ENGINE::Sprite* Baum_Row5[FLOATOBJECTS_PER_ROW_5];
     ENGINE::Sprite* Baum_Row3[FLOATOBJECTS_PER_ROW_3];    
     ENGINE::Sprite* Baum_Row1[FLOATOBJECTS_PER_ROW_1];
+    // Croco
+    ENGINE::Sprite* Croco_Row_3;
 
     // ----------------------
     // Schildkröten:
@@ -257,6 +259,7 @@ private:
     void ReleaseTrees();
     void InitTextMap();
     void InitVehicles();
+    void InitCroco();
     void ReleaseVehicles();
 
     void RenderBackgroundSprites();
@@ -267,6 +270,7 @@ private:
     void RenderTurtles();
     void RenderVehicles();
     void RenderArrivedFrogs();
+    void RenderCrocos();
     int GetFloatingStep();
 
 

@@ -29,6 +29,7 @@ TestEngine::~TestEngine(){
     delete frog;
     delete snake;
     delete frogdeath;
+    delete Croco_Row_3;
 
     for(int i=0; i< MAX_TILE_X; i++)
         delete StreetBlocksBottom[i];
@@ -290,6 +291,16 @@ void TestEngine::RenderBackgroundSprites(){
     // FrogZiel[FROG_DESTINATIONS-1]->RenderFromAsset(0,0);
 }
 
+void TestEngine::RenderCrocos(){
+    bool tmp;
+
+    if ( ! Croco_Row_3->AnimationDone())
+        Croco_Row_3->MoveSprite(0,1,192,64,500,Step_Trees_3,0,_Elapsed,tmp);
+    else{
+        Croco_Row_3->StartAnimation(0,1);
+    }
+}
+
 void TestEngine::RenderWood(){
 
     bool tmp;
@@ -300,8 +311,9 @@ void TestEngine::RenderWood(){
 
     for (int i =0; i < FLOATOBJECTS_PER_ROW_3;i++){
         // Erstmal alles rendern
-        Baum_Row3[i]->MoveSprite(0,0,128,64,100,Step_Trees_3,0,_Elapsed,tmp);
+        Baum_Row3[i]->MoveSprite(0,0,128,64,500,Step_Trees_3,0,_Elapsed,tmp);
     }
+//    RenderCrocos();
 
     for (int i =0; i < FLOATOBJECTS_PER_ROW_5;i++){
         // Erstmal alles rendern
@@ -610,8 +622,7 @@ void TestEngine::GetNewState(){
         }
     }
         break;
-    case 3:
-    {
+    case 3:   {
         bool plunk = true;
         sPoint p = frog->Pos();
         if (frog->PosX() > _ResX )
@@ -634,7 +645,14 @@ void TestEngine::GetNewState(){
                 break;
             }
             else
-                GameState = GAMESTATE::FloatingRight;
+                if (Croco_Row_3->IsColliding(frog->Pos(),frog->SpriteSize())) {
+                    // Croco frisst frogo...
+                    GameState = GAMESTATE::Die;
+                    StartDieAnimation(0,6);
+                }
+
+                else
+                    GameState = GAMESTATE::FloatingRight;
         }
     }
         break;
@@ -841,7 +859,7 @@ void TestEngine::Run(){
 
             // Das ganze mal mit den states:
 
-
+            bool tmp;
             switch (GameState){
 
                 case GAMESTATE::Paused:
@@ -876,6 +894,7 @@ void TestEngine::Run(){
                     RenderTurtles();
                     RenderVehicles();
                     RenderArrivedFrogs();
+                    RenderCrocos();
                     RenderFrog();
 
                     countelapse += _Elapsed;
@@ -889,15 +908,22 @@ void TestEngine::Run(){
 
                     RenderScore();
 
-                    if (! snake->IsColliding(frog->Pos(),frog->SpriteSize())) {
+                    if ( ! snake->AnimationDone())
+                        snake->MoveSprite(0,2,128,64,80,Step_Snake,0,_Elapsed,tmp);
+                    else{
 
-                        bool tmp;
-                        snake->MoveSprite(0,2,100,128,64,Step_Snake,0,_Elapsed,tmp);
-                    }
-                    else
-                    {
-                        GameState  = GAMESTATE::Die;
-                        StartDieAnimation(0,6);
+                        snake->StartAnimation(0,2);
+                        if (snake->IsColliding(frog->Pos(),frog->SpriteSize())) {
+                            GameState  = GAMESTATE::Die;
+                            StartDieAnimation(0,6);
+    //                         bool tmp;
+    //                         snake->MoveSprite(0,2,100,128,64,Step_Snake,0,_Elapsed,tmp);
+                        }
+                        // else
+                        // {
+                        //     // GameState  = GAMESTATE::Die;
+                        //     // StartDieAnimation(0,6);
+                        // }
                     }
 
                     break;
@@ -908,6 +934,7 @@ void TestEngine::Run(){
                     RenderScore();
                     RenderTurtles();
                     RenderVehicles();
+                    RenderCrocos();
                     RenderArrivedFrogs();
                     RenderFrog();
 
@@ -923,6 +950,7 @@ void TestEngine::Run(){
                     RenderScore();
                     RenderVehicles();
                     RenderTurtles();
+                    RenderCrocos();
                     RenderArrivedFrogs();
                     audio->ChannelToListen(AUDIO_Channel_Plunck);
                     audio->PlaySound(sound_Plunk,AUDIO_Channel_Plunck);
@@ -941,6 +969,7 @@ void TestEngine::Run(){
                     RenderScore();
                     RenderTurtles();
                     RenderVehicles();
+                    RenderCrocos();
                     RenderArrivedFrogs();
                     // Frog death
                     bool animdone;
@@ -963,6 +992,7 @@ void TestEngine::Run(){
                     RenderScore();
                     RenderTurtles();
                     RenderVehicles();
+                    RenderCrocos();
                     RenderArrivedFrogs();
                     _FrogCount --;
                     GameState = GAMESTATE::StartUpFinished;
@@ -978,6 +1008,7 @@ void TestEngine::Run(){
                         RenderScore();
                         RenderTurtles();
                         RenderVehicles();
+                        RenderCrocos();
                         RenderArrivedFrogs();
                         RenderFrog();
                         _gameScore += 100;
@@ -1168,7 +1199,7 @@ bool TestEngine::InitUserObjects(){
     snake->SetPosition(_ResX,800);
     snake->setInstanceName("<SNAKE>");
 
-    snake ->StartAnimation(0,0,3000,3,5,0);
+    snake ->StartAnimation(0,2);  // (0,0,3000,3,5,0);
     SnakeX = 0;
 
     // ---------------------------------------------
@@ -1259,6 +1290,7 @@ bool TestEngine::InitUserObjects(){
             x += 64;
     }
 
+    InitCroco();
     InitTreeRows();
     InitVehicles();
 
@@ -1394,6 +1426,14 @@ void TestEngine::InitVehicles(){
 
 }
 
+void TestEngine::InitCroco(){
+    int x = 0;
+    Croco_Row_3 = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Crocs392x64_2_1.png",_Shader);
+    Croco_Row_3->InitTextureMap(2,1);
+    Croco_Row_3->SetPosition(x,226);
+    Croco_Row_3->StartAnimation(0,1);
+}
+
 void TestEngine::InitTreeRows(){
     // -------------------------
     // Bäume Row1 - Row5
@@ -1407,13 +1447,13 @@ void TestEngine::InitTreeRows(){
         x+= 480;
     }
 
-    x = 0;
+    x = 250;
     for (int i =0; i < FLOATOBJECTS_PER_ROW_3;i++){
-        Baum_Row3[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum320x68.png",_Shader);
+        Baum_Row3[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum192x68.png",_Shader);
         Baum_Row3[i]->InitTextureMap(1,1);
         Baum_Row3[i]->SetPosition(x,226);
         Baum_Row3[i]->StartAnimation(0,0);
-        x+= 480;
+        x+= 300;
     }
 
     x = 0;

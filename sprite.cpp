@@ -149,8 +149,8 @@ void ENGINE::Sprite::MoveSprite(int starttile,int lasttile, int tilesizeX, int t
 
             _NextTile ++;
 
-            if (_NextTile >= lasttile) {  // restart from first image
-                _NextTile = starttile;
+            if (_NextTile > lasttile) { // Restart mit StartAnimation(starttile,lasttile)
+                _NextTile = lasttile;
                 _AnimationDone = true;
                 animationdone = true;
             }
@@ -174,16 +174,16 @@ void ENGINE::Sprite::MoveSprite(int starttile,int lasttile, int tilesizeX, int t
     _Pos.y += stepy;
 
     if (_Pos.x > _ResX)
-        _Pos.x = -tilesizeX;
+        _Pos.x = -SpriteSize().w;  //tilesizeX;
 
-    if (_Pos.x < -tilesizeX)
+    if (_Pos.x < -SpriteSize().w) //tilesizeX)
         _Pos.x = _ResX;
 
     if (_Pos.y > _ResY)
-        _Pos.y = -tilesizeY;
+        _Pos.y = -SpriteSize().h; //tilesizeY;
 
-    if (_Pos.y < -tilesizeY)
-        _Pos.y = _ResY;
+    if (_Pos.y < -SpriteSize().h) //tilesizeY)
+        _Pos.y = - SpriteSize().h; //_ResY;
 }
 
 
@@ -228,7 +228,14 @@ void ENGINE::Sprite::MoveSprite(int pixelsX, int pixelsY, uint64_t timetoanimate
                 // }
             }
             else
+            if (_Pos.x >= _ResX){
+                _Pos.x = -SpriteSize().w;
                 _ToPosX = _Pos.x;
+            }
+            else{
+
+                _ToPosX = _Pos.x;
+            }
         }
     }
 
