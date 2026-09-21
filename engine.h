@@ -126,6 +126,8 @@ protected:
     void _ResetScore();
     string _Score2String();
     void ResetGame();
+    // "Insert Coin, continue,...usw"
+    void RenderGameOverScreen();
 
     static Uint32 _TimerCallback(Uint32,void*);
     // ID's für TimerSnapshots:
@@ -193,6 +195,8 @@ protected:
     ENGINE::Sprite* Vehicle_Row10[VEHICLES_PER_ROW_10];
     ENGINE::Sprite* Vehicle_Row11[VEHICLES_PER_ROW_11];
 
+    std::vector<ENGINE::BaseObject2D> AvailableFrogs; // 3 bzw 5 Frogis, deshalb kein Array
+
 
     // Der Frog ist im ziel
     ENGINE::Sprite* FrogArrived[VEHICLES_PER_ROW_7];
@@ -206,6 +210,12 @@ protected:
     COSTUMTEXT::TextBase * _Score;
     COSTUMTEXT::TextBase * _Time;
 
+    // ---------------------------
+    // GameOver screen
+    // ---------------------------
+    COSTUMTEXT::TextBase * _InsertCoin_1EU;   // 3 Froggis
+    COSTUMTEXT::TextBase * _InsertCoin_2EU;   // 5 Froggis
+
     Mix_Chunk* sound_Startup;
     Mix_Chunk* sound_Hop;
     Mix_Chunk* sound_FrogDeath;
@@ -214,7 +224,6 @@ protected:
 
     // Sounds .mp3
     Mix_Music* sound_Background;
-    //Mix_Music* sound_StartUp;
 
     uint64_t _Elapsed;
 
@@ -248,33 +257,9 @@ private:
 
     bool _Pause;
     bool _DontRunAgain;
+    bool _StartNewGame;
 
     GAMESTATE _Oldstate;  // zum restaurieren nach _Pause
-
-    static void SoundHandler();
-    void ChangeGameState(GAMESTATE state);
-    int FrogInRow();// Die aktuelle "Zeile" vom Frosch...
-    void GetNewState();
-    void InitTreeRows();
-    void ReleaseTrees();
-    void InitTextMap();
-    void InitVehicles();
-    void InitCroco();
-    void ReleaseVehicles();
-
-    void RenderBackgroundSprites();
-    void RenderSplashScreen();
-    void RenderWood();
-    void RenderFrog();
-    void RenderScore();
-    void RenderTurtles();
-    void RenderVehicles();
-    void RenderArrivedFrogs();
-    void RenderCrocos();
-    int GetFloatingStep();
-
-
-    void StartDieAnimation(int starttile, int endtile); // Der Frosch darf nich leiden..
 
     int _FrogCount;
     string keyboardtext;
@@ -287,12 +272,36 @@ private:
 
     bool _AnimateReverse = false;
 
-    int SnakeX;
-
-    //TEst Countdown
     uint64_t countelapse = 0;
     int _TimeCounter = 100;
     std::string stCounter = "100";
+
+    static void SoundHandler();
+    void ChangeGameState(GAMESTATE state);
+    int FrogInRow();// Die aktuelle "Zeile" vom Frosch...
+    void GetNewState();
+    void InitTreeRows();
+    void ReleaseTrees();
+    void InitTextMap();
+    void InitVehicles();
+    void InitCroco();
+    void InitGameOverScreen();
+
+    void ReleaseVehicles();
+
+    void RenderBackgroundSprites();
+    void RenderSplashScreen();
+    void RenderWood();
+    void RenderFrog();
+    void RenderScore();
+    void RenderTurtles();
+    void RenderVehicles();
+    void RenderArrivedFrogs();
+    void RenderCrocos();
+    int GetFloatingStep();
+    void StartDieAnimation(int starttile, int endtile); // Der Frosch darf nich leiden..
+
+
 
 };
 

@@ -58,7 +58,8 @@ TestEngine::~TestEngine(){
     delete _Score;
     delete _HighScore;
     delete _Time;
-
+    delete _InsertCoin_1EU;
+    delete _InsertCoin_2EU;
 
     // wav freigeben
     Mix_FreeChunk(sound_Hop);
@@ -819,7 +820,7 @@ void TestEngine::Run(){
 
         StartUp();
 
-        while (_FrogCount > 0  && ! _Quit){
+        while (! _StartNewGame && ! _Quit){
 
             _Elapsed = clock.Elapsed(); //CLOCK::GameClock::Elapsed();
             //   cout << "Elapsed: " << elapsed  << endl;
@@ -1044,15 +1045,23 @@ void TestEngine::Run(){
 
                     RenderSplashScreen();
                     RenderScore();
+                    RenderGameOverScreen();
+                    // --------------------------
+                    // _StartNewGame hier setzen
+                    // --------------------------
 
                     break;
             }
-
-            if (SnakeX > _ResX)
-                SnakeX = 0;
             SwapWindow();
         }
     }
+}
+
+
+
+void TestEngine::RenderGameOverScreen(){
+    _InsertCoin_1EU->RenderText("INSERT-COIN-1-EU-3-FROGS",sPoint(10,_ResY-90));// sPoint(10,_ResY-80) );
+    _InsertCoin_2EU->RenderText("INSERT-COIN-2-EU-7-FROGS",sPoint(10,_ResY-40));
 }
 
 void TestEngine::RenderSplashScreen(){    
@@ -1110,6 +1119,9 @@ void TestEngine::InitTextMap(){
 
      _HighScore->AddMapToMap(_Score->GetCharacters());
      _Time->AddMapToMap(_Score->GetCharacters());
+     _InsertCoin_1EU->AddMapToMap(_Score->GetCharacters());
+     _InsertCoin_2EU->AddMapToMap(_Score->GetCharacters());
+
 }
 
 void TestEngine::_ResetTimeCounter(GAMELEVEL level){
@@ -1134,6 +1146,24 @@ void TestEngine::_ResetScore(){
 string TestEngine::_Score2String(){
 
     return std::to_string(_gameScore);
+}
+
+void TestEngine::InitGameOverScreen(){
+
+    // ErklärText...
+    _InsertCoin_1EU = new COSTUMTEXT::TextBase(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Text32x32_19_2.png",_Shader);
+    _InsertCoin_2EU = new COSTUMTEXT::TextBase(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Text32x32_19_2.png",_Shader);
+
+    _InsertCoin_1EU->InitTextureMap(19,2);
+    _InsertCoin_2EU->InitTextureMap(19,2);
+
+    // _InsertCoin_1EU->setPos(10,_ResY-90);
+    // _InsertCoin_2EU->setPos(10,_ResY-35);
+
+    // _InsertCoin_1EU->AddText("INSERT COIN 1 EU 3 FROGS");
+    // _InsertCoin_2EU->AddText("INSERT COIN 2 EU 7 FROGS");
+
+
 }
 
 bool TestEngine::InitUserObjects(){
@@ -1162,6 +1192,8 @@ bool TestEngine::InitUserObjects(){
     _GameLevel = GAMELEVEL::Level_1;
     _gameScore = 0;
     _gameHighScore = 0; // später aus datei lesen.
+
+    _StartNewGame = false;
 
 
     if (AddTextDisplayWithBackground(100,100,0,"FPS Display with background")){
@@ -1198,9 +1230,7 @@ bool TestEngine::InitUserObjects(){
     snake->InitTextureMap(3,1);
     snake->SetPosition(_ResX,800);
     snake->setInstanceName("<SNAKE>");
-
     snake ->StartAnimation(0,2);  // (0,0,3000,3,5,0);
-    SnakeX = 0;
 
     // ---------------------------------------------
     // frog - death
@@ -1227,9 +1257,6 @@ bool TestEngine::InitUserObjects(){
     for(int i=0; i< FROG_DESTINATIONS; i++){
         FrogZiel[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/FrogZiel.png",_Shader);
         FrogZiel[i]->InitTextureMap(1,1);
-
-
-
     }
 
     x = 64;
@@ -1293,7 +1320,7 @@ bool TestEngine::InitUserObjects(){
     InitCroco();
     InitTreeRows();
     InitVehicles();
-
+    InitGameOverScreen();
 
     // Default settings at start
     _TileX = 0;
