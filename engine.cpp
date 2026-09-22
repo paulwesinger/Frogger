@@ -1060,8 +1060,8 @@ void TestEngine::Run(){
 
 
 void TestEngine::RenderGameOverScreen(){
-    _InsertCoin_1EU->RenderText("INSERT-COIN-1-EU-3-FROGS",sPoint(10,_ResY-90));// sPoint(10,_ResY-80) );
-    _InsertCoin_2EU->RenderText("INSERT-COIN-2-EU-7-FROGS",sPoint(10,_ResY-40));
+    _InsertCoin_1EU->RenderText("INSERT COIN 1 EU 3 FROGS",sPoint(10,_ResY-90));// sPoint(10,_ResY-80) );
+    _InsertCoin_2EU->RenderText("INSERT COIN 2 EU 7 FROGS",sPoint(10,_ResY-40));
 }
 
 void TestEngine::RenderSplashScreen(){    
