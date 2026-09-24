@@ -70,6 +70,7 @@ TestEngine::~TestEngine(){
     Mix_FreeChunk(sound_GameOver);
     Mix_FreeChunk(sound_Racer);
     Mix_FreeChunk(sound_FrogHomed);
+    Mix_FreeChunk(sound_StageCleared);
 
     // Mixer_Music freigeben
     Mix_FreeMusic(sound_MainTheme);
@@ -237,7 +238,8 @@ void TestEngine::HandleMessage(){
             audio->PlaySound(sound_Hop,AUDIO_Channel_Hop);
             cout << "Animation ends" << endl;
 
-            _gameScore += 10;
+            if (GameState >= GAMESTATE::Run && GameState < GameOver)
+                _gameScore += 10;
             break;
 
 
@@ -540,10 +542,10 @@ void TestEngine::RenderTurtles(){
 void TestEngine::RenderScore(){
 
     _Score->UpdateText(_Score2String(),1);
-    _Score->RenderText(sPoint(50, _ResY -90));
+    _Score->RenderText(sPoint(50, _ResY -80));
 
     _HighScore->RenderText("HIGHSCORE ",sPoint(350,10));
-    _Time->RenderText(sPoint(_ResX-300,_ResY-90));
+    _Time->RenderText(sPoint(_ResX-300,_ResY-80));
 }
 
 void TestEngine::GetNewState(){
@@ -589,17 +591,32 @@ void TestEngine::GetNewState(){
 
                     break;
                 }
+        }
 
+        // testen, ob lle voll
+        bool stageCleared = true;
+        for (int i=0;i< FROG_DESTINATIONS;i++){
+            if ( ! FrogArrivedDestinatons[i].arrived)
+                stageCleared = false;
 
         }
 
+        if (stageCleared){
+
+            audio->ChannelToListen(AUDIO_CHANNEL_StageCleared);
+            audio->PlaySound(sound_StageCleared,AUDIO_CHANNEL_StageCleared);
+            GameState = GAMESTATE::StageCleared;
+        }
+        else
         if ( ! iscolliding){
             // Sprung gegen die Wand...
             GameState = GAMESTATE::Die;
             StartDieAnimation(4,6);
         }
 
-
+         audio->ChannelToListen(AUDIO_CHANNEL_StageCleared);
+         audio->PlaySound(sound_StageCleared,AUDIO_CHANNEL_StageCleared);
+         GameState = GAMESTATE::StageCleared; // Löschen !!!!!!!!
         _DontRunAgain = true;
 
     }
@@ -1118,7 +1135,9 @@ void TestEngine::Run(){
                             if (FrogArrivedDestinatons[indexFrogArrived].arrived) {
                                 FrogArrived[indexFrogArrived]->RenderFromAsset(1,0);
                                 GameState = GAMESTATE::Loop;
-                                _gameScore += 100;
+                                _gameScore += 50;  // Für den Frosch
+                                // ... plus verbliebene Zeit * 10
+                                _gameScore += _TimeCounter * 10;
                             }
                             else
                             if (FrogArrivedDestinatons[indexFrogArrived].haveTodie) {
@@ -1131,9 +1150,41 @@ void TestEngine::Run(){
 
                     break;
 
-                case GAMESTATE::GameOver:
+                case GAMESTATE::StageCleared:  // Alle Froggis im Kasten...
 
-                    // Todo: für jdes höhere level ein kürzer zeitspanne! ?
+                    RenderBackgroundSprites();
+                    RenderWood();
+                    RenderScore();
+                    RenderTurtles();
+                    RenderVehicles();
+                    RenderCrocos();
+                    RenderArrivedFrogs();
+
+                    if (audio->PlaySoundFinished(AUDIO_CHANNEL_StageCleared)) {
+
+                        GameState = GAMESTATE::LevelUp;   // ersetzen durch ShiftGamelevel
+                        _gameScore += 1000;
+                    }
+
+                    break;
+
+                case GAMESTATE::LevelUp:{
+                    RenderBackgroundSprites();
+                    RenderWood();
+                    RenderScore();
+                    RenderTurtles();
+                    RenderVehicles();
+                    RenderCrocos();
+                    RenderArrivedFrogs();
+                    audio->PlayBackrgoundSound(sound_MainTheme);
+                    int level = (int)_GameLevel;
+                    level++;
+                    _GameLevel = ((GAMELEVEL)level);
+                    GameState = GAMESTATE::Loop;
+                }
+                    break;
+
+                case GAMESTATE::GameOver:                  
 
                     // Abspann anzeigen
                     // Score                    
@@ -1145,17 +1196,7 @@ void TestEngine::Run(){
 
                     if (audio->PlaySoundFinished(AUDIO_CHANNEL_GameOver)) {
                         _StartNewGame = true;
-                    }
-
-                    // _TimerGameOver += _Elapsed;
-                    // if (_TimerGameOver >=  TIMER_SHOW_GAMEOVER_SCREEN) {
-
-
-
-                    //     //ResetGame();
-                    //     _StartNewGame = true;
-                    //     // GameState = GAMESTATE::Starting;
-                    // }
+                    }                  
                     break;
             }
             SwapWindow();
@@ -1266,14 +1307,6 @@ void TestEngine::InitGameOverScreen(){
 
     _InsertCoin_1EU->InitTextureMap(19,2);
     _InsertCoin_2EU->InitTextureMap(19,2);
-
-    // _InsertCoin_1EU->setPos(10,_ResY-90);
-    // _InsertCoin_2EU->setPos(10,_ResY-35);
-
-    // _InsertCoin_1EU->AddText("INSERT COIN 1 EU 3 FROGS");
-    // _InsertCoin_2EU->AddText("INSERT COIN 2 EU 7 FROGS");
-
-
 }
 
 void TestEngine::InitAudio(){
@@ -1301,7 +1334,7 @@ void TestEngine::InitAudio(){
     sound_GameOver = audio->LoadWavMixSound("/home/paul/workspace/Frogger/sounds/GameOver.wav");
     sound_Racer = audio->LoadWavMixSound("/home/paul/workspace/Frogger/sounds/RaceCar.wav");
     sound_FrogHomed = audio->LoadWavMixSound("/home/paul/workspace/Frogger/sounds/Homed.wav");
-
+    sound_StageCleared = audio->LoadWavMixSound("/home/paul/workspace/Frogger/sounds/StageClear.wav");
     // --------------
     // Change Volume:
     // --------------

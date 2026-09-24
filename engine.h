@@ -26,6 +26,8 @@ enum GAMESTATE{
     Die,                // Autsch.... neuer Frosch
     Arrived,            // Im ziel
     GameOver,
+    StageCleared,
+    LevelUp,            // Nächster Level
     Paused              // Zum testen, später wieder löschen
 };
 
@@ -69,6 +71,7 @@ const int AUDIO_CHANNEL_GameOver    = 6;
 const int AUDIO_CHANNEL_RaceCar     = 7;
 
 const int AUDIO_CHANNEL_FrogHomed   = 8;
+const int AUDIO_CHANNEL_StageCleared= 9;
 
 
 
@@ -235,6 +238,7 @@ protected:
     Mix_Chunk* sound_GameOver;
     Mix_Chunk* sound_Racer;
     Mix_Chunk* sound_FrogHomed;
+    Mix_Chunk* sound_StageCleared;
 
     // Music für hintergrund
     Mix_Music* sound_MainTheme;
@@ -290,7 +294,7 @@ private:
     bool _AnimateReverse = false;
 
     uint64_t countelapse = 0;
-    int _TimeCounter = 100;
+    int _TimeCounter = 0;
     std::string stCounter = "100";
 
     static void SoundHandler();
