@@ -16,6 +16,7 @@ enum GAMESTATE{
     Starting =0,        // Startupsound, spielstart
     StartUpFinished,    // Splash screen weg, Endlos  sound staten
     InsertCoins,        // 1 oder 2 € == 3 oder 7 Froggis
+    Loop,
     Run,
     RemoveFrog,
     FloatingRight,
@@ -235,8 +236,10 @@ protected:
     Mix_Chunk* sound_Racer;
     Mix_Chunk* sound_FrogHomed;
 
-    // Sounds .mp3
-    Mix_Music* sound_Background;
+    // Music für hintergrund
+    Mix_Music* sound_MainTheme;
+    Mix_Music* sound_Start;
+
 
     uint64_t _Elapsed;
     uint64_t _TimerGameOver;

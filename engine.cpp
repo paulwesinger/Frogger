@@ -72,7 +72,8 @@ TestEngine::~TestEngine(){
     Mix_FreeChunk(sound_FrogHomed);
 
     // Mixer_Music freigeben
-    Mix_FreeMusic(sound_Background);
+    Mix_FreeMusic(sound_MainTheme);
+    Mix_FreeMusic(sound_Start);
 }
 
 void TestEngine::ReleaseTrees(){
@@ -256,12 +257,12 @@ void TestEngine::HandleMessage(){
         case BTN_UP_F1_KEY: {
             // Add 3 Frogs
             _FrogCount = 3;
-            GameState = GAMESTATE::StartUpFinished;
+        //    GameState = GAMESTATE::StartUpFinished;
             break;
         }
         case BTN_UP_F2_KEY:{
             _FrogCount = 7;
-            GameState= GAMESTATE::StartUpFinished;
+       //     GameState= GAMESTATE::StartUpFinished;
             break;
         }
     }
@@ -541,8 +542,8 @@ void TestEngine::RenderScore(){
     _Score->UpdateText(_Score2String(),1);
     _Score->RenderText(sPoint(50, _ResY -90));
 
-    _HighScore->RenderText("HIGHSCORE ",sPoint(350,-90));
-    _Time->RenderText(sPoint(_ResX/2 + 250,-90));
+    _HighScore->RenderText("HIGHSCORE ",sPoint(350,10));
+    _Time->RenderText(sPoint(_ResX-300,_ResY-90));
 }
 
 void TestEngine::GetNewState(){
@@ -922,25 +923,62 @@ void TestEngine::Run(){
 
                     RenderStartScreen();
 
-                    if (audio->PlaySoundFinished(AUDIO_Channel_StartUp)){
+                    //if (audio->PlaySoundFinished(AUDIO_Channel_StartUp)){
                         GameState = GAMESTATE::InsertCoins;
-                        audio->PlayBackrgoundSound(sound_Background,1);
+                       // audio->PlayBackrgoundSound(sound_MainTheme,1);
                         ResetGame();
-                    }
+                    //}
                     break;
 
                 case GAMESTATE::InsertCoins:
                     RenderStartScreen();
-                    if (_FrogCount > 0)
-                        GameState= GAMESTATE::Run;
+
+                    if (_FrogCount > 0){
+                        // Hintergrund musik "start" aus
+                        audio->HaltMusic();
+                        GameState= GAMESTATE::StartUpFinished;
+
+                        // Insert coin, startup
+                        audio->ChannelToListen(AUDIO_Channel_StartUp);
+                        audio->PlaySound(sound_Startup,AUDIO_Channel_StartUp);
+                    }
                     break;
 
-                case GAMESTATE::StartUpFinished:
+                case GAMESTATE::Loop:
+
+                    RenderBackgroundSprites();
+                    RenderWood();
+                    RenderTurtles();
+                    RenderVehicles();
+                    RenderArrivedFrogs();
+                    RenderCrocos();
 
                     frog->SetPosition(608,802);
+                    snake->SetPosition(_ResX,800);
+
+                   _ResetTimeCounter(_GameLevel);
 
                     GameState = GAMESTATE::Run;
                     _DontRunAgain = false;
+
+                    break;
+
+                case GAMESTATE::StartUpFinished:
+                    RenderBackgroundSprites();
+                    RenderWood();
+                    RenderTurtles();
+                    RenderVehicles();
+                    RenderArrivedFrogs();
+                    RenderCrocos();
+                   // RenderFrog();
+
+                    if (audio->PlaySoundFinished(AUDIO_Channel_StartUp)){
+
+                        audio->PlayBackrgoundSound(sound_MainTheme);
+                        frog->SetPosition(608,802);
+                        GameState = GAMESTATE::Run;
+                        _DontRunAgain = false;
+                    }
                     break;
 
                 case GAMESTATE::Run:
@@ -951,6 +989,7 @@ void TestEngine::Run(){
                     RenderVehicles();
                     RenderArrivedFrogs();
                     RenderCrocos();
+                    RenderScore();
                     RenderFrog();
 
                     countelapse += _Elapsed;
@@ -972,16 +1011,9 @@ void TestEngine::Run(){
                         if (snake->IsColliding(frog->Pos(),frog->SpriteSize())) {
                             GameState  = GAMESTATE::Die;
                             StartDieAnimation(0,6);
-    //                         bool tmp;
-    //                         snake->MoveSprite(0,2,100,128,64,Step_Snake,0,_Elapsed,tmp);
-                        }
-                        // else
-                        // {
-                        //     // GameState  = GAMESTATE::Die;
-                        //     // StartDieAnimation(0,6);
-                        // }
-                    }
 
+                        }
+                    }
                     break;
                 case GAMESTATE::FloatingRight:
                 case GAMESTATE::FloatingLeft:
@@ -1061,8 +1093,8 @@ void TestEngine::Run(){
                         audio->PlaySound(sound_GameOver,AUDIO_CHANNEL_GameOver);
                     }
                     else{
-                        audio->PlayBackrgoundSound(sound_Background,1);
-                        GameState = GAMESTATE::StartUpFinished;
+                        audio->PlayBackrgoundSound(sound_MainTheme,1);
+                        GameState = GAMESTATE::Loop;//StartUpFinished;
                     }
 
                     break;
@@ -1076,7 +1108,7 @@ void TestEngine::Run(){
                         RenderCrocos();
                         RenderArrivedFrogs();
                         RenderFrog();
-                        _gameScore += 100;
+
                         bool tmp;
                         if (!  FrogArrived[indexFrogArrived]->AnimationDone()) {
                             FrogArrived[indexFrogArrived]->MoveSprite(0,1,64,72,300,0,0,_Elapsed,tmp);
@@ -1085,7 +1117,8 @@ void TestEngine::Run(){
 
                             if (FrogArrivedDestinatons[indexFrogArrived].arrived) {
                                 FrogArrived[indexFrogArrived]->RenderFromAsset(1,0);
-                                GameState = GAMESTATE::StartUpFinished;
+                                GameState = GAMESTATE::Loop;
+                                _gameScore += 100;
                             }
                             else
                             if (FrogArrivedDestinatons[indexFrogArrived].haveTodie) {
@@ -1135,7 +1168,7 @@ void TestEngine::Run(){
 void TestEngine::RenderGameOverScreen(){
 
     _GameOverScreen->Render();
-    _GameOver->RenderText("GAME OVER", sPoint(380,_ResY - 110));
+    _GameOver->RenderText("GAME OVER", sPoint(380,_ResY - 90));
 }
 
 void TestEngine::RenderStartScreen(){
@@ -1281,7 +1314,9 @@ void TestEngine::InitAudio(){
     // Mp3's
     // -----------------------
     // hintergrundsound laden, etwas nervig aber witzig...!!
-    sound_Background = audio->LoadBackgroundSound("/home/paul/workspace/Frogger/sounds/MainTheme.mp3");
+    sound_MainTheme = audio->LoadBackgroundSound("/home/paul/workspace/Frogger/sounds/MainTheme.mp3");
+    sound_Start = audio->LoadBackgroundSound("/home/paul/workspace/Frogger/sounds/FroggerHomed11.mp3");
+
     audio->MusicVolume(32);
 }
 
@@ -1597,7 +1632,8 @@ void TestEngine::StartUp(){
 
     ResetGame();
     audio->ChannelToListen(AUDIO_Channel_StartUp);
-    audio->PlaySound(sound_Startup,AUDIO_Channel_StartUp);
+  //  audio->PlaySound(sound_Startup,AUDIO_Channel_StartUp);
+    audio->PlayBackrgoundSound(sound_Start);
  //   _FrogCount = 3;
 
     GameState = GAMESTATE::Starting;
