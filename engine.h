@@ -15,6 +15,7 @@
 enum GAMESTATE{
     Starting =0,        // Startupsound, spielstart
     StartUpFinished,    // Splash screen weg, Endlos  sound staten
+    InsertCoins,        // 1 oder 2 € == 3 oder 7 Froggis
     Run,
     RemoveFrog,
     FloatingRight,
@@ -58,11 +59,17 @@ const int MAX_TILE_X = 20;
 const int MAX_TILE_Y = 15;
 
 const int AUDIO_Channel_Background  = 0;
-const int AUDIO_Channel_StartUp     = 5;
+const int AUDIO_Channel_StartUp     = 1;
 const int AUDIO_Channel_Hop         = 2;
 const int AUDIO_Channel_Death       = 3;
 const int AUDIO_Channel_Plunck      = 4;
 const int AUDIO_CHANNEL_EXTRA       = 5;
+const int AUDIO_CHANNEL_GameOver    = 6;
+const int AUDIO_CHANNEL_RaceCar     = 7;
+
+const int AUDIO_CHANNEL_FrogHomed   = 8;
+
+
 
 const int FLOATOBJECTS_PER_ROW_5            = 3;
 const int FLOATOBJECTS_PER_ROW_4            = 6;
@@ -76,7 +83,7 @@ const int TURTLES_ROW_4                     = 8;
 // Vehicles
 const int VEHICLES_PER_ROW_7                = 5;
 const int VEHICLES_PER_ROW_8                = 6;
-const int VEHICLES_PER_ROW_9                = 4;
+const int VEHICLES_PER_ROW_9                = 2;
 const int VEHICLES_PER_ROW_10               = 5;
 const int VEHICLES_PER_ROW_11               = 4;
 
@@ -93,6 +100,7 @@ const int TIMELEVEL_5 = 70;
 
 const int TURTLE_DIVING_TILE                = 5;
 
+const uint64_t TIMER_SHOW_GAMEOVER_SCREEN   = 4000; // 4 sekunden Game over geniessen..
 
 
 
@@ -118,9 +126,7 @@ public:
 
     bool LoadSurface(std::string path);
 
-protected:
-
-    void InitTimer(Uint32 interval);
+protected: 
 
     void _ResetTimeCounter(GAMELEVEL level);
     void _ResetScore();
@@ -129,7 +135,9 @@ protected:
     // "Insert Coin, continue,...usw"
     void RenderGameOverScreen();
 
-    static Uint32 _TimerCallback(Uint32,void*);
+    //static Uint32 _TimerCallback(Uint32,void*);
+
+   // static FP _TimerCallback();
     // ID's für TimerSnapshots:
     SDL_TimerID TimerID_Snake;
     SDL_TimerID TimerID_Croc;
@@ -204,11 +212,13 @@ protected:
     // --------------------------
     // Splash Screen
     // --------------------------
-    ENGINE::BaseObject2D * _SplashScreen;
+    ENGINE::BaseObject2D * _StartScreen;
+    ENGINE::BaseObject2D * _GameOverScreen;
 
     COSTUMTEXT::TextBase * _HighScore;
     COSTUMTEXT::TextBase * _Score;
     COSTUMTEXT::TextBase * _Time;
+    COSTUMTEXT::TextBase * _GameOver;
 
     // ---------------------------
     // GameOver screen
@@ -221,11 +231,15 @@ protected:
     Mix_Chunk* sound_FrogDeath;
     Mix_Chunk* sound_Plunk;         // Ins Wasser geplumpst..
     Mix_Chunk* sound_Extra;
+    Mix_Chunk* sound_GameOver;
+    Mix_Chunk* sound_Racer;
+    Mix_Chunk* sound_FrogHomed;
 
     // Sounds .mp3
     Mix_Music* sound_Background;
 
     uint64_t _Elapsed;
+    uint64_t _TimerGameOver;
 
 private:
 
@@ -285,12 +299,14 @@ private:
     void InitTextMap();
     void InitVehicles();
     void InitCroco();
+    void InitAudio();
     void InitGameOverScreen();
 
     void ReleaseVehicles();
 
     void RenderBackgroundSprites();
-    void RenderSplashScreen();
+    void RenderStartScreen();
+    void RenderGameoverScreen();
     void RenderWood();
     void RenderFrog();
     void RenderScore();

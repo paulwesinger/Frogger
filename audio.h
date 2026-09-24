@@ -64,6 +64,10 @@ public:
 
     void ChannelToListen(int channel);
 
+    void Mix_AllocateAudioChannel(int countchannels);
+
+    int AllocatedChannels();
+
 
 protected:
     // 8 Bit Wav:
@@ -83,6 +87,7 @@ private :
     bool Mp3_Init_OK;
     bool _SoundFinished;
     int _ChanneltoListen;
+    int _AllocatedChannels = 8;  // default in sdl2
 
     int _AudioId;
     void Init();

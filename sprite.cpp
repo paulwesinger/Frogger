@@ -550,7 +550,6 @@ void ENGINE::Sprite::RenderFromAsset(int fromcol, int fromrow)
         h = _Size.h;
     }
 
-
     GLfloat px = static_cast<GLfloat>(Base::PosX());
     GLfloat py = static_cast<GLfloat>(Base::PosY());
 

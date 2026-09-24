@@ -231,6 +231,14 @@ void Audio::ChunkVolume(Mix_Chunk *chunk, int vol){
     Mix_VolumeChunk(chunk,vol);
 }
 
+int Audio::AllocatedChannels(){
+    return _AllocatedChannels;
+}
+
+void Audio::Mix_AllocateAudioChannel(int countchannels){
+    _AllocatedChannels = Mix_AllocateChannels(countchannels);
+}
+
 void Audio::ChannelToListen(int channel){
     _ChanneltoListen = channel;
 }

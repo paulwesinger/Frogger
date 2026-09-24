@@ -65,7 +65,11 @@ TestEngine::~TestEngine(){
     Mix_FreeChunk(sound_Hop);
     Mix_FreeChunk(sound_Startup);
     Mix_FreeChunk(sound_FrogDeath);
+    Mix_FreeChunk(sound_Plunk);
     Mix_FreeChunk(sound_Extra);
+    Mix_FreeChunk(sound_GameOver);
+    Mix_FreeChunk(sound_Racer);
+    Mix_FreeChunk(sound_FrogHomed);
 
     // Mixer_Music freigeben
     Mix_FreeMusic(sound_Background);
@@ -117,6 +121,23 @@ bool TestEngine::UserUpdate(KEYBOARDSTATE state){
 
 
     bool ret = false;
+
+    // switch(state.BtnStateUP){
+    //     case BTN_UP_F1_KEY:
+    //         _FrogCount = 3;
+    //         GameState = GAMESTATE::StartUpFinished;
+    //         _StartNewGame = true;
+    //         break;
+
+    //     case BTN_UP_F2_KEY:
+    //         _FrogCount = 7;
+    //         _StartNewGame = true;
+    //         GameState = GAMESTATE::StartUpFinished;
+    //         break;
+    // }
+
+
+
     switch(state.BtnStatePress){
 
     case  BTN_PRESS_UP_KEY:{
@@ -219,17 +240,30 @@ void TestEngine::HandleMessage(){
             break;
 
 
-        case BTN_UP_SPACE_KEY:
-        if (_Pause) {
-            GameState = _Oldstate; // State wieder herstellen
+        case BTN_UP_SPACE_KEY:{
+            if (_Pause) {
+                GameState = _Oldstate; // State wieder herstellen
+                break;
 
+            }
+            else{
+                _Oldstate = GameState;
+                GameState = GAMESTATE::Paused;
+            }
+            _Pause = ! _Pause;  // Toggle the Pause state
+            break;
         }
-        else{
-            _Oldstate = GameState;
-            GameState = GAMESTATE::Paused;
+        case BTN_UP_F1_KEY: {
+            // Add 3 Frogs
+            _FrogCount = 3;
+            GameState = GAMESTATE::StartUpFinished;
+            break;
         }
-        _Pause = ! _Pause;  // Toggle the Pause state
-        break;
+        case BTN_UP_F2_KEY:{
+            _FrogCount = 7;
+            GameState= GAMESTATE::StartUpFinished;
+            break;
+        }
     }
 }
 
@@ -237,16 +271,9 @@ void TestEngine::HandleMessage(){
 // ----------------------------------------------------
 // Handler für SDL_Timer, init
 // ----------------------------------------------------
-Uint32 TestEngine::_TimerCallback(Uint32, void *){
-   //  std::cout << "Timer triggered" << std::endl;
-}
-
-void TestEngine::InitTimer(Uint32 interval){
-
-
- //   TimerID_Croc=  SDL_AddTimer(interval,_TimerCallback,nullptr);
-    // usw....
-}
+// void TestEngine::_TimerCallback(){
+//     std::cout << "Timer triggered" << std::endl;
+// }
 
 int TestEngine::FrogInRow(){
     // anm.: 34 ist die obere Begrenzung des Bewegungsbereichs, 64 die Höhe des FroschSprite,
@@ -406,8 +433,19 @@ void TestEngine::RenderVehicles(){
 
         }
         else{
-            Vehicle_Row9[i]->StartAnimation(2,2);
+
             sPoint p = Vehicle_Row9[i]->Pos();
+
+            audio->ChannelToListen(AUDIO_CHANNEL_RaceCar); // wir leihen uns den startup aus...
+
+
+            if (p.x < 0 && i == 0) {   // wir testen nur den ersten wagen
+
+                    audio->PlaySound(sound_Racer,AUDIO_CHANNEL_RaceCar);
+            }
+
+            Vehicle_Row9[i]->StartAnimation(2,2);
+
             p.x += _StepVehicleRow9;
             Vehicle_Row9[i]->SetPosition(p.x,p.y);
             Vehicle_Row9[i]->RenderFromAsset(2,0);
@@ -501,10 +539,10 @@ void TestEngine::RenderTurtles(){
 void TestEngine::RenderScore(){
 
     _Score->UpdateText(_Score2String(),1);
-    _Score->RenderText(sPoint(50,_ResY -90));
+    _Score->RenderText(sPoint(50, _ResY -90));
 
-    _HighScore->RenderText("0-I-J-c",sPoint(_ResX-260,_ResY -90));
-    _Time->RenderText(sPoint(_ResX/2,_ResY -90));
+    _HighScore->RenderText("HIGHSCORE ",sPoint(350,-90));
+    _Time->RenderText(sPoint(_ResX/2 + 250,-90));
 }
 
 void TestEngine::GetNewState(){
@@ -537,8 +575,8 @@ void TestEngine::GetNewState(){
 
                         FrogArrived[indexFrogArrived]->StartAnimation(0,1);
 
-                        audio->ChannelToListen(AUDIO_CHANNEL_EXTRA);
-                        audio->PlaySound(sound_Extra,AUDIO_CHANNEL_EXTRA);
+                        audio->ChannelToListen(AUDIO_CHANNEL_FrogHomed);
+                        audio->PlaySound(sound_FrogHomed,AUDIO_CHANNEL_FrogHomed);
 
 
                     }
@@ -801,12 +839,16 @@ void TestEngine::ResetGame(){
     _ResetScore();
     _ResetTimeCounter(_GameLevel);
 
-    audio->PlayBackrgoundSound(sound_Background,1);
+    //audio->PlayBackrgoundSound(sound_Background,1);
     // Auf Startpositon
     frog->SetPosition(608,802);
 
     snake->SetPosition(_SnakePos.x,_SnakePos.y);//  _ResX, 800);
     _DontRunAgain = false;
+
+    for (int i =0; i< FROG_DESTINATIONS; i++){ // alle angekommenen Frösche wiederrauswerfen...
+        FrogArrivedDestinatons[i].arrived = false;
+    }
 }
 
 void TestEngine::Run(){
@@ -878,16 +920,29 @@ void TestEngine::Run(){
 
                 case GAMESTATE::Starting:
 
-                    RenderSplashScreen();
+                    RenderStartScreen();
 
-                    if (audio->PlaySoundFinished(AUDIO_Channel_StartUp))
-                        GameState = GAMESTATE::StartUpFinished;
+                    if (audio->PlaySoundFinished(AUDIO_Channel_StartUp)){
+                        GameState = GAMESTATE::InsertCoins;
+                        audio->PlayBackrgoundSound(sound_Background,1);
+                        ResetGame();
+                    }
+                    break;
+
+                case GAMESTATE::InsertCoins:
+                    RenderStartScreen();
+                    if (_FrogCount > 0)
+                        GameState= GAMESTATE::Run;
                     break;
 
                 case GAMESTATE::StartUpFinished:
-                    ResetGame();
-                    GameState= GAMESTATE::Run;
+
+                    frog->SetPosition(608,802);
+
+                    GameState = GAMESTATE::Run;
+                    _DontRunAgain = false;
                     break;
+
                 case GAMESTATE::Run:
 
                     RenderBackgroundSprites();
@@ -981,8 +1036,7 @@ void TestEngine::Run(){
                         frogdeath->setRenderSprite(false);
                         frog->setRenderSprite(true);
                         snake->SetPosition(_ResX,802);
-
-
+                        frog->SetPosition(608,802);
                     }
 
                     break;
@@ -996,11 +1050,21 @@ void TestEngine::Run(){
                     RenderCrocos();
                     RenderArrivedFrogs();
                     _FrogCount --;
-                    GameState = GAMESTATE::StartUpFinished;
+
                     cout << "Frösche " << _FrogCount << endl;
 
-                    if (_FrogCount == 0)
+                    if (_FrogCount <= 0){
                         GameState = GAMESTATE::GameOver;
+                        audio->HaltMusic();
+
+                        audio->ChannelToListen(AUDIO_CHANNEL_GameOver);
+                        audio->PlaySound(sound_GameOver,AUDIO_CHANNEL_GameOver);
+                    }
+                    else{
+                        audio->PlayBackrgoundSound(sound_Background,1);
+                        GameState = GAMESTATE::StartUpFinished;
+                    }
+
                     break;
                 case GAMESTATE::Arrived:{
 
@@ -1035,21 +1099,30 @@ void TestEngine::Run(){
                     break;
 
                 case GAMESTATE::GameOver:
-                    audio->HaltMusic();
 
                     // Todo: für jdes höhere level ein kürzer zeitspanne! ?
 
                     // Abspann anzeigen
-                    // Score
-
-
-                    RenderSplashScreen();
+                    // Score                    
                     RenderScore();
                     RenderGameOverScreen();
                     // --------------------------
                     // _StartNewGame hier setzen
                     // --------------------------
 
+                    if (audio->PlaySoundFinished(AUDIO_CHANNEL_GameOver)) {
+                        _StartNewGame = true;
+                    }
+
+                    // _TimerGameOver += _Elapsed;
+                    // if (_TimerGameOver >=  TIMER_SHOW_GAMEOVER_SCREEN) {
+
+
+
+                    //     //ResetGame();
+                    //     _StartNewGame = true;
+                    //     // GameState = GAMESTATE::Starting;
+                    // }
                     break;
             }
             SwapWindow();
@@ -1060,12 +1133,16 @@ void TestEngine::Run(){
 
 
 void TestEngine::RenderGameOverScreen(){
-    _InsertCoin_1EU->RenderText("INSERT COIN 1 EU 3 FROGS",sPoint(10,_ResY-90));// sPoint(10,_ResY-80) );
-    _InsertCoin_2EU->RenderText("INSERT COIN 2 EU 7 FROGS",sPoint(10,_ResY-40));
+
+    _GameOverScreen->Render();
+    _GameOver->RenderText("GAME OVER", sPoint(380,_ResY - 110));
 }
 
-void TestEngine::RenderSplashScreen(){    
-    _SplashScreen -> Render();
+void TestEngine::RenderStartScreen(){
+    _InsertCoin_1EU->RenderText("INSERT COIN 1 EU 3 FROGS",sPoint(50,_ResY-110));
+    _InsertCoin_2EU->RenderText("INSERT COIN 2 EU 7 FROGS",sPoint(50,_ResY-60));
+
+    _StartScreen -> Render();
 }
 
 void TestEngine::InitTextMap(){
@@ -1121,7 +1198,7 @@ void TestEngine::InitTextMap(){
      _Time->AddMapToMap(_Score->GetCharacters());
      _InsertCoin_1EU->AddMapToMap(_Score->GetCharacters());
      _InsertCoin_2EU->AddMapToMap(_Score->GetCharacters());
-
+     _GameOver->AddMapToMap(_Score->GetCharacters());
 }
 
 void TestEngine::_ResetTimeCounter(GAMELEVEL level){
@@ -1130,7 +1207,7 @@ void TestEngine::_ResetTimeCounter(GAMELEVEL level){
     case GAMELEVEL::Level_1: _TimeCounter = TIMELEVEL_1; break;
     case GAMELEVEL::Level_2: _TimeCounter = TIMELEVEL_2; break;
     case GAMELEVEL::Level_3: _TimeCounter = TIMELEVEL_3; break;
-    case GAMELEVEL::Level_4: _TimeCounter = TIMELEVEL_4; break;/// usw... an jeden level anpassen !! je höher , je kürzer
+    case GAMELEVEL::Level_4: _TimeCounter = TIMELEVEL_4; break;   /// usw... an jeden level anpassen !! je höher , je kürzer
     case GAMELEVEL::Level_5: _TimeCounter = TIMELEVEL_5; break;
 
     default:
@@ -1166,6 +1243,48 @@ void TestEngine::InitGameOverScreen(){
 
 }
 
+void TestEngine::InitAudio(){
+    audio = new Audio;
+    // Allocate 8 weitere channel, für sounds
+    audio->Mix_AllocateAudioChannel(16);
+    int channels = audio->AllocatedChannels();
+
+
+    std::cout << "Channels " << channels << std::endl;
+
+    audio->AddHandlder(SoundHandler,AUDIO_Channel_StartUp);
+
+    // Background sound laden
+    // audio->LoadMP3("/home/paul/workspace/sounds/retrogames/frogger/frogger.mp3",Sound_Background);
+
+    // ------------------------
+    // Wav's
+    // ------------------------
+    sound_Hop =  audio->LoadWavMixSound("/home/paul/workspace/sounds/retrogames/frogger/pickupCoin.wav");
+    sound_Startup = audio->LoadWavMixSound("/home/paul/workspace/sounds/retrogames/frogger/downloaded/sound-frogger-coin-in/sound-frogger-coin-in.wav");
+    sound_FrogDeath = audio->LoadWavMixSound("/home/paul/workspace/Frogger/sounds/frogDeath.wav");
+    sound_Plunk = audio->LoadWavMixSound("/home/paul/workspace/Frogger/sounds/plunk.wav");
+    sound_Extra = audio->LoadWavMixSound("/home/paul/workspace/Frogger/sounds/frog-extra.wav");
+    sound_GameOver = audio->LoadWavMixSound("/home/paul/workspace/Frogger/sounds/GameOver.wav");
+    sound_Racer = audio->LoadWavMixSound("/home/paul/workspace/Frogger/sounds/RaceCar.wav");
+    sound_FrogHomed = audio->LoadWavMixSound("/home/paul/workspace/Frogger/sounds/Homed.wav");
+
+    // --------------
+    // Change Volume:
+    // --------------
+    audio->ChunkVolume(sound_Hop,80);
+    audio->ChunkVolume(sound_Startup,100);
+    audio->ChunkVolume(sound_FrogDeath,80);
+    audio->ChunkVolume(sound_Plunk,80);
+
+    // -----------------------
+    // Mp3's
+    // -----------------------
+    // hintergrundsound laden, etwas nervig aber witzig...!!
+    sound_Background = audio->LoadBackgroundSound("/home/paul/workspace/Frogger/sounds/MainTheme.mp3");
+    audio->MusicVolume(32);
+}
+
 bool TestEngine::InitUserObjects(){
 
     bool ret = true;
@@ -1185,7 +1304,7 @@ bool TestEngine::InitUserObjects(){
 
     _StepVehicleRow11   = 1;
     _StepVehicleRow10   = 3;
-    _StepVehicleRow9    = 4;
+    _StepVehicleRow9    = 8;
     _StepVehicleRow8    = 2;
     _StepVehicleRow7    = 2;
 
@@ -1194,6 +1313,7 @@ bool TestEngine::InitUserObjects(){
     _gameHighScore = 0; // später aus datei lesen.
 
     _StartNewGame = false;
+    _FrogCount = 0;
 
 
     if (AddTextDisplayWithBackground(100,100,0,"FPS Display with background")){
@@ -1327,9 +1447,15 @@ bool TestEngine::InitUserObjects(){
     _TileY = 0;
     _EndTileX = 0; _EndTileY = 0;
 
-    // _SplashScreen
-    _SplashScreen = new ENGINE::BaseObject2D(_ResX,_ResY,"/home/paul/workspace/Frogger/images/frogsplash2.png",_Shader);
-    _SplashScreen->setPos(325,250);
+    // _StartScreen
+    _StartScreen = new ENGINE::BaseObject2D(_ResX,_ResY,"/home/paul/workspace/Frogger/images/froggerStartScreen735x735.png",_Shader);
+    _StartScreen->setSize(1280,800);
+    _StartScreen->setPos(0,0);
+
+    // GameOverScreen
+    _GameOverScreen = new ENGINE::BaseObject2D(_ResX,_ResY,"/home/paul/workspace/Frogger/images/frogsplash2.png",_Shader);
+    _GameOverScreen->setSize(1280,800);
+    _GameOverScreen->setPos(0,0);
 
     // ------------------------------------------
     // Score, Highscore, Time
@@ -1347,48 +1473,17 @@ bool TestEngine::InitUserObjects(){
 
     _Time = new COSTUMTEXT::TextBase(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Text32x32_19_2.png",_Shader);
     _Time->InitTextureMap(19,2);
-    _Time->setPos(_ResX / 2 -300,0);
+    _Time->setPos(_ResX - 200,_ResY-70);
 
     _Time->AddText("TIME");
     _Time->AddText(stCounter);
 
+    _GameOver = new COSTUMTEXT::TextBase(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Text32x32_19_2.png",_Shader);
+    _GameOver->InitTextureMap(19,2);
+    _GameOver->setPos(250,_ResY -150);
     InitTextMap();
 
-    audio = new Audio;
-
-    audio->AddHandlder(SoundHandler,AUDIO_Channel_StartUp);
-
-    // Background sound laden
-    // audio->LoadMP3("/home/paul/workspace/sounds/retrogames/frogger/frogger.mp3",Sound_Background);
-
-    // ------------------------
-    // Wav's
-    // ------------------------
-    sound_Hop =  audio->LoadWavMixSound("/home/paul/workspace/sounds/retrogames/frogger/pickupCoin.wav");
-    sound_Startup = audio->LoadWavMixSound("/home/paul/workspace/sounds/retrogames/frogger/downloaded/sound-frogger-coin-in/sound-frogger-coin-in.wav");
-    sound_FrogDeath = audio->LoadWavMixSound("/home/paul/workspace/Frogger/sounds/frogDeath.wav");
-    sound_Plunk = audio->LoadWavMixSound("/home/paul/workspace/Frogger/sounds/plunk.wav");
-    sound_Extra = audio->LoadWavMixSound("/home/paul/workspace/Frogger/sounds/frog-extra.wav");
-
-    // --------------
-    // Change Volume:
-    // --------------
-    audio->ChunkVolume(sound_Hop,80);
-    audio->ChunkVolume(sound_Startup,100);
-    audio->ChunkVolume(sound_FrogDeath,80);
-    audio->ChunkVolume(sound_Plunk,80);
-
-    // -----------------------
-    // Mp3's
-    // -----------------------
-    // hintergrundsound laden, etwas nervig aber witzig...!!
-    sound_Background = audio->LoadBackgroundSound("/home/paul/workspace/sounds/retrogames/frogger/AudacityModiyfied/EndlessBackground.mp3");
-    audio->MusicVolume(32);
-
-    // -------------------------
-    // Timer
-    // -------------------------
-    InitTimer(1000);
+    InitAudio();
 
 
 
@@ -1414,13 +1509,13 @@ void TestEngine::InitVehicles(){
         x+= 190;
     }
 
-    x = 0;
+    x = -64;
     for (int i =0; i < VEHICLES_PER_ROW_9;i++){
         Vehicle_Row9[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Vehicles6x1_64x64.png",_Shader);
         Vehicle_Row9[i]->InitTextureMap(6,1);
         Vehicle_Row9[i]->SetPosition(x,610);
         Vehicle_Row9[i]->StartAnimation(2,2);
-        x+= 270;
+        x+= 120;
     }
 
     x = 0;
@@ -1499,17 +1594,18 @@ void TestEngine::SoundHandler(){
 }
 
 void TestEngine::StartUp(){
+
+    ResetGame();
     audio->ChannelToListen(AUDIO_Channel_StartUp);
     audio->PlaySound(sound_Startup,AUDIO_Channel_StartUp);
-    _FrogCount = 3;
+ //   _FrogCount = 3;
+
     GameState = GAMESTATE::Starting;
     _GameLevel = GAMELEVEL::Level_1;
-    _ResetTimeCounter(_GameLevel);
-    _ResetScore();
+    _StartNewGame = false;
+    _TimerGameOver = 0;
 
-    for (int i =0; i< FROG_DESTINATIONS; i++){ // alle angekommenen Frösche wiederrauswerfen...
-        FrogArrivedDestinatons[i].arrived = false;
-    }
+    GameState = GAMESTATE::Starting;
     // Splash screen usw anzeigen
 }
 
