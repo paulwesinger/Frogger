@@ -317,6 +317,8 @@ private:
     void RenderWood();
     void RenderFrog();
     void RenderScore();
+    void RenderHighScore();
+    void RenderTime();
     void RenderTurtles();
     void RenderVehicles();
     void RenderArrivedFrogs();

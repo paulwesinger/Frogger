@@ -537,15 +537,21 @@ void TestEngine::RenderTurtles(){
     }
 }
 
+void TestEngine::RenderHighScore(){
+     _HighScore->RenderText("HIGHSCORE ",sPoint(650,_ResY-10));
+}
 
+void TestEngine::RenderTime(){
+    _Time->RenderText(sPoint(_ResX-300,_ResY-90));
+}
 
 void TestEngine::RenderScore(){
 
     _Score->UpdateText(_Score2String(),1);
     _Score->RenderText(sPoint(50, _ResY -80));
 
-    _HighScore->RenderText("HIGHSCORE ",sPoint(350,10));
-    _Time->RenderText(sPoint(_ResX-300,_ResY-80));
+
+
 }
 
 void TestEngine::GetNewState(){
@@ -614,9 +620,9 @@ void TestEngine::GetNewState(){
             StartDieAnimation(4,6);
         }
 
-         audio->ChannelToListen(AUDIO_CHANNEL_StageCleared);
-         audio->PlaySound(sound_StageCleared,AUDIO_CHANNEL_StageCleared);
-         GameState = GAMESTATE::StageCleared; // Löschen !!!!!!!!
+         // audio->ChannelToListen(AUDIO_CHANNEL_StageCleared);
+         // audio->PlaySound(sound_StageCleared,AUDIO_CHANNEL_StageCleared);
+         // GameState = GAMESTATE::StageCleared; // Löschen !!!!!!!!
         _DontRunAgain = true;
 
     }
@@ -1007,6 +1013,7 @@ void TestEngine::Run(){
                     RenderArrivedFrogs();
                     RenderCrocos();
                     RenderScore();
+
                     RenderFrog();
 
                     countelapse += _Elapsed;
@@ -1018,7 +1025,7 @@ void TestEngine::Run(){
 
                     }
 
-                    RenderScore();
+                    RenderTime();
 
                     if ( ! snake->AnimationDone())
                         snake->MoveSprite(0,2,128,64,80,Step_Snake,0,_Elapsed,tmp);
@@ -1041,6 +1048,7 @@ void TestEngine::Run(){
                     RenderVehicles();
                     RenderCrocos();
                     RenderArrivedFrogs();
+                    RenderTime();
                     RenderFrog();
 
                     break;
@@ -1048,6 +1056,7 @@ void TestEngine::Run(){
                 case GAMESTATE::TimeOut:
                     RenderBackgroundSprites();
                     RenderScore();
+                    RenderTime();
                     break;
                 case GAMESTATE::Plunk:
                     RenderBackgroundSprites();
@@ -1056,6 +1065,7 @@ void TestEngine::Run(){
                     RenderVehicles();
                     RenderTurtles();
                     RenderCrocos();
+                    RenderTime();
                     RenderArrivedFrogs();
                     audio->ChannelToListen(AUDIO_Channel_Plunck);
                     audio->PlaySound(sound_Plunk,AUDIO_Channel_Plunck);
@@ -1075,6 +1085,7 @@ void TestEngine::Run(){
                     RenderTurtles();
                     RenderVehicles();
                     RenderCrocos();
+                    RenderTime();
                     RenderArrivedFrogs();
                     // Frog death
                     bool animdone;
@@ -1097,6 +1108,7 @@ void TestEngine::Run(){
                     RenderTurtles();
                     RenderVehicles();
                     RenderCrocos();
+                    RenderTime();
                     RenderArrivedFrogs();
                     _FrogCount --;
 
@@ -1124,6 +1136,7 @@ void TestEngine::Run(){
                         RenderVehicles();
                         RenderCrocos();
                         RenderArrivedFrogs();
+                        RenderTime();
                         RenderFrog();
 
                         bool tmp;
@@ -1158,6 +1171,7 @@ void TestEngine::Run(){
                     RenderTurtles();
                     RenderVehicles();
                     RenderCrocos();
+                    RenderTime();
                     RenderArrivedFrogs();
 
                     if (audio->PlaySoundFinished(AUDIO_CHANNEL_StageCleared)) {
@@ -1176,6 +1190,7 @@ void TestEngine::Run(){
                     RenderVehicles();
                     RenderCrocos();
                     RenderArrivedFrogs();
+                    RenderTime();
                     audio->PlayBackrgoundSound(sound_MainTheme);
                     int level = (int)_GameLevel;
                     level++;
@@ -1189,6 +1204,7 @@ void TestEngine::Run(){
                     // Abspann anzeigen
                     // Score                    
                     RenderScore();
+                    RenderTime();
                     RenderGameOverScreen();
                     // --------------------------
                     // _StartNewGame hier setzen
