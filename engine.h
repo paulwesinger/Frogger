@@ -9,6 +9,7 @@
 #include "audio.h"
 #include "sprite.h"
 #include "costumtext.h"
+#include "levelconfig.h"
 
 
 
@@ -130,7 +131,10 @@ public:
 
     bool LoadSurface(std::string path);
 
-protected: 
+protected:
+
+    CONFIG::LevelConfig _LevelConfig;
+
 
     void _ResetTimeCounter(GAMELEVEL level);
     void _ResetScore();
@@ -138,6 +142,7 @@ protected:
     void ResetGame();
     // "Insert Coin, continue,...usw"
     void RenderGameOverScreen();
+    void UpdateTime();
 
     //static Uint32 _TimerCallback(Uint32,void*);
 
@@ -253,12 +258,9 @@ private:
     // ----------------------------------------
     // X-Steps für cars, Bäume usw..
     // ----------------------------------------
-    int Step_Trees_1;
-    int Step_Trees_3;
-    int Step_Trees_5;
-
-    int _StepXFrog;
-    int _StepYFrog;
+    int _Step_Trees_1;
+    int _Step_Trees_3;
+    int _Step_Trees_5;
 
     int _StepXTurtlesRow2;
     int _StepXTurtlesRow4;
@@ -269,12 +271,16 @@ private:
     int _StepVehicleRow8;
     int _StepVehicleRow7;
 
+    int _StepXFrog;
+    int _StepYFrog;
+
+    int _Step_Snake;
 
     int _gameScore;
     int _gameHighScore;
-    int Step_Snake;
 
-    int indexFrogArrived = 0;
+
+    int _IndexFrogArrived = 0;
 
     bool _Pause;
     bool _DontRunAgain;
@@ -292,6 +298,7 @@ private:
     int _EndTileY;
 
     bool _AnimateReverse = false;
+    bool _UpdateTime = true;
 
     uint64_t countelapse = 0;
     int _TimeCounter = 0;
@@ -308,6 +315,7 @@ private:
     void InitCroco();
     void InitAudio();
     void InitGameOverScreen();
+    void InitLevels();
 
     void ReleaseVehicles();
 

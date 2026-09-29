@@ -1,6 +1,6 @@
 QT = core
 
-CONFIG += c++17 cmdline
+CONFIG += c++20 cmdline
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -10,6 +10,7 @@ SOURCES += \
         audio.cpp \
         costumtext.cpp \
         engine.cpp \
+        levelconfig.cpp \
         main.cpp \
         sprite.cpp
 
@@ -30,6 +31,7 @@ HEADERS += \
     audio.h \
     costumtext.h \
     engine.h \
+    levelconfig.h \
     matrix2d.h \
     sprite.h \
     sprite.h \

@@ -326,7 +326,7 @@ void TestEngine::RenderCrocos(){
     bool tmp;
 
     if ( ! Croco_Row_3->AnimationDone())
-        Croco_Row_3->MoveSprite(0,1,192,64,500,Step_Trees_3,0,_Elapsed,tmp);
+        Croco_Row_3->MoveSprite(0,1,192,64,500,_Step_Trees_3,0,_Elapsed,tmp);
     else{
         Croco_Row_3->StartAnimation(0,1);
     }
@@ -337,18 +337,18 @@ void TestEngine::RenderWood(){
     bool tmp;
     for (int i =0; i < FLOATOBJECTS_PER_ROW_1;i++){
         // Erstmal alles rendern
-        Baum_Row1[i]->MoveSprite(0,0,128,64,100,Step_Trees_1,0,_Elapsed,tmp);
+        Baum_Row1[i]->MoveSprite(0,0,128,64,100,_Step_Trees_1,0,_Elapsed,tmp);
     }
 
     for (int i =0; i < FLOATOBJECTS_PER_ROW_3;i++){
         // Erstmal alles rendern
-        Baum_Row3[i]->MoveSprite(0,0,128,64,500,Step_Trees_3,0,_Elapsed,tmp);
+        Baum_Row3[i]->MoveSprite(0,0,128,64,500,_Step_Trees_3,0,_Elapsed,tmp);
     }
 //    RenderCrocos();
 
     for (int i =0; i < FLOATOBJECTS_PER_ROW_5;i++){
         // Erstmal alles rendern
-        Baum_Row5[i]->MoveSprite(0,0,128,64,100,Step_Trees_5,0,_Elapsed,tmp);
+        Baum_Row5[i]->MoveSprite(0,0,128,64,100,_Step_Trees_5,0,_Elapsed,tmp);
     }
 }
 
@@ -356,16 +356,16 @@ int TestEngine::GetFloatingStep(){
   int row = FrogInRow();
 
     // default:
-    int ret = Step_Trees_1;
+    int ret = _Step_Trees_1;
     switch (row)
     {
-        case 1: ret = Step_Trees_1; break;
+        case 1: ret = _Step_Trees_1; break;
         case 2: ret = _StepXTurtlesRow2; break;
-        case 3: ret = Step_Trees_3; break;
+        case 3: ret = _Step_Trees_3; break;
         case 4: ret = _StepXTurtlesRow4; break;
-        case 5: ret = Step_Trees_5; break;
+        case 5: ret = _Step_Trees_5; break;
         default:
-            ret = Step_Trees_1; break;
+            ret = _Step_Trees_1; break;
     }
         return ret;
 }
@@ -573,7 +573,7 @@ void TestEngine::GetNewState(){
 
                     if ( ! FrogArrivedDestinatons[i].arrived) {
 
-                        indexFrogArrived = i;
+                        _IndexFrogArrived = i;
                         FrogArrivedDestinatons[i].arrived = true;
                         FrogArrivedDestinatons[i].haveTodie = false;
 
@@ -582,7 +582,7 @@ void TestEngine::GetNewState(){
 
                         audio->HaltMusic();
 
-                        FrogArrived[indexFrogArrived]->StartAnimation(0,1);
+                        FrogArrived[_IndexFrogArrived]->StartAnimation(0,1);
 
                         audio->ChannelToListen(AUDIO_CHANNEL_FrogHomed);
                         audio->PlaySound(sound_FrogHomed,AUDIO_CHANNEL_FrogHomed);
@@ -924,6 +924,17 @@ void TestEngine::Run(){
             // Hintergrund und mauern immer rendern..
             // --------------------------------------
 
+            UpdateTime();
+            // countelapse += _Elapsed;
+            // if (countelapse >= 1000){
+            //     countelapse = 0;
+            //     _TimeCounter--;
+            //     stCounter = std::to_string(_TimeCounter);
+            //     _Time->UpdateText(stCounter,1);
+
+            // }
+
+
             // Das ganze mal mit den states:
 
             bool tmp;
@@ -975,6 +986,7 @@ void TestEngine::Run(){
                     RenderVehicles();
                     RenderArrivedFrogs();
                     RenderCrocos();
+                    RenderTime();
 
                     frog->SetPosition(608,802);
                     snake->SetPosition(_ResX,800);
@@ -993,6 +1005,11 @@ void TestEngine::Run(){
                     RenderVehicles();
                     RenderArrivedFrogs();
                     RenderCrocos();
+
+                    _UpdateTime = true;
+
+
+                    RenderTime();
                    // RenderFrog();
 
                     if (audio->PlaySoundFinished(AUDIO_Channel_StartUp)){
@@ -1016,19 +1033,19 @@ void TestEngine::Run(){
 
                     RenderFrog();
 
-                    countelapse += _Elapsed;
-                    if (countelapse >= 1000){
-                        countelapse = 0;
-                        _TimeCounter--;
-                        stCounter = std::to_string(_TimeCounter);
-                        _Time->UpdateText(stCounter,1);
+                    // countelapse += _Elapsed;
+                    // if (countelapse >= 1000){
+                    //     countelapse = 0;
+                    //     _TimeCounter--;
+                    //     stCounter = std::to_string(_TimeCounter);
+                    //     _Time->UpdateText(stCounter,1);
 
-                    }
+                    // }
 
                     RenderTime();
 
                     if ( ! snake->AnimationDone())
-                        snake->MoveSprite(0,2,128,64,80,Step_Snake,0,_Elapsed,tmp);
+                        snake->MoveSprite(0,2,128,64,80,_Step_Snake,0,_Elapsed,tmp);
                     else{
 
                         snake->StartAnimation(0,2);
@@ -1140,20 +1157,20 @@ void TestEngine::Run(){
                         RenderFrog();
 
                         bool tmp;
-                        if (!  FrogArrived[indexFrogArrived]->AnimationDone()) {
-                            FrogArrived[indexFrogArrived]->MoveSprite(0,1,64,72,300,0,0,_Elapsed,tmp);
+                        if (!  FrogArrived[_IndexFrogArrived]->AnimationDone()) {
+                            FrogArrived[_IndexFrogArrived]->MoveSprite(0,1,64,72,300,0,0,_Elapsed,tmp);
                         }
                         else {
 
-                            if (FrogArrivedDestinatons[indexFrogArrived].arrived) {
-                                FrogArrived[indexFrogArrived]->RenderFromAsset(1,0);
+                            if (FrogArrivedDestinatons[_IndexFrogArrived].arrived) {
+                                FrogArrived[_IndexFrogArrived]->RenderFromAsset(1,0);
                                 GameState = GAMESTATE::Loop;
                                 _gameScore += 50;  // Für den Frosch
                                 // ... plus verbliebene Zeit * 10
                                 _gameScore += _TimeCounter * 10;
                             }
                             else
-                            if (FrogArrivedDestinatons[indexFrogArrived].haveTodie) {
+                            if (FrogArrivedDestinatons[_IndexFrogArrived].haveTodie) {
                                 GameState = GAMESTATE::Die;
                                 StartDieAnimation(4,6);
                             }
@@ -1204,6 +1221,9 @@ void TestEngine::Run(){
                     // Abspann anzeigen
                     // Score                    
                     RenderScore();
+
+                    // Wir zeigen die verbliebene Zeit, kein update mehr !!
+                    _UpdateTime = false;
                     RenderTime();
                     RenderGameOverScreen();
                     // --------------------------
@@ -1220,7 +1240,19 @@ void TestEngine::Run(){
     }
 }
 
+void TestEngine::UpdateTime(){
 
+    if ( ! _UpdateTime) return;
+
+    countelapse += _Elapsed;
+    if (countelapse >= 1000){
+        countelapse = 0;
+        _TimeCounter--;
+        stCounter = std::to_string(_TimeCounter);
+        _Time->UpdateText(stCounter,1);
+
+    }
+}
 
 void TestEngine::RenderGameOverScreen(){
 
@@ -1315,6 +1347,16 @@ string TestEngine::_Score2String(){
     return std::to_string(_gameScore);
 }
 
+void TestEngine::InitLevels(){
+
+    CONFIG::LevelRow row;
+
+    row.CountObjects = 4; row.Step = 4; row.TimePerLevel = 200;
+
+    _LevelConfig.AddLevelConfiguration(row,1);
+
+}
+
 void TestEngine::InitGameOverScreen(){
 
     // ErklärText...
@@ -1324,6 +1366,8 @@ void TestEngine::InitGameOverScreen(){
     _InsertCoin_1EU->InitTextureMap(19,2);
     _InsertCoin_2EU->InitTextureMap(19,2);
 }
+
+
 
 void TestEngine::InitAudio(){
     audio = new Audio;
@@ -1376,11 +1420,11 @@ bool TestEngine::InitUserObjects(){
     // ----------------------------------------------------------------------
     // Step init, bei jedem höheren level erhöhen, erhöht die geschwindigkeit
     // ----------------------------------------------------------------------
-    Step_Trees_1 = 1;
-    Step_Trees_3 = 2;
-    Step_Trees_5 = 3;
+    _Step_Trees_1 = 1;
+    _Step_Trees_3 = 2;
+    _Step_Trees_5 = 3;
 
-    Step_Snake = -4;  // Right to Left...
+    _Step_Snake = -4;  // Right to Left...
     _SnakePos = sPoint(_ResX,800);
 
     _StepXTurtlesRow2   = 3;
@@ -1525,6 +1569,7 @@ bool TestEngine::InitUserObjects(){
     InitTreeRows();
     InitVehicles();
     InitGameOverScreen();
+    InitLevels();
 
     // Default settings at start
     _TileX = 0;
