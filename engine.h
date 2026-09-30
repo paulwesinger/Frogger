@@ -105,12 +105,6 @@ const int TIMELEVEL_5 = 70;
 
 const int TURTLE_DIVING_TILE                = 5;
 
-const uint64_t TIMER_SHOW_GAMEOVER_SCREEN   = 4000; // 4 sekunden Game over geniessen..
-
-
-
-
-
 
 static GAMESTATE GameState;
 
@@ -135,7 +129,6 @@ protected:
 
     CONFIG::LevelConfig _LevelConfig;
 
-
     void _ResetTimeCounter(GAMELEVEL level);
     void _ResetScore();
     string _Score2String();
@@ -143,6 +136,7 @@ protected:
     // "Insert Coin, continue,...usw"
     void RenderGameOverScreen();
     void UpdateTime();
+    void _RenderAvailableFrogs();
 
     //static Uint32 _TimerCallback(Uint32,void*);
 
@@ -212,7 +206,7 @@ protected:
     ENGINE::Sprite* Vehicle_Row10[VEHICLES_PER_ROW_10];
     ENGINE::Sprite* Vehicle_Row11[VEHICLES_PER_ROW_11];
 
-    std::vector<ENGINE::BaseObject2D> AvailableFrogs; // 3 bzw 5 Frogis, deshalb kein Array
+    std::vector<ENGINE::BaseObject2D> _AvailableFrogs; // 3 bzw 5 Frogis, deshalb kein Array
 
 
     // Der Frog ist im ziel
@@ -302,7 +296,8 @@ private:
 
     uint64_t countelapse = 0;
     int _TimeCounter = 0;
-    std::string stCounter = "100";
+    std::string stCounter = "120";
+
 
     static void SoundHandler();
     void ChangeGameState(GAMESTATE state);

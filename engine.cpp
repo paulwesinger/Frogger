@@ -59,7 +59,7 @@ TestEngine::~TestEngine(){
     delete _HighScore;
     delete _Time;
     delete _InsertCoin_1EU;
-    delete _InsertCoin_2EU;
+    delete _InsertCoin_2EU;  
 
     // wav freigeben
     Mix_FreeChunk(sound_Hop);
@@ -320,6 +320,19 @@ void TestEngine::RenderBackgroundSprites(){
 
     // FrogZiel[FROG_DESTINATIONS-1]->setPos(1152,0);
     // FrogZiel[FROG_DESTINATIONS-1]->RenderFromAsset(0,0);
+}
+
+void TestEngine::_RenderAvailableFrogs(){
+
+    if (_AvailableFrogs.size() == 0) return;
+
+    //int x = _FirstFrogPos.x;
+    // for (int i = 0; i<_AvailableFrogs.size(); i++){
+    //     //_AvailableFrogs.at(i).setPos(x,_FirstFrogPos.y);
+    //     _AvailableFrogs.at(i).RenderFromAsset(0,0);
+    //     //x += 70;
+    // }
+
 }
 
 void TestEngine::RenderCrocos(){
@@ -1443,6 +1456,9 @@ bool TestEngine::InitUserObjects(){
     _StartNewGame = false;
     _FrogCount = 0;
 
+    // _FirstFrogPos.x = _ResX / 2;
+    // _FirstFrogPos.y = _ResY - 90;
+
 
     if (AddTextDisplayWithBackground(100,100,0,"FPS Display with background")){
 
@@ -1469,7 +1485,6 @@ bool TestEngine::InitUserObjects(){
     //frog->SetPosition(608,802);
     frog->InitTextureMap(8,4);
     frog->SetMoveArea(0,32,1280,876);
-
 
     // ---------------------------------------------
     // Snake
