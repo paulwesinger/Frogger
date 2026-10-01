@@ -51,6 +51,12 @@ TestEngine::~TestEngine(){
     for (int i =0; i<TURTLES_ROW_4; i++)
         delete turtlesRow4[i];
 
+    for(ENGINE::Sprite * sp:_AvailableFrogs){
+        delete sp;
+    }
+
+    _AvailableFrogs.clear();
+
 
     ReleaseTrees();
     ReleaseVehicles();
@@ -316,22 +322,15 @@ void TestEngine::RenderBackgroundSprites(){
 
     Walls[0]->Render();
 
-
-
-    // FrogZiel[FROG_DESTINATIONS-1]->setPos(1152,0);
-    // FrogZiel[FROG_DESTINATIONS-1]->RenderFromAsset(0,0);
 }
 
-void TestEngine::_RenderAvailableFrogs(){
+void TestEngine::RenderAvailableFrogs(){
 
-    if (_AvailableFrogs.size() == 0) return;
+    if (_AvailableFrogs.size() <= 0) return;
 
-    //int x = _FirstFrogPos.x;
-    // for (int i = 0; i<_AvailableFrogs.size(); i++){
-    //     //_AvailableFrogs.at(i).setPos(x,_FirstFrogPos.y);
-    //     _AvailableFrogs.at(i).RenderFromAsset(0,0);
-    //     //x += 70;
-    // }
+    for (int i = 0; i<_AvailableFrogs.size(); i++){
+        _AvailableFrogs[i] ->RenderFromAsset(0,0);
+    }
 
 }
 
@@ -938,15 +937,6 @@ void TestEngine::Run(){
             // --------------------------------------
 
             UpdateTime();
-            // countelapse += _Elapsed;
-            // if (countelapse >= 1000){
-            //     countelapse = 0;
-            //     _TimeCounter--;
-            //     stCounter = std::to_string(_TimeCounter);
-            //     _Time->UpdateText(stCounter,1);
-
-            // }
-
 
             // Das ganze mal mit den states:
 
@@ -985,6 +975,21 @@ void TestEngine::Run(){
                         audio->HaltMusic();
                         GameState= GAMESTATE::StartUpFinished;
 
+                        // Available Frogs laden
+
+                        int x = _ResX/2-200;
+                        int y = _ResY-90;
+
+                        for (int i = 0; i < _FrogCount; i++ ){
+                            ENGINE::Sprite* sprite = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/FrogAvailable64x64.png",_Shader);
+                            sprite->InitTextureMap(1,1);
+                            sprite->SetPosition(x,y);
+                            _AvailableFrogs.push_back(sprite);
+                            x+=70;
+                        }
+
+                        RenderAvailableFrogs();
+
                         // Insert coin, startup
                         audio->ChannelToListen(AUDIO_Channel_StartUp);
                         audio->PlaySound(sound_Startup,AUDIO_Channel_StartUp);
@@ -1000,6 +1005,8 @@ void TestEngine::Run(){
                     RenderArrivedFrogs();
                     RenderCrocos();
                     RenderTime();
+                    RenderAvailableFrogs();
+
 
                     frog->SetPosition(608,802);
                     snake->SetPosition(_ResX,800);
@@ -1018,6 +1025,7 @@ void TestEngine::Run(){
                     RenderVehicles();
                     RenderArrivedFrogs();
                     RenderCrocos();
+                    RenderAvailableFrogs();
 
                     _UpdateTime = true;
 
@@ -1045,17 +1053,8 @@ void TestEngine::Run(){
                     RenderScore();
 
                     RenderFrog();
-
-                    // countelapse += _Elapsed;
-                    // if (countelapse >= 1000){
-                    //     countelapse = 0;
-                    //     _TimeCounter--;
-                    //     stCounter = std::to_string(_TimeCounter);
-                    //     _Time->UpdateText(stCounter,1);
-
-                    // }
-
                     RenderTime();
+                    RenderAvailableFrogs();
 
                     if ( ! snake->AnimationDone())
                         snake->MoveSprite(0,2,128,64,80,_Step_Snake,0,_Elapsed,tmp);
@@ -1080,6 +1079,7 @@ void TestEngine::Run(){
                     RenderArrivedFrogs();
                     RenderTime();
                     RenderFrog();
+                    RenderAvailableFrogs();
 
                     break;
 
@@ -1087,6 +1087,8 @@ void TestEngine::Run(){
                     RenderBackgroundSprites();
                     RenderScore();
                     RenderTime();
+                    RenderAvailableFrogs();
+
                     break;
                 case GAMESTATE::Plunk:
                     RenderBackgroundSprites();
@@ -1097,6 +1099,8 @@ void TestEngine::Run(){
                     RenderCrocos();
                     RenderTime();
                     RenderArrivedFrogs();
+                    RenderAvailableFrogs();
+
                     audio->ChannelToListen(AUDIO_Channel_Plunck);
                     audio->PlaySound(sound_Plunk,AUDIO_Channel_Plunck);
 
@@ -1117,6 +1121,8 @@ void TestEngine::Run(){
                     RenderCrocos();
                     RenderTime();
                     RenderArrivedFrogs();
+                    RenderAvailableFrogs();
+
                     // Frog death
                     bool animdone;
                     frogdeath->MoveSprite(0,6,64,64,150,0,0,_Elapsed,animdone);
@@ -1141,6 +1147,15 @@ void TestEngine::Run(){
                     RenderTime();
                     RenderArrivedFrogs();
                     _FrogCount --;
+
+                    if (_AvailableFrogs.size() > 0){
+
+                        delete _AvailableFrogs[_AvailableFrogs.size()-1];
+                        _AvailableFrogs.pop_back();
+                    }
+
+                    RenderAvailableFrogs();
+
 
                     cout << "Frösche " << _FrogCount << endl;
 
@@ -1168,6 +1183,7 @@ void TestEngine::Run(){
                         RenderArrivedFrogs();
                         RenderTime();
                         RenderFrog();
+                        RenderAvailableFrogs();
 
                         bool tmp;
                         if (!  FrogArrived[_IndexFrogArrived]->AnimationDone()) {
@@ -1208,7 +1224,11 @@ void TestEngine::Run(){
 
                         GameState = GAMESTATE::LevelUp;   // ersetzen durch ShiftGamelevel
                         _gameScore += 1000;
+                        _FrogCount++;
+
                     }
+
+                    RenderAvailableFrogs();
 
                     break;
 
@@ -1221,6 +1241,7 @@ void TestEngine::Run(){
                     RenderCrocos();
                     RenderArrivedFrogs();
                     RenderTime();
+                    RenderAvailableFrogs();
                     audio->PlayBackrgoundSound(sound_MainTheme);
                     int level = (int)_GameLevel;
                     level++;

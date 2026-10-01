@@ -22,8 +22,16 @@ typedef struct {
 class Sprite :public BaseObject2D
 {
 public:
+
+
     Sprite(int resx, int resy, Shader *sh);
     Sprite(int resx, int resy, std::string path, Shader * sh);
+    // Copy Constructor
+    Sprite(Sprite &sprite);
+    // Default constructor
+    Sprite();
+
+
     ~Sprite();
 
     void Render() override;
@@ -46,6 +54,9 @@ public:
 
     sSize SpriteSize();
     void setRenderSprite(bool render);
+
+    // neu für copyconstructor
+    void setImagePath(std::string path);
 
     // Collission detection
     bool IsColliding(sPoint p, sSize s);

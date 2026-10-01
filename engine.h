@@ -6,10 +6,12 @@
 #include <base.h>
 #include <logger.h>
 #include <SDL.h>
+#include <list>
 #include "audio.h"
 #include "sprite.h"
 #include "costumtext.h"
 #include "levelconfig.h"
+
 
 
 
@@ -136,7 +138,7 @@ protected:
     // "Insert Coin, continue,...usw"
     void RenderGameOverScreen();
     void UpdateTime();
-    void _RenderAvailableFrogs();
+    void RenderAvailableFrogs();
 
     //static Uint32 _TimerCallback(Uint32,void*);
 
@@ -206,7 +208,7 @@ protected:
     ENGINE::Sprite* Vehicle_Row10[VEHICLES_PER_ROW_10];
     ENGINE::Sprite* Vehicle_Row11[VEHICLES_PER_ROW_11];
 
-    std::vector<ENGINE::BaseObject2D> _AvailableFrogs; // 3 bzw 5 Frogis, deshalb kein Array
+    std::vector<ENGINE::Sprite*> _AvailableFrogs; // 3 bzw 5 Frogis, deshalb kein Array
 
 
     // Der Frog ist im ziel
@@ -328,9 +330,6 @@ private:
     void RenderCrocos();
     int GetFloatingStep();
     void StartDieAnimation(int starttile, int endtile); // Der Frosch darf nich leiden..
-
-
-
 };
 
 #endif // ENGINE_H

@@ -6,6 +6,15 @@
 #include "imageloader.h"
 
 
+ENGINE::Sprite::Sprite()
+    : BaseObject2D()
+{
+    _IsRunning = false;
+    _AnimationDone = true;
+    _RenderSprite = true;
+    steptime = 0;
+}
+
 ENGINE::Sprite::Sprite(int resx, int resy, Shader *sh)
     :BaseObject2D(resx,resy,sh)
 {
@@ -24,6 +33,14 @@ ENGINE::Sprite::Sprite(int resx, int resy, std::string path, Shader * sh)
     steptime = 0;
 }
 
+
+ENGINE::Sprite::Sprite(ENGINE::Sprite& sprite)
+    :BaseObject2D(sprite._ResX,sprite._ResY,sprite._ImagePath,sprite.getShaderPtr())
+{
+
+
+}
+
 ENGINE::Sprite::~Sprite(){
     // for (int i =0; i<_TileTextureColumns; i++)
     //     delete [] tiles[i];
@@ -31,6 +48,10 @@ ENGINE::Sprite::~Sprite(){
     // delete tiles;
 
     tilecoordinats.clear();
+}
+
+void ENGINE::Sprite::setImagePath(string path){
+    _ImagePath = path;
 }
 
 void ENGINE::Sprite::InitTextureMap(int colums, int rows){
@@ -560,7 +581,14 @@ void ENGINE::Sprite::RenderFromAsset(int fromcol, int fromrow)
     int index = fromrow * columns + fromcol;
 
     sTileTextureCoords tmp;
-    tmp = tilecoordinats.at(index);
+
+    if (tilecoordinats.size() > 0 && index < tilecoordinats.size())
+        tmp = tilecoordinats.at(index);
+    else{
+
+        std::cout << "Sprite::RenderfromAsset -> tilecoordinate map nicht enhält 0 einträge !!" << std::endl;
+        return;
+    }
 
     GLfloat vertsTileMap[6][4] = {
         { px,     py  + h,        tmp.sx, tmp.sy + tmp.sHeight}, //0.0, 1.0},//0.0 },
