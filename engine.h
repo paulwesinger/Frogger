@@ -99,11 +99,11 @@ const int VEHICLES_PER_ROW_11               = 4;
 const int FROG_DESTINATIONS                 = 5;
 const int WALLS                             = 10;
 
-const int TIMELEVEL_1 = 120;
-const int TIMELEVEL_2 = 100;
-const int TIMELEVEL_3 = 90;
-const int TIMELEVEL_4 = 80;
-const int TIMELEVEL_5 = 70;
+const int TIMELEVEL_1 = 60;
+const int TIMELEVEL_2 = 50;
+const int TIMELEVEL_3 = 40;
+const int TIMELEVEL_4 = 35;
+const int TIMELEVEL_5 = 30;
 
 const int TURTLE_DIVING_TILE                = 5;
 

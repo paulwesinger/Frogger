@@ -1197,6 +1197,8 @@ void TestEngine::Run(){
                                 _gameScore += 50;  // Für den Frosch
                                 // ... plus verbliebene Zeit * 10
                                 _gameScore += _TimeCounter * 10;
+
+                                audio->PlayBackrgoundSound(sound_MainTheme);
                             }
                             else
                             if (FrogArrivedDestinatons[_IndexFrogArrived].haveTodie) {
