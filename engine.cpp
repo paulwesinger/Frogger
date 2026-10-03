@@ -632,9 +632,13 @@ void TestEngine::GetNewState(){
             StartDieAnimation(4,6);
         }
 
-         // audio->ChannelToListen(AUDIO_CHANNEL_StageCleared);
-         // audio->PlaySound(sound_StageCleared,AUDIO_CHANNEL_StageCleared);
-         // GameState = GAMESTATE::StageCleared; // Löschen !!!!!!!!
+
+
+
+        // Für Testzwecke
+                  // audio->ChannelToListen(AUDIO_CHANNEL_StageCleared);
+                  // audio->PlaySound(sound_StageCleared,AUDIO_CHANNEL_StageCleared);
+                  // GameState = GAMESTATE::StageCleared; // Löschen !!!!!!!!
         _DontRunAgain = true;
 
     }
@@ -887,6 +891,20 @@ void TestEngine::ResetGame(){
     }
 }
 
+int TestEngine::RemoveFrogFromList(){
+
+    int countfrogs = _AvailableFrogs.size();
+    if ( countfrogs > 0){
+
+        // Speicher freigeben
+        delete _AvailableFrogs[countfrogs-1];
+        _AvailableFrogs.pop_back();
+
+        return --countfrogs;
+    }
+    return 0;
+}
+
 void TestEngine::Run(){
     glEnable(GL_DEPTH_TEST);
     //LoadSurface("/home/paul/workspace/GLFrameWork/images/standard/errorAlpha.png");
@@ -1011,7 +1029,7 @@ void TestEngine::Run(){
                     frog->SetPosition(608,802);
                     snake->SetPosition(_ResX,800);
 
-                   _ResetTimeCounter(_GameLevel);
+                   _ResetTimeCounter(_GameLevel);                   
 
                     GameState = GAMESTATE::Run;
                     _DontRunAgain = false;
@@ -1038,6 +1056,13 @@ void TestEngine::Run(){
                         audio->PlayBackrgoundSound(sound_MainTheme);
                         frog->SetPosition(608,802);
                         GameState = GAMESTATE::Run;
+                        // ---------------------------------------
+                        // Die Liste mit Available Frogs um einen
+                        // verringern, einer kommt ja jetzt ins
+                        // Spielfeld
+                        // ---------------------------------------
+
+                        RemoveFrogFromList();
                         _DontRunAgain = false;
                     }
                     break;
@@ -1221,6 +1246,7 @@ void TestEngine::Run(){
                     RenderCrocos();
                     RenderTime();
                     RenderArrivedFrogs();
+                    RenderAvailableFrogs();
 
                     if (audio->PlaySoundFinished(AUDIO_CHANNEL_StageCleared)) {
 
@@ -1240,10 +1266,12 @@ void TestEngine::Run(){
                     RenderScore();
                     RenderTurtles();
                     RenderVehicles();
-                    RenderCrocos();
-                    RenderArrivedFrogs();
+                    RenderCrocos();                   
                     RenderTime();
                     RenderAvailableFrogs();
+
+                    ClearArrivedFrogs();
+                    RenderArrivedFrogs();
                     audio->PlayBackrgoundSound(sound_MainTheme);
                     int level = (int)_GameLevel;
                     level++;
@@ -1273,6 +1301,14 @@ void TestEngine::Run(){
             }
             SwapWindow();
         }
+    }
+}
+
+void TestEngine::ClearArrivedFrogs(){
+
+    for (int i = 0; i < FROG_DESTINATIONS; i++){
+        FrogArrivedDestinatons[i].arrived = false;
+        FrogArrivedDestinatons[i].haveTodie = false;
     }
 }
 

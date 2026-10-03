@@ -139,6 +139,12 @@ protected:
     void RenderGameOverScreen();
     void UpdateTime();
     void RenderAvailableFrogs();
+    int RemoveFrogFromList();
+
+    // --------------------------------------------
+    // Für den nächsten Level wieder alle freigeben
+    // --------------------------------------------
+    void ClearArrivedFrogs();
 
     //static Uint32 _TimerCallback(Uint32,void*);
 
