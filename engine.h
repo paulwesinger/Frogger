@@ -75,6 +75,8 @@ const int AUDIO_CHANNEL_RaceCar     = 7;
 
 const int AUDIO_CHANNEL_FrogHomed   = 8;
 const int AUDIO_CHANNEL_StageCleared= 9;
+const int AUDIO_CHANNEL_HurryUp     = 10;
+
 
 
 
@@ -99,13 +101,14 @@ const int VEHICLES_PER_ROW_11               = 4;
 const int FROG_DESTINATIONS                 = 5;
 const int WALLS                             = 10;
 
-const int TIMELEVEL_1 = 60;
+const int TIMELEVEL_1 = 20;
 const int TIMELEVEL_2 = 50;
 const int TIMELEVEL_3 = 40;
 const int TIMELEVEL_4 = 35;
 const int TIMELEVEL_5 = 30;
 
 const int TURTLE_DIVING_TILE                = 5;
+const int TIME_RUNS_OUT                     = 10;
 
 
 static GAMESTATE GameState;
@@ -246,6 +249,7 @@ protected:
     Mix_Chunk* sound_Racer;
     Mix_Chunk* sound_FrogHomed;
     Mix_Chunk* sound_StageCleared;
+    Mix_Chunk* sound_HurryUp;
 
     // Music für hintergrund
     Mix_Music* sound_MainTheme;
@@ -287,6 +291,7 @@ private:
     bool _Pause;
     bool _DontRunAgain;
     bool _StartNewGame;
+    bool _TimesIsOut = false;
 
     GAMESTATE _Oldstate;  // zum restaurieren nach _Pause
 

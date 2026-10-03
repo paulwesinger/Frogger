@@ -77,6 +77,7 @@ TestEngine::~TestEngine(){
     Mix_FreeChunk(sound_Racer);
     Mix_FreeChunk(sound_FrogHomed);
     Mix_FreeChunk(sound_StageCleared);
+    Mix_FreeChunk(sound_HurryUp);
 
     // Mixer_Music freigeben
     Mix_FreeMusic(sound_MainTheme);
@@ -1026,6 +1027,7 @@ void TestEngine::Run(){
                     RenderAvailableFrogs();
 
 
+
                     frog->SetPosition(608,802);
                     snake->SetPosition(_ResX,800);
 
@@ -1033,6 +1035,7 @@ void TestEngine::Run(){
 
                     GameState = GAMESTATE::Run;
                     _DontRunAgain = false;
+                    _TimesIsOut = false;
 
                     break;
 
@@ -1046,6 +1049,7 @@ void TestEngine::Run(){
                     RenderAvailableFrogs();
 
                     _UpdateTime = true;
+                    _TimesIsOut = false;
 
 
                     RenderTime();
@@ -1110,9 +1114,18 @@ void TestEngine::Run(){
 
                 case GAMESTATE::TimeOut:
                     RenderBackgroundSprites();
+                    RenderWood();
                     RenderScore();
+                    RenderVehicles();
+                    RenderTurtles();
+                    RenderCrocos();
                     RenderTime();
+                    RenderArrivedFrogs();
                     RenderAvailableFrogs();
+
+                    GameState = GAMESTATE::Die;
+                    StartDieAnimation(0,6);
+
 
                     break;
                 case GAMESTATE::Plunk:
@@ -1134,8 +1147,7 @@ void TestEngine::Run(){
                         GameState = GAMESTATE::Die;
                         StartDieAnimation(4,6);
 
-                    }
-                    break;
+                    }                   break;
                 case GAMESTATE::Die:
 
                     RenderBackgroundSprites();
@@ -1191,6 +1203,7 @@ void TestEngine::Run(){
                         audio->ChannelToListen(AUDIO_CHANNEL_GameOver);
                         audio->PlaySound(sound_GameOver,AUDIO_CHANNEL_GameOver);
                     }
+
                     else{
                         audio->PlayBackrgoundSound(sound_MainTheme,1);
                         GameState = GAMESTATE::Loop;//StartUpFinished;
@@ -1320,9 +1333,28 @@ void TestEngine::UpdateTime(){
     if (countelapse >= 1000){
         countelapse = 0;
         _TimeCounter--;
+
+        if (_TimeCounter < 0){
+            _TimeCounter = 0;
+        }
         stCounter = std::to_string(_TimeCounter);
         _Time->UpdateText(stCounter,1);
 
+        // Time == 10, Sound "Hurry_up" starten
+        // Check the time:
+        if (_TimeCounter == TIME_RUNS_OUT){
+            audio->PlaySound(sound_HurryUp,AUDIO_CHANNEL_HurryUp);
+        }
+
+        if ( _TimeCounter == 0){
+
+            // Verhindert, das hier bei jedem update der GameState neu gestzt wird
+            if ( ! _TimesIsOut) {
+                _TimesIsOut = true;
+                GameState = GAMESTATE::Die;
+                StartDieAnimation(0,6);
+            }
+        }
     }
 }
 
@@ -1467,6 +1499,8 @@ void TestEngine::InitAudio(){
     sound_Racer = audio->LoadWavMixSound("/home/paul/workspace/Frogger/sounds/RaceCar.wav");
     sound_FrogHomed = audio->LoadWavMixSound("/home/paul/workspace/Frogger/sounds/Homed.wav");
     sound_StageCleared = audio->LoadWavMixSound("/home/paul/workspace/Frogger/sounds/StageClear.wav");
+    sound_HurryUp = audio->LoadWavMixSound("/home/paul/workspace/Frogger/sounds/TimeWarning.wav");
+
     // --------------
     // Change Volume:
     // --------------
