@@ -6,7 +6,8 @@
 #include <base.h>
 #include <logger.h>
 #include <SDL.h>
-#include <list>
+#include <random>
+
 #include "audio.h"
 #include "sprite.h"
 #include "costumtext.h"
@@ -101,11 +102,12 @@ const int VEHICLES_PER_ROW_11               = 4;
 const int FROG_DESTINATIONS                 = 5;
 const int WALLS                             = 10;
 
-const int TIMELEVEL_1 = 20;
+const int TIMELEVEL_1 = 60;
 const int TIMELEVEL_2 = 50;
 const int TIMELEVEL_3 = 40;
 const int TIMELEVEL_4 = 35;
 const int TIMELEVEL_5 = 30;
+const int TIMELEVEL_6 = 25;
 
 const int TURTLE_DIVING_TILE                = 5;
 const int TIME_RUNS_OUT                     = 10;
@@ -143,6 +145,8 @@ protected:
     void UpdateTime();
     void RenderAvailableFrogs();
     int RemoveFrogFromList();
+
+    int RandomGenerator();
 
     // --------------------------------------------
     // Für den nächsten Level wieder alle freigeben
@@ -292,6 +296,7 @@ private:
     bool _DontRunAgain;
     bool _StartNewGame;
     bool _TimesIsOut = false;
+    bool _Randomrunning = false;
 
     GAMESTATE _Oldstate;  // zum restaurieren nach _Pause
 

@@ -3,6 +3,7 @@
 #include <thread>
 #include <iomanip>
 #include <sstream>
+#include <ctime>
 
 #include "engine.h"
 #include <imageloader.h>
@@ -858,6 +859,9 @@ void TestEngine::GetNewState(){
         break;
 
     }
+
+ //   int Box = RandomGenerator();
+
 }
 
 void TestEngine::StartDieAnimation(int starttile, int endtile){
@@ -904,6 +908,26 @@ int TestEngine::RemoveFrogFromList(){
         return --countfrogs;
     }
     return 0;
+}
+
+int TestEngine::RandomGenerator(){
+
+    std::random_device rd;
+
+    // Initialisiere die Mersenne-Twister-Engine mit dem Seed
+    std::mt19937 gen(rd());
+
+    // Definiere den gewünschten Wertebereich (z. B. von 1 bis 6 für einen Würfel)
+    std::uniform_int_distribution<> distrib(1, 5);
+
+    // Generiere und ausgebe die Zufallszahl
+    return distrib(gen);
+
+    // std::random_device dev;
+    // std::mt19937 rng(dev());
+    // std::uniform_int_distribution<std::mt19937::result_type> dist6(1,5); // distribution in range [1, 6]
+
+    // return dist6(rng);
 }
 
 void TestEngine::Run(){
