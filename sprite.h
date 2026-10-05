@@ -35,10 +35,13 @@ public:
     ~Sprite();
 
     void Render() override;
-    void RenderFromAsset(int fromcol, int fromrow);
+    void RenderFromAsset(int fromcol, int fromrow,bool reverseX=false,bool reverseY=false);
+
+
 
     void MoveSprite(int pixelsX, int pixelsY, uint64_t timetoanimate, int steps, uint64_t elapsed, int tilex, int tiley);
-    void MoveSprite(int starttile, int lasttile, int tilesizeX, int tilesizeY, uint64_t timeperTile, int stepx, int stepy, uint64_t elapsed,bool &animationdone);
+    void MoveSprite(int starttile, int lasttile, int tilesizeX, int tilesizeY, uint64_t timeperTile, int stepx, int stepy,
+                    uint64_t elapsed,bool mirrorX=false,bool mirrorY=false);
 
     void Animate(uint64_t elapsed, int pixelXperSecond, int pixelYperSecond, int fromTileX, int toTileX, int tileY);
     void InitTextureMap(int colums,int rows);
@@ -70,6 +73,9 @@ public:
 
 
 protected:
+
+//    GLfloat[][4] Reverse(GLfloat[][4] origin, bool revx, bool revy);
+
     std::vector<sTileTextureCoords> tilecoordinats;
     float _TileWidth;
     float _TileHeight;

@@ -142,6 +142,8 @@ protected:
     void ResetGame();
     // "Insert Coin, continue,...usw"
     void RenderGameOverScreen();
+    void RenderNextLevelScreen(int level);
+
     void UpdateTime();
     void RenderAvailableFrogs();
     int RemoveFrogFromList();
@@ -232,11 +234,13 @@ protected:
     // --------------------------
     ENGINE::BaseObject2D * _StartScreen;
     ENGINE::BaseObject2D * _GameOverScreen;
+    ENGINE::BaseObject2D * _LevelBackground;
 
     COSTUMTEXT::TextBase * _HighScore;
     COSTUMTEXT::TextBase * _Score;
     COSTUMTEXT::TextBase * _Time;
     COSTUMTEXT::TextBase * _GameOver;
+    COSTUMTEXT::TextBase * _LevelText;
 
     // ---------------------------
     // GameOver screen

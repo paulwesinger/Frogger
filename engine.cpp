@@ -66,7 +66,12 @@ TestEngine::~TestEngine(){
     delete _HighScore;
     delete _Time;
     delete _InsertCoin_1EU;
-    delete _InsertCoin_2EU;  
+    delete _InsertCoin_2EU;
+    delete _LevelText;
+
+    delete _LevelBackground;
+    delete _GameOverScreen;
+    delete _StartScreen;
 
     // wav freigeben
     Mix_FreeChunk(sound_Hop);
@@ -411,11 +416,11 @@ void TestEngine::RenderFrog(){
 }
 
 void TestEngine::RenderVehicles(){
-    bool tmp;
+
     for (int i=0;i<VEHICLES_PER_ROW_11; i++){
         if ( ! Vehicle_Row11[i]->AnimationDone() ){
             // Warten auf Animationsende
-                Vehicle_Row11[i]->MoveSprite(3,3,64,64,100,_StepVehicleRow11,0,_Elapsed,tmp);
+                Vehicle_Row11[i]->MoveSprite(3,3,64,64,100,_StepVehicleRow11,0,_Elapsed);
 
         }
         else{
@@ -431,7 +436,7 @@ void TestEngine::RenderVehicles(){
     for (int i=0;i<VEHICLES_PER_ROW_10; i++){
         if ( ! Vehicle_Row10[i]->AnimationDone() ){
             // Warten auf Animationsende
-            Vehicle_Row10[i]->MoveSprite(1,1,64,64,100,-_StepVehicleRow10,0,_Elapsed,tmp);
+            Vehicle_Row10[i]->MoveSprite(1,1,64,64,100,-_StepVehicleRow10,0,_Elapsed);
 
         }
         else{
@@ -446,7 +451,7 @@ void TestEngine::RenderVehicles(){
     for (int i=0;i<VEHICLES_PER_ROW_9; i++){
         if ( ! Vehicle_Row9[i]->AnimationDone() ){
             // Warten auf Animationsende
-            Vehicle_Row9[i]->MoveSprite(2,2,64,64,100,_StepVehicleRow9,0,_Elapsed,tmp);
+            Vehicle_Row9[i]->MoveSprite(2,2,64,64,100,_StepVehicleRow9,0,_Elapsed);
 
         }
         else{
@@ -473,7 +478,7 @@ void TestEngine::RenderVehicles(){
     for (int i=0;i<VEHICLES_PER_ROW_8; i++){
         if ( ! Vehicle_Row8[i]->AnimationDone() ){
             // Warten auf Animationsende
-            Vehicle_Row8[i]->MoveSprite(0,0,64,64,100,-_StepVehicleRow8,0,_Elapsed,tmp);
+            Vehicle_Row8[i]->MoveSprite(0,0,64,64,100,-_StepVehicleRow8,0,_Elapsed,true);
 
         }
         else{
@@ -481,7 +486,7 @@ void TestEngine::RenderVehicles(){
             sPoint p = Vehicle_Row8[i]->Pos();
             p.x += _StepVehicleRow8;
             Vehicle_Row8[i]->SetPosition(p.x,p.y);
-            Vehicle_Row8[i]->RenderFromAsset(0,0);
+            Vehicle_Row8[i]->RenderFromAsset(0,0,true);
         }
     }
 
@@ -489,8 +494,8 @@ void TestEngine::RenderVehicles(){
     for (int i=0;i<VEHICLES_PER_ROW_7; i++){
         if ( ! Vehicle_Row7[i]->AnimationDone() ){
             // Warten auf Animationsende
-            Vehicle_Row7[i]->MoveSprite(4,4,64,64,100,-_StepVehicleRow7,0,_Elapsed,tmp);
-            Vehicle_Row7_2[i]->MoveSprite(4,4,64,64,100,-_StepVehicleRow7,0,_Elapsed,tmp);
+            Vehicle_Row7[i]->MoveSprite(4,4,64,64,100,-_StepVehicleRow7,0,_Elapsed);
+            Vehicle_Row7_2[i]->MoveSprite(4,4,64,64,100,-_StepVehicleRow7,0,_Elapsed);
 
         }
         else{
@@ -518,9 +523,9 @@ void TestEngine::RenderTurtles(){
             // Warten auf Animationsende
 
             if (i == 3 || i == 4 || i == 5)
-                turtlesRow2[i]->MoveSprite(0,9,64,64,300,-_StepXTurtlesRow2,0,_Elapsed,tmp);
+                turtlesRow2[i]->MoveSprite(0,9,64,64,300,-_StepXTurtlesRow2,0,_Elapsed);
             else
-                turtlesRow2[i]->MoveSprite(0,2,64,64,300,-_StepXTurtlesRow2,0,_Elapsed,tmp);
+                turtlesRow2[i]->MoveSprite(0,2,64,64,300,-_StepXTurtlesRow2,0,_Elapsed);
         }
         else{
             turtlesRow2[i]->StartAnimation(0,9);
@@ -537,9 +542,9 @@ void TestEngine::RenderTurtles(){
             // Warten auf Animationsende
 
             if (i == 3 ||  i == 4)
-                turtlesRow4[i]->MoveSprite(0,2,64,64,300,-_StepXTurtlesRow4,0,_Elapsed,tmp);
+                turtlesRow4[i]->MoveSprite(0,2,64,64,300,-_StepXTurtlesRow4,0,_Elapsed);
             else
-                turtlesRow4[i]->MoveSprite(0,9,64,64,300,-_StepXTurtlesRow4,0,_Elapsed,tmp);
+                turtlesRow4[i]->MoveSprite(0,9,64,64,300,-_StepXTurtlesRow4,0,_Elapsed);
         }
         else{
             turtlesRow4[i]->StartAnimation(0,9);
@@ -562,10 +567,17 @@ void TestEngine::RenderTime(){
 void TestEngine::RenderScore(){
 
     _Score->UpdateText(_Score2String(),1);
-    _Score->RenderText(sPoint(50, _ResY -80));
+    _Score->RenderText(sPoint(50, _ResY -80));    
+}
 
+void TestEngine::RenderNextLevelScreen(int level){
 
+    _LevelBackground->Render();
 
+    string sLevel = std::to_string(++level);
+    _LevelText->UpdateText(sLevel,1);
+
+    _LevelText->RenderText(sPoint(300,300));
 }
 
 void TestEngine::GetNewState(){
@@ -638,9 +650,9 @@ void TestEngine::GetNewState(){
 
 
         // Für Testzwecke
-                  // audio->ChannelToListen(AUDIO_CHANNEL_StageCleared);
-                  // audio->PlaySound(sound_StageCleared,AUDIO_CHANNEL_StageCleared);
-                  // GameState = GAMESTATE::StageCleared; // Löschen !!!!!!!!
+                   audio->ChannelToListen(AUDIO_CHANNEL_StageCleared);
+                   audio->PlaySound(sound_StageCleared,AUDIO_CHANNEL_StageCleared);
+                   GameState = GAMESTATE::StageCleared; // Löschen !!!!!!!!
         _DontRunAgain = true;
 
     }
@@ -1110,7 +1122,7 @@ void TestEngine::Run(){
                     RenderAvailableFrogs();
 
                     if ( ! snake->AnimationDone())
-                        snake->MoveSprite(0,2,128,64,80,_Step_Snake,0,_Elapsed,tmp);
+                        snake->MoveSprite(0,2,128,64,80,_Step_Snake,0,_Elapsed,true);
                     else{
 
                         snake->StartAnimation(0,2);
@@ -1284,12 +1296,19 @@ void TestEngine::Run(){
                     RenderTime();
                     RenderArrivedFrogs();
                     RenderAvailableFrogs();
+                    RenderNextLevelScreen((int)_GameLevel);
 
                     if (audio->PlaySoundFinished(AUDIO_CHANNEL_StageCleared)) {
 
                         GameState = GAMESTATE::LevelUp;   // ersetzen durch ShiftGamelevel
                         _gameScore += 1000;
                         _FrogCount++;
+
+                        int x = _ResX/2 -200 + _AvailableFrogs.size()* 70;
+                        ENGINE::Sprite* sprite = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/FrogAvailable64x64.png",_Shader);
+                        sprite->InitTextureMap(1,1);
+                        sprite->SetPosition(x,_ResY -90);
+                        _AvailableFrogs.push_back(sprite);
 
                     }
 
@@ -1449,6 +1468,7 @@ void TestEngine::InitTextMap(){
      _InsertCoin_1EU->AddMapToMap(_Score->GetCharacters());
      _InsertCoin_2EU->AddMapToMap(_Score->GetCharacters());
      _GameOver->AddMapToMap(_Score->GetCharacters());
+     _LevelText->AddMapToMap(_Score->GetCharacters());
 }
 
 void TestEngine::_ResetTimeCounter(GAMELEVEL level){
@@ -1494,8 +1514,6 @@ void TestEngine::InitGameOverScreen(){
     _InsertCoin_1EU->InitTextureMap(19,2);
     _InsertCoin_2EU->InitTextureMap(19,2);
 }
-
-
 
 void TestEngine::InitAudio(){
     audio = new Audio;
@@ -1718,6 +1736,12 @@ bool TestEngine::InitUserObjects(){
     _GameOverScreen->setSize(1280,800);
     _GameOverScreen->setPos(0,0);
 
+    // Level screen
+    _LevelBackground = new ENGINE::BaseObject2D(_ResX,_ResY,"/home/paul/workspace/Frogger/images/FroggerArcade-Tape-Ladebild_70Alpha.png",_Shader);
+    _LevelBackground->setSize(800,600);
+    _LevelBackground->setPos(240,150);
+
+
     // ------------------------------------------
     // Score, Highscore, Time
     // ------------------------------------------
@@ -1742,6 +1766,18 @@ bool TestEngine::InitUserObjects(){
     _GameOver = new COSTUMTEXT::TextBase(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Text32x32_19_2.png",_Shader);
     _GameOver->InitTextureMap(19,2);
     _GameOver->setPos(250,_ResY -150);
+
+    _LevelText = new COSTUMTEXT::TextBase(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Text32x32_19_2.png",_Shader);
+    _LevelText->InitTextureMap(19,2);
+    _LevelText->setPos(200,200);
+    _LevelText->AddText("STARTING NEXT LEVEL");
+    _LevelText->AddText("1");
+    _LevelText->setColor(glm::vec4(1.0,0.2,1.0,1.0));
+    //todo:einen coooolen namen für jeden level finden !!
+    _LevelText->AddText("FUNKY BABY-FROG");
+
+
+    // Alle Texts mit den korrespondierenden chars init.
     InitTextMap();
 
     InitAudio();
