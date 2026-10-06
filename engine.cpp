@@ -578,6 +578,12 @@ void TestEngine::RenderNextLevelScreen(int level){
     string output = "JUMPING TO LEVEL " + sLevel;
     _LevelText->UpdateText(output,0);
 
+    if ((Uint64)level <  LEVEL_NAMES.size()) {
+        _LevelText->UpdateText(LEVEL_NAMES[level],2);
+    }
+    else
+        _LevelText->UpdateText(LEVEL_NAMES[0],2);
+
     _LevelText->RenderText(sPoint(300,300));
 }
 
@@ -657,14 +663,14 @@ void TestEngine::GetNewState(){
 
 
 
-        // Für Testzwecke nachher löschen !!!
-                   audio->ChannelToListen(AUDIO_CHANNEL_StageCleared);
-                   audio->PlaySound(sound_StageCleared,AUDIO_CHANNEL_StageCleared);
-                   GameState = GAMESTATE::StageCleared; // Löschen !!!!!!!!
+        // Für Testzwecke nachher auskommentieren !!!
+                   // audio->ChannelToListen(AUDIO_CHANNEL_StageCleared);
+                   // audio->PlaySound(sound_StageCleared,AUDIO_CHANNEL_StageCleared);
+                   // GameState = GAMESTATE::StageCleared; // Löschen !!!!!!!!
 
-                   int level = (int)_GameLevel;
-                   level++;
-                   _GameLevel = ((GAMELEVEL)level);
+                   // int level = (int)_GameLevel;
+                   // level++;
+                   // _GameLevel = ((GAMELEVEL)level);
 
         _DontRunAgain = true;
 
@@ -1038,6 +1044,7 @@ void TestEngine::Run(){
                 case GAMESTATE::InsertCoins:
                     RenderStartScreen();
                     _UpdateTime = false;
+                    _GameLevel = GAMELEVEL::Level_1;
 
                     if (_FrogCount > 0){
                         // Hintergrund musik "start" aus
@@ -1139,7 +1146,7 @@ void TestEngine::Run(){
                     RenderAvailableFrogs();
 
                     if ( ! snake->AnimationDone())
-                        snake->MoveSprite(0,2,128,64,80,_Step_Snake,0,_Elapsed,true);
+                        snake->MoveSprite(0,2,128,64,80,_Step_Snake,0,_Elapsed);
                     else{
 
                         snake->StartAnimation(0,2);

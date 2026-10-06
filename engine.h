@@ -111,6 +111,14 @@ const int TIMELEVEL_6 = 25;
 
 const int TURTLE_DIVING_TILE                = 5;
 const int TIME_RUNS_OUT                     = 10;
+const std::array<std::string,6> LEVEL_NAMES = {
+    {"FUNKY BABY FROG"   ,
+    "CRAZY OCHSENFROSCH",
+    "BOUNCING PETER"    ,
+    "HERO OF THE DAY"   ,
+    "OUTSTANDING FROGGI",
+     "RAMBO "}
+};
 
 
 static GAMESTATE GameState;
