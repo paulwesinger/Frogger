@@ -574,8 +574,9 @@ void TestEngine::RenderNextLevelScreen(int level){
 
     _LevelBackground->Render();
 
-    string sLevel = std::to_string(++level);
-    _LevelText->UpdateText(sLevel,1);
+    string sLevel = std::to_string(level);
+    string output = "JUMPING TO LEVEL " + sLevel;
+    _LevelText->UpdateText(output,0);
 
     _LevelText->RenderText(sPoint(300,300));
 }
@@ -638,6 +639,13 @@ void TestEngine::GetNewState(){
             audio->ChannelToListen(AUDIO_CHANNEL_StageCleared);
             audio->PlaySound(sound_StageCleared,AUDIO_CHANNEL_StageCleared);
             GameState = GAMESTATE::StageCleared;
+
+
+            int level = (int)_GameLevel;
+            level++;
+            _GameLevel = ((GAMELEVEL)level);
+
+
         }
         else
         if ( ! iscolliding){
@@ -649,10 +657,15 @@ void TestEngine::GetNewState(){
 
 
 
-        // Für Testzwecke
+        // Für Testzwecke nachher löschen !!!
                    audio->ChannelToListen(AUDIO_CHANNEL_StageCleared);
                    audio->PlaySound(sound_StageCleared,AUDIO_CHANNEL_StageCleared);
                    GameState = GAMESTATE::StageCleared; // Löschen !!!!!!!!
+
+                   int level = (int)_GameLevel;
+                   level++;
+                   _GameLevel = ((GAMELEVEL)level);
+
         _DontRunAgain = true;
 
     }
@@ -1024,6 +1037,7 @@ void TestEngine::Run(){
 
                 case GAMESTATE::InsertCoins:
                     RenderStartScreen();
+                    _UpdateTime = false;
 
                     if (_FrogCount > 0){
                         // Hintergrund musik "start" aus
@@ -1044,6 +1058,8 @@ void TestEngine::Run(){
                         }
 
                         RenderAvailableFrogs();
+
+                        RenderNextLevelScreen((int)_GameLevel);
 
                         // Insert coin, startup
                         audio->ChannelToListen(AUDIO_Channel_StartUp);
@@ -1087,7 +1103,6 @@ void TestEngine::Run(){
                     _UpdateTime = true;
                     _TimesIsOut = false;
 
-
                     RenderTime();
                    // RenderFrog();
 
@@ -1105,6 +1120,8 @@ void TestEngine::Run(){
                         RemoveFrogFromList();
                         _DontRunAgain = false;
                     }
+                    else
+                        RenderNextLevelScreen((int)_GameLevel);
                     break;
 
                 case GAMESTATE::Run:
@@ -1296,13 +1313,19 @@ void TestEngine::Run(){
                     RenderTime();
                     RenderArrivedFrogs();
                     RenderAvailableFrogs();
-                    RenderNextLevelScreen((int)_GameLevel);
+
 
                     if (audio->PlaySoundFinished(AUDIO_CHANNEL_StageCleared)) {
 
                         GameState = GAMESTATE::LevelUp;   // ersetzen durch ShiftGamelevel
                         _gameScore += 1000;
                         _FrogCount++;
+
+                        // int level = (int)_GameLevel;
+                        // level++;
+                        // _GameLevel = ((GAMELEVEL)level);
+
+
 
                         int x = _ResX/2 -200 + _AvailableFrogs.size()* 70;
                         ENGINE::Sprite* sprite = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/FrogAvailable64x64.png",_Shader);
@@ -1311,6 +1334,8 @@ void TestEngine::Run(){
                         _AvailableFrogs.push_back(sprite);
 
                     }
+                    else
+                        RenderNextLevelScreen((int)_GameLevel);
 
                     RenderAvailableFrogs();
 
@@ -1329,9 +1354,7 @@ void TestEngine::Run(){
                     ClearArrivedFrogs();
                     RenderArrivedFrogs();
                     audio->PlayBackrgoundSound(sound_MainTheme);
-                    int level = (int)_GameLevel;
-                    level++;
-                    _GameLevel = ((GAMELEVEL)level);
+
                     GameState = GAMESTATE::Loop;
                 }
                     break;
@@ -1770,8 +1793,8 @@ bool TestEngine::InitUserObjects(){
     _LevelText = new COSTUMTEXT::TextBase(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Text32x32_19_2.png",_Shader);
     _LevelText->InitTextureMap(19,2);
     _LevelText->setPos(200,200);
-    _LevelText->AddText("STARTING NEXT LEVEL");
-    _LevelText->AddText("1");
+    _LevelText->AddText("STARTING LEVEL 1");
+    _LevelText->AddText(" ");
     _LevelText->setColor(glm::vec4(1.0,0.2,1.0,1.0));
     //todo:einen coooolen namen für jeden level finden !!
     _LevelText->AddText("FUNKY BABY-FROG");
