@@ -10,6 +10,7 @@ SOURCES += \
         audio.cpp \
         costumtext.cpp \
         engine.cpp \
+        highscoreplayer.cpp \
         levelconfig.cpp \
         main.cpp \
         sprite.cpp
@@ -31,6 +32,7 @@ HEADERS += \
     audio.h \
     costumtext.h \
     engine.h \
+    highscoreplayer.h \
     levelconfig.h \
     matrix2d.h \
     sprite.h \
