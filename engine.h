@@ -12,6 +12,7 @@
 #include "sprite.h"
 #include "costumtext.h"
 #include "levelconfig.h"
+#include "highscoreplayer.h"
 
 
 
@@ -32,6 +33,7 @@ enum GAMESTATE{
     GameOver,
     StageCleared,
     LevelUp,            // Nächster Level
+    ShowTheBest,        // BestenListe anzeigen
     Paused              // Zum testen, später wieder löschen
 };
 
@@ -77,9 +79,6 @@ const int AUDIO_CHANNEL_RaceCar     = 7;
 const int AUDIO_CHANNEL_FrogHomed   = 8;
 const int AUDIO_CHANNEL_StageCleared= 9;
 const int AUDIO_CHANNEL_HurryUp     = 10;
-
-
-
 
 const int FLOATOBJECTS_PER_ROW_5            = 3;
 const int FLOATOBJECTS_PER_ROW_4            = 6;
@@ -326,7 +325,10 @@ private:
 
     uint64_t countelapse = 0;
     int _TimeCounter = 0;
-    std::string stCounter = "120";
+    std::string stCounter = "60";
+
+    std::vector<SCORE::HighScorePlayer*> _BestPlayers;
+    SCORE::HighScorePlayer* _BestPlayer;
 
 
     static void SoundHandler();
@@ -341,6 +343,11 @@ private:
     void InitAudio();
     void InitGameOverScreen();
     void InitLevels();
+
+    // den Score des 5. platzes ermitteln,
+    // ob der aktuelle spieler überhaupt in die bestenliste aufgenommen wird
+    int FifthScore_ofThe_Best();
+    void AddPlayerToHighScoreList(SCORE::HighScorePlayer * player);
 
     void ReleaseVehicles();
 

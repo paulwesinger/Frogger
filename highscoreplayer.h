@@ -25,6 +25,8 @@ public:
     int Score();
     int Level();
     int Rank();
+    bool WriteToDisk();
+    bool ReadFromDisk();
 
 
 protected:

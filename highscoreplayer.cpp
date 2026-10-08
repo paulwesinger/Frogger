@@ -50,3 +50,11 @@ void SCORE::HighScorePlayer::SetScore(int score){
 int SCORE::HighScorePlayer::Score(){
     return _Score;
 }
+
+// ---------------------------------------------------
+
+bool SCORE::HighScorePlayer::WriteToDisk(){
+}
+bool SCORE::HighScorePlayer::ReadFromDisk(){
+    return true;
+}

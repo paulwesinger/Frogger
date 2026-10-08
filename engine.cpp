@@ -56,6 +56,12 @@ TestEngine::~TestEngine(){
         delete sp;
     }
 
+    for(SCORE::HighScorePlayer* p:  _BestPlayers){
+        delete p;
+    }
+
+    _BestPlayers.clear();
+
     _AvailableFrogs.clear();
 
 
@@ -585,6 +591,58 @@ void TestEngine::RenderNextLevelScreen(int level){
         _LevelText->UpdateText(LEVEL_NAMES[0],2);
 
     _LevelText->RenderText(sPoint(300,300));
+}
+
+void TestEngine::AddPlayerToHighScoreList(SCORE::HighScorePlayer *player){
+    if (player == nullptr) return;
+
+    int score = player->Score();
+
+    // Liste[0] == erster platz
+    // Leere Liste, einfach mal reinhängen
+    if(_BestPlayers.size() == 0) {
+        player->SetRank(1);
+        _BestPlayers.push_back(player);
+    }
+    else {
+
+        // auf Rank checken, an den richtigen Rang  einfügen
+        int count = _BestPlayers.size();
+
+        for(int i = 0; i< count; i++){
+            SCORE::HighScorePlayer * p = _BestPlayers[i];
+            if (p == nullptr)
+                continue;
+
+            if (score >= p->Score()){
+                // Checken, ob überhaupt Bester:
+                if (i == 0) {
+                    player->SetRank(1);
+                    _BestPlayers.insert(_BestPlayers.begin(),player);
+                    break;
+                }
+                else{
+                    player->SetRank(i-1);
+                    std::vector<SCORE::HighScorePlayer*>::iterator it = _BestPlayers.begin()+i;
+                    // Vor dem aktuellen player einfügen
+                    _BestPlayers.insert(it,player);
+                    break;
+                }
+            }
+        }
+    }
+
+    // "Re-Rank" the list
+    for(int i = 0; i< _BestPlayers.size();i++)
+        _BestPlayers[i]->SetRank(i+1);
+
+}
+
+int TestEngine::FifthScore_ofThe_Best(){
+    if (_BestPlayers.size() == 0) return 0;  // noch keiner drin
+    if (_BestPlayers.size() < 5) return _BestPlayers[_BestPlayers.size()-1]->Score();
+
+    return _BestPlayers[4]->Score();
 }
 
 void TestEngine::GetNewState(){
@@ -1366,7 +1424,22 @@ void TestEngine::Run(){
                 }
                     break;
 
-                case GAMESTATE::GameOver:                  
+                case GAMESTATE::ShowTheBest: {
+                    // Momentan "dummy"
+                    SCORE::HighScorePlayer* player =
+                        new SCORE::HighScorePlayer("JUMPI WAMPI",_gameScore,(int)_GameLevel,0);
+                    AddPlayerToHighScoreList(player);
+
+                    for(std::vector<SCORE::HighScorePlayer*>::iterator it = _BestPlayers.begin();it < _BestPlayers.end(); it ++){
+                        SCORE::HighScorePlayer p = **it;
+                        std::cout << p.Rank()<< "  " << p.PlayerName() << "   " << p.Score()<< "   " << p.Level() << std::endl;
+                    }
+
+                    _StartNewGame = true;
+                    break;
+                }
+
+                case GAMESTATE::GameOver:{
 
                     // Abspann anzeigen
                     // Score                    
@@ -1381,9 +1454,33 @@ void TestEngine::Run(){
                     // --------------------------
 
                     if (audio->PlaySoundFinished(AUDIO_CHANNEL_GameOver)) {
-                        _StartNewGame = true;
-                    }                  
+
+                        int fithplace = FifthScore_ofThe_Best();
+
+
+                        // ---------------------------------
+                        // Zum testen !!!
+                        // ---------------------------------
+                        //_gameScore = 7500;
+
+                        if (_gameScore > fithplace)  {
+                            // Aufnahme in die 5 Besten liste:
+                            // Todo: Inputmethode für Name
+                            // Anzeigen der 5 Besten
+
+
+
+
+                            GameState = GAMESTATE::ShowTheBest;
+
+                        }
+                        else
+                            _StartNewGame = true;
+                    }
+                }
                     break;
+
+
             }
             SwapWindow();
         }
@@ -1594,6 +1691,31 @@ void TestEngine::InitAudio(){
 bool TestEngine::InitUserObjects(){
 
     bool ret = true;
+
+    // --------------------------
+    // Test des highscore ranking
+    // --------------------------
+
+    int score = 7000;
+    for (int i = 0; i< 5;i++){
+
+        SCORE::HighScorePlayer* player = new SCORE::HighScorePlayer("Wampi",score,i+1,0);
+        _BestPlayers.push_back(player);
+        score -= 1000;
+    }
+
+    SCORE::HighScorePlayer* player = new SCORE::HighScorePlayer("Flatschi",3200,5,0);
+
+    AddPlayerToHighScoreList(player);
+
+    for(int i=0; i<_BestPlayers.size();i++){
+        SCORE::HighScorePlayer p = *_BestPlayers[i];
+        std::cout << p.PlayerName() << "  " << p.Score() << "  " << p.Level() << "  " << p.Rank() << std::endl;
+    }
+
+
+
+
 
     // ----------------------------------------------------------------------
     // Step init, bei jedem höheren level erhöhen, erhöht die geschwindigkeit
