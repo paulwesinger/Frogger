@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <sstream>
 #include <ctime>
+#include <sstream>
 
 #include "engine.h"
 #include <imageloader.h>
@@ -586,10 +587,10 @@ void TestEngine::RenderNextLevelScreen(int level){
     _LevelText->UpdateText(output,0);
 
     if ((Uint64)level <  LEVEL_NAMES.size()) {
-        _LevelText->UpdateText(LEVEL_NAMES[level],2);
+        _LevelText->UpdateText(LEVEL_NAMES[level],1);
     }
     else
-        _LevelText->UpdateText(LEVEL_NAMES[0],2);
+        _LevelText->UpdateText(LEVEL_NAMES[0],1);
 
     _LevelText->RenderText(sPoint(300,300));
 }
@@ -1535,6 +1536,26 @@ void TestEngine::UpdateTime(){
 
 void TestEngine::RenderBestPlayers(){
     _BestPlayersBG->Render();
+
+    int i=0;
+    for(std::vector<SCORE::HighScorePlayer*>::iterator it = _BestPlayers.begin();it < _BestPlayers.end(); it ++){
+        SCORE::HighScorePlayer p = **it;
+    //    std::cout << p.Rank()<< "  " << p.PlayerName() << "   " << p.Score()<< "   " << p.Level() << std::endl;
+
+        stringstream  ss;
+        ss << p.Rank() << "  " << p.PlayerName()<< "    " << p.Score() << "  " << p.Level() ;
+        string result = ss.str();
+        std::cout << result << std::endl;
+        _BestFive->UpdateText(result,i);
+        i++;
+
+    }
+
+
+
+
+    _BestFive->RenderText(sPoint(350,400));
+
 }
 
 void TestEngine::RenderGameOverScreen(){
@@ -1605,6 +1626,7 @@ void TestEngine::InitTextMap(){
      _InsertCoin_2EU->AddMapToMap(_Score->GetCharacters());
      _GameOver->AddMapToMap(_Score->GetCharacters());
      _LevelText->AddMapToMap(_Score->GetCharacters());
+     _BestFive->AddMapToMap(_Score->GetCharacters());
 }
 
 void TestEngine::_ResetTimeCounter(GAMELEVEL level){
@@ -1708,12 +1730,12 @@ bool TestEngine::InitUserObjects(){
     int score = 7000;
     for (int i = 0; i< 5;i++){
 
-        SCORE::HighScorePlayer* player = new SCORE::HighScorePlayer("Wampi",score,i+1,0);
+        SCORE::HighScorePlayer* player = new SCORE::HighScorePlayer("WAMPI",score,i+1,0);
         _BestPlayers.push_back(player);
         score -= 1000;
     }
 
-    SCORE::HighScorePlayer* player = new SCORE::HighScorePlayer("Flatschi",3200,5,0);
+    SCORE::HighScorePlayer* player = new SCORE::HighScorePlayer("FLATSCHI",3200,5,0);
 
     AddPlayerToHighScoreList(player);
 
@@ -1936,10 +1958,19 @@ bool TestEngine::InitUserObjects(){
     _LevelText->InitTextureMap(19,2);
     _LevelText->setPos(200,200);
     _LevelText->AddText("STARTING LEVEL 1");
-    _LevelText->AddText(" ");
     _LevelText->setColor(glm::vec4(1.0,0.2,1.0,1.0));
     //todo:einen coooolen namen für jeden level finden !!
     _LevelText->AddText("FUNKY BABY-FROG");
+
+    _BestFive = new COSTUMTEXT::TextBase(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Text32x32_19_2.png",_Shader);
+    _BestFive->InitTextureMap(19,2);
+    _BestFive->setPos(300,200);
+    _BestFive->AddText("FIRST");
+    _BestFive->AddText("SECOND");
+    _BestFive->AddText("THIRD");
+    _BestFive->AddText("FOURTH");
+    _BestFive->AddText("FITH");
+    _BestFive->setColor(glm::vec4(0.0,0.0,1.0,1.0));
 
 
     // Alle Texts mit den korrespondierenden chars init.

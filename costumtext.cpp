@@ -83,10 +83,16 @@ void COSTUMTEXT::TextBase::RenderText(sPoint pos){
     for(const std::string &st: _StringList) {
         for(char c: st){
 
-            sPoint p = _Characters[c];
-            setPos(x,y);
-            RenderFromAsset(p.x,p.y);
-            x += SpriteSize().w;
+            if ( c == ' ') {
+                x+= SpriteSize().w;
+                setPos(x,pos.y);
+            }
+            else{
+                sPoint p = _Characters[c];
+                setPos(x,y);
+                RenderFromAsset(p.x,p.y);
+                x += SpriteSize().w;
+            }
 
         }
         x = pos.x;

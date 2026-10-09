@@ -598,7 +598,6 @@ void ENGINE::Sprite::RenderFromAsset(int fromcol, int fromrow,bool reverseX,bool
     int index = fromrow * columns + fromcol;
 
     sTileTextureCoords tmp;
-
     if (tilecoordinats.size() > 0 && index < tilecoordinats.size())
         tmp = tilecoordinats.at(index);
     else{
@@ -612,11 +611,11 @@ void ENGINE::Sprite::RenderFromAsset(int fromcol, int fromrow,bool reverseX,bool
     if (reverseX){
         vertsTileMap[0][0] = px+w;      vertsTileMap[0][1] = py + h;  vertsTileMap[0][2] = tmp.sx;            vertsTileMap[0][3] = tmp.sy + tmp.sHeight;
         vertsTileMap[1][0] = px+w;      vertsTileMap[1][1] = py;      vertsTileMap[1][2] = tmp.sx;            vertsTileMap[1][3] = tmp.sy ;
-        vertsTileMap[2][0] = px;  vertsTileMap[2][1] = py;      vertsTileMap[2][2] = tmp.sx+tmp.sWidth; vertsTileMap[2][3] = tmp.sy;
+        vertsTileMap[2][0] = px;        vertsTileMap[2][1] = py;      vertsTileMap[2][2] = tmp.sx+tmp.sWidth; vertsTileMap[2][3] = tmp.sy;
 
         vertsTileMap[3][0] = px+w;      vertsTileMap[3][1] = py + h;  vertsTileMap[3][2] = tmp.sx;             vertsTileMap[3][3] = tmp.sy + tmp.sHeight;
-        vertsTileMap[4][0] = px;   vertsTileMap[4][1] = py;      vertsTileMap[4][2] = tmp.sx+tmp.sWidth;  vertsTileMap[4][3] = tmp.sy;
-        vertsTileMap[5][0] = px;   vertsTileMap[5][1] = py + h;  vertsTileMap[5][2] = tmp.sx+tmp.sWidth;  vertsTileMap[5][3] = tmp.sy + tmp.sHeight;
+        vertsTileMap[4][0] = px;        vertsTileMap[4][1] = py;      vertsTileMap[4][2] = tmp.sx+tmp.sWidth;  vertsTileMap[4][3] = tmp.sy;
+        vertsTileMap[5][0] = px;        vertsTileMap[5][1] = py + h;  vertsTileMap[5][2] = tmp.sx+tmp.sWidth;  vertsTileMap[5][3] = tmp.sy + tmp.sHeight;
 
     }
     else {

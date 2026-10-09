@@ -249,6 +249,7 @@ protected:
     COSTUMTEXT::TextBase * _Time;
     COSTUMTEXT::TextBase * _GameOver;
     COSTUMTEXT::TextBase * _LevelText;
+    COSTUMTEXT::TextBase * _BestFive;
 
     // ---------------------------
     // GameOver screen
