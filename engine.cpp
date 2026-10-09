@@ -78,6 +78,7 @@ TestEngine::~TestEngine(){
     delete _LevelBackground;
     delete _GameOverScreen;
     delete _StartScreen;
+    delete _BestPlayersBG;
 
     // wav freigeben
     Mix_FreeChunk(sound_Hop);
@@ -1425,24 +1426,20 @@ void TestEngine::Run(){
                     break;
 
                 case GAMESTATE::ShowTheBest: {
-                    // Momentan "dummy"
-                    SCORE::HighScorePlayer* player =
-                        new SCORE::HighScorePlayer("JUMPI WAMPI",_gameScore,(int)_GameLevel,0);
-                    AddPlayerToHighScoreList(player);
 
-                    for(std::vector<SCORE::HighScorePlayer*>::iterator it = _BestPlayers.begin();it < _BestPlayers.end(); it ++){
-                        SCORE::HighScorePlayer p = **it;
-                        std::cout << p.Rank()<< "  " << p.PlayerName() << "   " << p.Score()<< "   " << p.Level() << std::endl;
+                    RenderBestPlayers();
+
+                    if (audio->PlaySoundFinished(AUDIO_CHANNEL_StageCleared)){
+
+                        _StartNewGame = true;
                     }
-
-                    _StartNewGame = true;
                     break;
                 }
 
                 case GAMESTATE::GameOver:{
 
                     // Abspann anzeigen
-                    // Score                    
+                    // Score
                     RenderScore();
 
                     // Wir zeigen die verbliebene Zeit, kein update mehr !!
@@ -1455,13 +1452,12 @@ void TestEngine::Run(){
 
                     if (audio->PlaySoundFinished(AUDIO_CHANNEL_GameOver)) {
 
-                        int fithplace = FifthScore_ofThe_Best();
-
 
                         // ---------------------------------
                         // Zum testen !!!
                         // ---------------------------------
-                        //_gameScore = 7500;
+                        _gameScore = 7500;
+                        int fithplace = FifthScore_ofThe_Best();
 
                         if (_gameScore > fithplace)  {
                             // Aufnahme in die 5 Besten liste:
@@ -1469,10 +1465,19 @@ void TestEngine::Run(){
                             // Anzeigen der 5 Besten
 
 
+                            SCORE::HighScorePlayer* player =
+                                new SCORE::HighScorePlayer("JUMPI WAMPI",_gameScore,(int)_GameLevel,0);
+                            AddPlayerToHighScoreList(player);
 
+                            for(std::vector<SCORE::HighScorePlayer*>::iterator it = _BestPlayers.begin();it < _BestPlayers.end(); it ++){
+                                SCORE::HighScorePlayer p = **it;
+                                std::cout << p.Rank()<< "  " << p.PlayerName() << "   " << p.Score()<< "   " << p.Level() << std::endl;
+                            }
+
+                            audio->ChannelToListen(AUDIO_CHANNEL_StageCleared);
+                            audio->PlaySound(sound_StageCleared,AUDIO_CHANNEL_StageCleared);
 
                             GameState = GAMESTATE::ShowTheBest;
-
                         }
                         else
                             _StartNewGame = true;
@@ -1526,6 +1531,10 @@ void TestEngine::UpdateTime(){
             }
         }
     }
+}
+
+void TestEngine::RenderBestPlayers(){
+    _BestPlayersBG->Render();
 }
 
 void TestEngine::RenderGameOverScreen(){
@@ -1893,6 +1902,10 @@ bool TestEngine::InitUserObjects(){
     _LevelBackground->setSize(800,600);
     _LevelBackground->setPos(240,150);
 
+    // Best5Player
+    _BestPlayersBG = new ENGINE::BaseObject2D(_ResX,_ResY,"/home/paul/workspace/Frogger/images/wide-round-frame-gold-laurel-and-crown.png",_Shader);
+    _BestPlayersBG->setSize(1280,960);
+    _BestPlayersBG->setPos(0,0);
 
     // ------------------------------------------
     // Score, Highscore, Time

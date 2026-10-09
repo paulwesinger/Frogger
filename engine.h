@@ -242,6 +242,7 @@ protected:
     ENGINE::BaseObject2D * _StartScreen;
     ENGINE::BaseObject2D * _GameOverScreen;
     ENGINE::BaseObject2D * _LevelBackground;
+    ENGINE::BaseObject2D * _BestPlayersBG;
 
     COSTUMTEXT::TextBase * _HighScore;
     COSTUMTEXT::TextBase * _Score;
@@ -354,6 +355,7 @@ private:
     void RenderBackgroundSprites();
     void RenderStartScreen();
     void RenderGameoverScreen();
+    void RenderBestPlayers();
     void RenderWood();
     void RenderFrog();
     void RenderScore();
