@@ -288,6 +288,14 @@ void TestEngine::HandleMessage(){
        //     GameState= GAMESTATE::StartUpFinished;
             break;
         }
+
+        case BTN_UP_A:
+            break;
+        case BTN_UP_B: // usw
+            break;
+
+        // Input für Namen
+
     }
 }
 
