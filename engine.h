@@ -19,6 +19,7 @@
 
 enum GAMESTATE{
     Starting =0,        // Startupsound, spielstart
+    InputPlayerName,
     StartUpFinished,    // Splash screen weg, Endlos  sound staten
     InsertCoins,        // 1 oder 2 € == 3 oder 7 Froggis
     Loop,
@@ -239,10 +240,11 @@ protected:
     // --------------------------
     // Splash Screen
     // --------------------------
-    ENGINE::BaseObject2D * _StartScreen;
-    ENGINE::BaseObject2D * _GameOverScreen;
-    ENGINE::BaseObject2D * _LevelBackground;
-    ENGINE::BaseObject2D * _BestPlayersBG;
+    ENGINE::BaseObject2D * _StartScreen =       nullptr;
+    ENGINE::BaseObject2D * _GameOverScreen =    nullptr;
+    ENGINE::BaseObject2D * _LevelBackground =   nullptr;
+    ENGINE::BaseObject2D * _BestPlayersBG =     nullptr;
+    ENGINE::BaseObject2D * _InputBG =           nullptr;
 
     COSTUMTEXT::TextBase * _HighScore;
     COSTUMTEXT::TextBase * _Score;
@@ -250,6 +252,7 @@ protected:
     COSTUMTEXT::TextBase * _GameOver;
     COSTUMTEXT::TextBase * _LevelText;
     COSTUMTEXT::TextBase * _BestFive;
+    COSTUMTEXT::TextBase * _PlayerName;
 
     // ---------------------------
     // GameOver screen
@@ -310,11 +313,13 @@ private:
     bool _StartNewGame;
     bool _TimesIsOut = false;
     bool _Randomrunning = false;
+    bool _NameInputDone = false;
 
     GAMESTATE _Oldstate;  // zum restaurieren nach _Pause
 
     int _FrogCount;
     string keyboardtext;
+    string _CurrentPlayerName = "";
 
     int _TileX;
     int _TileY;
@@ -353,6 +358,7 @@ private:
 
     void ReleaseVehicles();
 
+    void RenderNameInputScreen();
     void RenderBackgroundSprites();
     void RenderStartScreen();
     void RenderGameoverScreen();
@@ -365,7 +371,7 @@ private:
     void RenderTurtles();
     void RenderVehicles();
     void RenderArrivedFrogs();
-    void RenderCrocos();
+    void RenderCrocos();    
     int GetFloatingStep();
     void StartDieAnimation(int starttile, int endtile); // Der Frosch darf nich leiden..
 };

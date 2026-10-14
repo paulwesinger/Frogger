@@ -75,11 +75,13 @@ TestEngine::~TestEngine(){
     delete _InsertCoin_1EU;
     delete _InsertCoin_2EU;
     delete _LevelText;
+    delete _PlayerName;
 
     delete _LevelBackground;
     delete _GameOverScreen;
     delete _StartScreen;
     delete _BestPlayersBG;
+    delete _InputBG;
 
     // wav freigeben
     Mix_FreeChunk(sound_Hop);
@@ -268,13 +270,13 @@ void TestEngine::HandleMessage(){
             if (_Pause) {
                 GameState = _Oldstate; // State wieder herstellen
                 break;
-
             }
             else{
                 _Oldstate = GameState;
                 GameState = GAMESTATE::Paused;
             }
             _Pause = ! _Pause;  // Toggle the Pause state
+
             break;
         }
         case BTN_UP_F1_KEY: {
@@ -289,10 +291,119 @@ void TestEngine::HandleMessage(){
             break;
         }
 
+        case BTN_UP_ENTER:
+            _NameInputDone = true;
+            break;
         case BTN_UP_A:
+            _CurrentPlayerName += 'A';
             break;
         case BTN_UP_B: // usw
+            _CurrentPlayerName += 'B';
             break;
+        case BTN_UP_C:
+            _CurrentPlayerName += 'C';
+            break;
+        case BTN_UP_D: // usw
+            _CurrentPlayerName += 'D';
+            break;
+        case BTN_UP_E:
+            _CurrentPlayerName += 'E';
+            break;
+        case BTN_UP_F:
+            _CurrentPlayerName += 'F';
+            break;
+        case BTN_UP_G:
+            _CurrentPlayerName += 'G';
+            break;
+        case BTN_UP_H:
+            _CurrentPlayerName += 'H';
+            break;
+        case BTN_UP_I:
+            _CurrentPlayerName += 'I';
+            break;
+        case BTN_UP_J:
+            _CurrentPlayerName += 'J';
+            break;
+        case BTN_UP_K:
+            _CurrentPlayerName += 'K';
+            break;
+        case BTN_UP_L:
+            _CurrentPlayerName += 'L';
+            break;
+        case BTN_UP_M:
+            _CurrentPlayerName += 'M';
+            break;
+        case BTN_UP_N:
+            _CurrentPlayerName += 'N';
+            break;
+        case BTN_UP_O:
+            _CurrentPlayerName += 'O';
+            break;
+        case BTN_UP_P:
+            _CurrentPlayerName += 'P';
+            break;
+        case BTN_UP_Q:
+            _CurrentPlayerName += 'Q';
+            break;
+        case BTN_UP_R:
+            _CurrentPlayerName += 'R';
+            break;
+        case BTN_UP_S:
+            _CurrentPlayerName += 'S';
+            break;
+        case BTN_UP_T:
+            _CurrentPlayerName += 'T';
+            break;
+        case BTN_UP_U:
+            _CurrentPlayerName += 'U';
+            break;
+        case BTN_UP_V:
+            _CurrentPlayerName += 'V';
+            break;
+        case BTN_UP_W:
+            _CurrentPlayerName += 'W';
+            break;
+        case BTN_UP_X:
+            _CurrentPlayerName += 'X';
+            break;
+        case BTN_UP_Y:
+            _CurrentPlayerName += 'Y';
+            break;
+        case BTN_UP_Z:
+            _CurrentPlayerName += 'Z';
+            break;
+
+        case BTN_UP_0:
+            _CurrentPlayerName += '0';
+            break;
+        case BTN_UP_1:
+            _CurrentPlayerName += '1';
+            break;
+        case BTN_UP_2:
+            _CurrentPlayerName += '2';
+            break;
+        case BTN_UP_3:
+            _CurrentPlayerName += '3';
+            break;
+        case BTN_UP_4:
+            _CurrentPlayerName += '4';
+            break;
+        case BTN_UP_5:
+            _CurrentPlayerName += '5';
+            break;
+        case BTN_UP_6:
+            _CurrentPlayerName += '6';
+            break;
+        case BTN_UP_7:
+            _CurrentPlayerName += '7';
+            break;
+        case BTN_UP_8:
+            _CurrentPlayerName += '8';
+            break;
+        case BTN_UP_9:
+            _CurrentPlayerName += '9';
+            break;
+
 
         // Input für Namen
 
@@ -1029,6 +1140,17 @@ int TestEngine::RandomGenerator(){
     // return dist6(rng);
 }
 
+void TestEngine::RenderNameInputScreen(){
+    if (_InputBG == nullptr) return;
+    _InputBG->setColor(glm::vec4(0.0,0.8,0.0,1.0));
+    _InputBG->Render();
+    _PlayerName->UpdateText(_CurrentPlayerName,0);
+    _PlayerName->RenderText(sPoint(350,500));
+
+    //_PlayerName->RenderText(350,500);
+
+}
+
 void TestEngine::Run(){
     glEnable(GL_DEPTH_TEST);
     //LoadSurface("/home/paul/workspace/GLFrameWork/images/standard/errorAlpha.png");
@@ -1099,26 +1221,28 @@ void TestEngine::Run(){
                 break;
 
                 case GAMESTATE::Starting:
-
-                    RenderStartScreen();
-
-                    //if (audio->PlaySoundFinished(AUDIO_Channel_StartUp)){
-                        GameState = GAMESTATE::InsertCoins;
-                       // audio->PlayBackrgoundSound(sound_MainTheme,1);
-                        ResetGame();
-                    //}
+                    RenderStartScreen();                    
+                    GameState = GAMESTATE::InsertCoins;
+                    ResetGame();
                     break;
 
                 case GAMESTATE::InsertCoins:
                     RenderStartScreen();
                     _UpdateTime = false;
                     _GameLevel = GAMELEVEL::Level_1;
+                    _CurrentPlayerName = "";
 
                     if (_FrogCount > 0){
                         // Hintergrund musik "start" aus
-                        audio->HaltMusic();
-                        GameState= GAMESTATE::StartUpFinished;
+                        audio->HaltMusic();                     
+                        GameState = GAMESTATE::InputPlayerName;
+                    }
+                    break;
 
+                case GAMESTATE::InputPlayerName:
+
+                    RenderNameInputScreen();
+                    if (_NameInputDone) {
                         // Available Frogs laden
 
                         int x = _ResX/2-200;
@@ -1132,14 +1256,15 @@ void TestEngine::Run(){
                             x+=70;
                         }
 
-                        RenderAvailableFrogs();
-
-                        RenderNextLevelScreen((int)_GameLevel);
-
                         // Insert coin, startup
                         audio->ChannelToListen(AUDIO_Channel_StartUp);
                         audio->PlaySound(sound_Startup,AUDIO_Channel_StartUp);
+
+                        GameState = GAMESTATE::StartUpFinished;
+                        // flag gleich wieder zurücksetzen
+                        _NameInputDone = false;
                     }
+
                     break;
 
                 case GAMESTATE::Loop:
@@ -1152,8 +1277,6 @@ void TestEngine::Run(){
                     RenderCrocos();
                     RenderTime();
                     RenderAvailableFrogs();
-
-
 
                     frog->SetPosition(608,802);
                     snake->SetPosition(_ResX,800);
@@ -1174,6 +1297,8 @@ void TestEngine::Run(){
                     RenderArrivedFrogs();
                     RenderCrocos();
                     RenderAvailableFrogs();
+                    //RenderAvailableFrogs();
+                    RenderNextLevelScreen((int)_GameLevel);
 
                     _UpdateTime = true;
                     _TimesIsOut = false;
@@ -1465,7 +1590,9 @@ void TestEngine::Run(){
                         // ---------------------------------
                         // Zum testen !!!
                         // ---------------------------------
-                        _gameScore = 7500;
+                        //_gameScore = 7500;
+                        // ---------------------------------
+
                         int fithplace = FifthScore_ofThe_Best();
 
                         if (_gameScore > fithplace)  {
@@ -1473,9 +1600,8 @@ void TestEngine::Run(){
                             // Todo: Inputmethode für Name
                             // Anzeigen der 5 Besten
 
-
                             SCORE::HighScorePlayer* player =
-                                new SCORE::HighScorePlayer("JUMPI WAMPI",_gameScore,(int)_GameLevel,0);
+                                new SCORE::HighScorePlayer(_CurrentPlayerName,_gameScore,(int)_GameLevel,0);
                             AddPlayerToHighScoreList(player);
 
                             for(std::vector<SCORE::HighScorePlayer*>::iterator it = _BestPlayers.begin();it < _BestPlayers.end(); it ++){
@@ -1489,7 +1615,7 @@ void TestEngine::Run(){
                             GameState = GAMESTATE::ShowTheBest;
                         }
                         else
-                            _StartNewGame = true;
+                            _StartNewGame = true;  // bzw. Namen eingeben?
                     }
                 }
                     break;
@@ -1635,6 +1761,7 @@ void TestEngine::InitTextMap(){
      _GameOver->AddMapToMap(_Score->GetCharacters());
      _LevelText->AddMapToMap(_Score->GetCharacters());
      _BestFive->AddMapToMap(_Score->GetCharacters());
+     _PlayerName->AddMapToMap(_Score->GetCharacters());
 }
 
 void TestEngine::_ResetTimeCounter(GAMELEVEL level){
@@ -1937,6 +2064,10 @@ bool TestEngine::InitUserObjects(){
     _BestPlayersBG->setSize(1280,960);
     _BestPlayersBG->setPos(0,0);
 
+    _InputBG = new ENGINE::BaseObject2D(_ResX,_ResY/*,"/home/paul/workspace/Frogger/images/wide-round-frame-gold-laurel-and-crown.png"*/,_Shader) ;
+    _InputBG ->setSize(640,200);
+    _InputBG->setPos(320,500);
+
     // ------------------------------------------
     // Score, Highscore, Time
     // ------------------------------------------
@@ -1961,6 +2092,11 @@ bool TestEngine::InitUserObjects(){
     _GameOver = new COSTUMTEXT::TextBase(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Text32x32_19_2.png",_Shader);
     _GameOver->InitTextureMap(19,2);
     _GameOver->setPos(250,_ResY -150);
+
+    _PlayerName = new COSTUMTEXT::TextBase(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Text32x32_19_2.png",_Shader);
+    _PlayerName->InitTextureMap(19,2);
+    _PlayerName->setColor(glm::vec4(1.0,0.8,0.7,1.0));
+    _PlayerName->AddText("WHOAMI");
 
     _LevelText = new COSTUMTEXT::TextBase(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Text32x32_19_2.png",_Shader);
     _LevelText->InitTextureMap(19,2);
