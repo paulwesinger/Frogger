@@ -4,7 +4,8 @@
 #include <iomanip>
 #include <sstream>
 #include <ctime>
-#include <sstream>
+#include <fstream>
+#include <bits/stdc++.h>
 
 #include "engine.h"
 #include <imageloader.h>
@@ -1146,9 +1147,6 @@ void TestEngine::RenderNameInputScreen(){
     _InputBG->Render();
     _PlayerName->UpdateText(_CurrentPlayerName,0);
     _PlayerName->RenderText(sPoint(350,500));
-
-    //_PlayerName->RenderText(350,500);
-
 }
 
 void TestEngine::Run(){
@@ -1556,17 +1554,6 @@ void TestEngine::Run(){
                     audio->PlayBackrgoundSound(sound_MainTheme);
 
                     GameState = GAMESTATE::Loop;
-                }
-                    break;
-
-                case GAMESTATE::ShowTheBest: {
-
-                    RenderBestPlayers();
-
-                    if (audio->PlaySoundFinished(AUDIO_CHANNEL_StageCleared)){
-
-                        _StartNewGame = true;
-                    }
                     break;
                 }
 
@@ -1590,7 +1577,7 @@ void TestEngine::Run(){
                         // ---------------------------------
                         // Zum testen !!!
                         // ---------------------------------
-                        //_gameScore = 7500;
+                        //_gameScore = 6500;
                         // ---------------------------------
 
                         int fithplace = FifthScore_ofThe_Best();
@@ -1602,12 +1589,7 @@ void TestEngine::Run(){
 
                             SCORE::HighScorePlayer* player =
                                 new SCORE::HighScorePlayer(_CurrentPlayerName,_gameScore,(int)_GameLevel,0);
-                            AddPlayerToHighScoreList(player);
-
-                            for(std::vector<SCORE::HighScorePlayer*>::iterator it = _BestPlayers.begin();it < _BestPlayers.end(); it ++){
-                                SCORE::HighScorePlayer p = **it;
-                                std::cout << p.Rank()<< "  " << p.PlayerName() << "   " << p.Score()<< "   " << p.Level() << std::endl;
-                            }
+                            AddPlayerToHighScoreList(player);                          
 
                             audio->ChannelToListen(AUDIO_CHANNEL_StageCleared);
                             audio->PlaySound(sound_StageCleared,AUDIO_CHANNEL_StageCleared);
@@ -1617,9 +1599,20 @@ void TestEngine::Run(){
                         else
                             _StartNewGame = true;  // bzw. Namen eingeben?
                     }
-                }
                     break;
+                }
 
+                case GAMESTATE::ShowTheBest: {
+
+                    RenderBestPlayers();
+
+                    if (audio->PlaySoundFinished(AUDIO_CHANNEL_StageCleared)){
+                        WriteTheBestToDisk();
+
+                        _StartNewGame = true;
+                    }
+                    break;
+                }
 
             }
             SwapWindow();
@@ -1684,9 +1677,6 @@ void TestEngine::RenderBestPlayers(){
         i++;
 
     }
-
-
-
 
     _BestFive->RenderText(sPoint(350,400));
 
@@ -1854,6 +1844,72 @@ void TestEngine::InitAudio(){
     audio->MusicVolume(32);
 }
 
+bool TestEngine::WriteTheBestToDisk(){
+    std::ofstream bestfile(PATHTOBESTPLAYERS); // Kein append !!
+    if ( ! bestfile.is_open()) return false;
+
+
+    int i = 0;
+    for (std::vector<SCORE::HighScorePlayer*>::iterator it = _BestPlayers.begin(); it != _BestPlayers.end(); it++){
+        SCORE::HighScorePlayer p = **it;
+        bestfile << p.Rank()  <<";"<<p.PlayerName()<<";"<< p.Score()<<";"<< p.Level()<<  std::endl;
+        i++;
+        if (i > 9)
+            break; // Nur max. 10 schreiben
+    }
+
+    bestfile.close();
+    return true;
+}
+
+bool TestEngine::ReadBestFromDisk(){
+    std::ifstream bestfile(PATHTOBESTPLAYERS);
+    if ( ! bestfile.is_open()) return false;
+    std::string line;
+
+    // Todo: ersetzen durech release funktion
+    if (! _BestPlayers.empty()){
+        for(SCORE::HighScorePlayer* p:  _BestPlayers){
+            delete p;
+        }
+        _BestPlayers.clear();
+    }
+
+
+    // Zeile aus datei lesen
+    while (std::getline(bestfile,line)){
+        // stringstream ss (line);
+        // string rank,name,score,level;
+        // std::getline(ss,rank,";");
+        // getline(ss,name,";");
+        // getline(ss,score,";");
+        // getline(ss,name,";");
+        string split[4];
+        regex del(";");
+
+        sregex_token_iterator it(line.begin(),line.end(),del,-1);
+        sregex_token_iterator end;
+
+        int i = 0;
+        while(it != end){
+            split[i] = *it;
+            it++;
+            i++;
+        }
+
+        int rank = std::stoi(split[0]);
+        string name = split[1];
+        int score = std::stoi(split[2]);
+        int level = std::stoi(split[3]);
+
+        SCORE::HighScorePlayer* player = new SCORE::HighScorePlayer(name,score,rank,level);
+        _BestPlayers.push_back(player);
+
+    }
+    return true;
+
+}
+
 bool TestEngine::InitUserObjects(){
 
     bool ret = true;
@@ -1861,28 +1917,20 @@ bool TestEngine::InitUserObjects(){
     // --------------------------
     // Test des highscore ranking
     // --------------------------
+     // int score = 7000;
+     // for (int i = 0; i< 5;i++){
 
-    int score = 7000;
-    for (int i = 0; i< 5;i++){
+     //     SCORE::HighScorePlayer* player = new SCORE::HighScorePlayer("FLATSCHI",score,i+1,0);
+     //     _BestPlayers.push_back(player);
+     //     score -= 1000;
+     // }
 
-        SCORE::HighScorePlayer* player = new SCORE::HighScorePlayer("WAMPI",score,i+1,0);
-        _BestPlayers.push_back(player);
-        score -= 1000;
-    }
+    // for(int i=0; i<_BestPlayers.size();i++){
+    //     SCORE::HighScorePlayer p = *_BestPlayers[i];
+    //     std::cout << p.PlayerName() << "  " << p.Score() << "  " << p.Level() << "  " << p.Rank() << std::endl;
+    // }
 
-    SCORE::HighScorePlayer* player = new SCORE::HighScorePlayer("FLATSCHI",3200,5,0);
-
-    AddPlayerToHighScoreList(player);
-
-    for(int i=0; i<_BestPlayers.size();i++){
-        SCORE::HighScorePlayer p = *_BestPlayers[i];
-        std::cout << p.PlayerName() << "  " << p.Score() << "  " << p.Level() << "  " << p.Rank() << std::endl;
-    }
-
-
-
-
-
+    ReadBestFromDisk();
     // ----------------------------------------------------------------------
     // Step init, bei jedem höheren level erhöhen, erhöht die geschwindigkeit
     // ----------------------------------------------------------------------
@@ -1908,10 +1956,6 @@ bool TestEngine::InitUserObjects(){
 
     _StartNewGame = false;
     _FrogCount = 0;
-
-    // _FirstFrogPos.x = _ResX / 2;
-    // _FirstFrogPos.y = _ResY - 90;
-
 
     if (AddTextDisplayWithBackground(100,100,0,"FPS Display with background")){
 

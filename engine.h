@@ -120,6 +120,8 @@ const std::array<std::string,6> LEVEL_NAMES = {
      "RAMBO "}
 };
 
+const std::string PATHTOBESTPLAYERS = "/home/paul/workspace/Frogger/BestPlayers/Best.txt";
+
 
 static GAMESTATE GameState;
 
@@ -162,6 +164,13 @@ protected:
     // Für den nächsten Level wieder alle freigeben
     // --------------------------------------------
     void ClearArrivedFrogs();
+
+    // --------------------------------------------
+    // Die besten 10 auf die Disk speichern
+    // Wir nehmen einen constanten Pfadnamen
+    // --------------------------------------------
+    bool WriteTheBestToDisk();
+    bool ReadBestFromDisk();
 
     //static Uint32 _TimerCallback(Uint32,void*);
 
