@@ -254,6 +254,7 @@ protected:
     ENGINE::BaseObject2D * _LevelBackground =   nullptr;
     ENGINE::BaseObject2D * _BestPlayersBG =     nullptr;
     ENGINE::BaseObject2D * _InputBG =           nullptr;
+    ENGINE::BaseObject2D * _SchmuckRahmen   =   nullptr;
 
     COSTUMTEXT::TextBase * _HighScore;
     COSTUMTEXT::TextBase * _Score;

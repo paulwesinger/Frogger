@@ -1143,10 +1143,14 @@ int TestEngine::RandomGenerator(){
 
 void TestEngine::RenderNameInputScreen(){
     if (_InputBG == nullptr) return;
-    _InputBG->setColor(glm::vec4(0.0,0.8,0.0,1.0));
+    if (_SchmuckRahmen == nullptr) return;
+
+    //_InputBG->setColor(glm::vec4(0.0,0.0,0.5,1.0));
     _InputBG->Render();
-    _PlayerName->UpdateText(_CurrentPlayerName,0);
-    _PlayerName->RenderText(sPoint(350,500));
+    _SchmuckRahmen->Render();
+
+    _PlayerName->UpdateText(_CurrentPlayerName,1);
+    _PlayerName->RenderText(sPoint(470,460));
 }
 
 void TestEngine::Run(){
@@ -2108,9 +2112,16 @@ bool TestEngine::InitUserObjects(){
     _BestPlayersBG->setSize(1280,960);
     _BestPlayersBG->setPos(0,0);
 
-    _InputBG = new ENGINE::BaseObject2D(_ResX,_ResY/*,"/home/paul/workspace/Frogger/images/wide-round-frame-gold-laurel-and-crown.png"*/,_Shader) ;
+    _InputBG = new ENGINE::BaseObject2D(_ResX,_ResY,_Shader);
     _InputBG ->setSize(640,200);
-    _InputBG->setPos(320,500);
+    _InputBG->setPos(320,400);
+    _InputBG->setColor(glm::vec4(0.4,0.4,0.7,0.3));
+
+    _SchmuckRahmen = new ENGINE::BaseObject2D(_ResX,_ResY,"/home/paul/workspace/Frogger/images/SchmuckRahmen800x800.png",_Shader) ;
+    _SchmuckRahmen->setSize(640,200);
+    _SchmuckRahmen->setPos(320,400);
+    _SchmuckRahmen->setColor(glm::vec4(0.0,1.0,0.0,1.0));
+
 
     // ------------------------------------------
     // Score, Highscore, Time
@@ -2140,6 +2151,7 @@ bool TestEngine::InitUserObjects(){
     _PlayerName = new COSTUMTEXT::TextBase(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Text32x32_19_2.png",_Shader);
     _PlayerName->InitTextureMap(19,2);
     _PlayerName->setColor(glm::vec4(1.0,0.8,0.7,1.0));
+    _PlayerName->AddText("DEIN NAME");
     _PlayerName->AddText("WHOAMI");
 
     _LevelText = new COSTUMTEXT::TextBase(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Text32x32_19_2.png",_Shader);
