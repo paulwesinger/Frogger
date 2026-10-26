@@ -109,6 +109,15 @@ const int TIMELEVEL_4 = 35;
 const int TIMELEVEL_5 = 30;
 const int TIMELEVEL_6 = 25;
 
+
+/* -----------------------------------------------------------------------------
+ * Neues Dessign für Level:
+ * int Objects_Row_1 = [je nach Levelstufe dekremntieren..]
+ *
+ * -----------------------------------------------------------------------------
+ */
+
+
 const int TURTLE_DIVING_TILE                = 5;
 const int TIME_RUNS_OUT                     = 10;
 const std::array<std::string,6> LEVEL_NAMES = {
@@ -120,7 +129,7 @@ const std::array<std::string,6> LEVEL_NAMES = {
      "RAMBO "}
 };
 
-const std::string PATHTOBESTPLAYERS = "/home/paul/workspace/Frogger/BestPlayers/Best.txt";
+
 
 
 static GAMESTATE GameState;
@@ -290,6 +299,8 @@ protected:
     uint64_t _TimerGameOver;
 
 private:
+
+    std::string PATHTOBESTPLAYERS = "/home/paul/workspace/Frogger/BestPlayers/Best.txt";
 
     // ----------------------------------------
     // X-Steps für cars, Bäume usw..
