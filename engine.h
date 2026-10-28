@@ -255,6 +255,8 @@ protected:
     // Der Frog ist im ziel
     ENGINE::Sprite* FrogArrived[VEHICLES_PER_ROW_7];
 
+
+
     // --------------------------
     // Splash Screen
     // --------------------------
