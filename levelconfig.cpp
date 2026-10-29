@@ -1,53 +1,41 @@
 #include "levelconfig.h"
 
-CONFIG::LevelConfig::LevelConfig() {}
+CONFIG::AnyLevel::AnyLevel() {}
 
-
-CONFIG::LevelConfig::~LevelConfig(){
-
-
-    for (auto & paar: Levels){
-        paar.second.clear();
-    }
-    Levels.clear();
-}
-
-void CONFIG::LevelConfig::AddLevelConfiguration(LevelRow config,int level){
-
-//    Levels.insert_or_assign(level,config);
-    if (Levels.contains(level)) {
-        Levels[level].push_back(config);
-    }
-    else{
-
-        std::vector<LevelRow> tmp;
-        tmp.push_back(config);
-
-        Levels.insert(std::make_pair(level,tmp) );
-    }
-
+CONFIG::AnyLevel::AnyLevel(int level,int timeperlevel,std::vector<Row> rows){
 
 }
 
-// ENGINE::CONFIG::LevelConfigurations ENGINE::CONFIG::GetLevelConfig(int level){
+CONFIG::AnyLevel::~AnyLevel(){
 
-//     std::vector<LevelConfigurations>::iterator it = std::vector<LevelConfigurations>.begin();
-
-//     for (std::vector<LevelConfigurations>::iterator it =  std::vector<LevelConfigurations>.begin();
-//          it <  std::vector<LevelConfigurations>.begin(); it ++){
-
-//         if (it->Level == level) {
-//             return it->Rows;
-
-
-//         }
-//     }
-// }
-
-std::vector<CONFIG::LevelConfigurations> CONFIG::LevelConfig::LevelConfiguration(){
-
-        return LevelsConfig;
-        // std::vector<ENGINE::CONFIG::LevelConfigurations> ::iterator it =
-        //     std::vector<ENGINE::CONFIG::LevelConfigurations>.at(level);
-        // return LevelRowsConfig[level];
 }
+
+void CONFIG::AnyLevel::AddLevelConfiguration(Level level){
+    _Levels.push_back(level);
+}
+
+void CONFIG::AnyLevel::AddLevelConfiguration(int level, int timeperlevel, std::vector<Row> row){
+    Level l(level,timeperlevel,row);
+    _Levels.push_back(l);
+}
+
+std::vector<CONFIG::Level> CONFIG::AnyLevel::GetAllLevels(){
+    return _Levels;
+}
+
+CONFIG::Level CONFIG::AnyLevel::GetLevelData(int level){
+    CONFIG::Level emptylevel;
+    if (level >= _Levels.size()) return emptylevel;
+
+    return _Levels[level];
+}
+
+std::vector<CONFIG::Row>CONFIG::AnyLevel::GetLevelRows(int level){
+    std::vector<CONFIG::Row> emptyRow;
+
+    if (level >= _Levels.size()) return emptyRow;
+    if (level < 0) return emptyRow;
+
+    return _Levels[level].Rows;
+}
+

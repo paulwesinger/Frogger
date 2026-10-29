@@ -5,91 +5,93 @@
 #include <iostream>
 #include <map>
 #include <memory>
+#include <sprite.h>
 
 
 namespace CONFIG{
 
 /*
  * Layout:
- *
- * enum ENEMYTYPE{
- *  Croco = 0,
- *  Snake ,
- *  Biber
- * }
- *
+ */
+ enum ENEMYTYPE{
+    Croco = 0,
+    Snake ,
+    Biber
+};
+ /*
  *
  *
  * Level  (int), TimePerLevel)  |
- *                              | vector<Row [Count_Objects,[Enemiy[Frames]],Step]>
+ *                              | vector<Row [Count_Objects,[Enemiy[Frames]],Step]>  --> vector[0] == Row 1, vector[1] == Row 8, usw...
  *
- *
- * struct Row{
+ *-------------------------------------------------------------------------------------------------------------------------------------
+ * typedef struct Row{
  *   vector<Sprite*> Objects
  *   vector<Sprite*> Enemies
- *   Enemietype tpye --> für die animation.Biber ist im Waser zwichen dem Holz, Snke eigentlich überall, Croco im Wasser..
- *   int Step
+ *   Enemietype tpye --> für die animation.Biber ist im Waser zwichen dem Holz, Snake eigentlich überall, Croco im Wasser..
+ *   int Step  // Geschwindigkeit der objeckte.
  * }
  *
- * struct Level{
+ * typedef struct Level{
  *  int _Level
  *  int _TimePerLevel
  *  vector<Row>
  * }
+ *-------------------------------------------------------------------------------------------------------------------------------------
  *
  * Initialisieren:
  * Row row(vector,vector,enemietype,step) // Gap zwischen den objekten ?
+ *          davon brauchen wir beim Frogger 9 pro Level!
  *
  * Level level(Level1,TIME_LEVEL1, row)
  *
  * Für Class LevelConfig:
  *
- * LevelConfig->AddLevel(Level level,Row row)
- *              AddLevel(LEVEL_1,TIME_LEVEL_n,vector,vector,enemietype,step)
+ * LevelConfig->AddLevel(Level level,Row row);
+ *              AddLevel(LEVEL_1,TIME_LEVEL_n,vector,vector,enemietype,step);
  *
 */
 
-typedef struct sLevelRow {
-    int CountObjects;
+typedef struct sRow {
+    std::vector<ENGINE::Sprite*> Objects;
+    std::vector<ENGINE::Sprite*> Enemies;
+
+    ENEMYTYPE Enemytype;
     int Step;
-    int TimePerLevel;
-    sLevelRow(){}
-    sLevelRow(int _countobjects,int _step, int _timeperlevel) : CountObjects(_countobjects),
-            Step(_step), TimePerLevel(_timeperlevel){}
-} LevelRow;
 
+    sRow(){}
+    sRow(std::vector<ENGINE::Sprite*> objects,std::vector<ENGINE::Sprite*> enemies, ENEMYTYPE enemytype,int _step) : Objects(objects),
+            Enemies(enemies),Step(_step){
+        Enemytype = enemytype;
+    }
+} Row;
 
-
-typedef struct sLevelConfigurations {
-    std::vector<LevelRow> Rows;
+typedef struct sLevel {
     int Level;
-}LevelConfigurations;
+    int TimePerLevel;
+    std::vector<Row> Rows;
 
+    sLevel(){}
+    sLevel(int level, int timeperlevel,std::vector<Row> rows):
+        Level(level),TimePerLevel(timeperlevel),Rows(rows){}
+}Level;
 
-
-class LevelConfig
+class AnyLevel
 {
 public:
-    LevelConfig();
-    ~LevelConfig();
+    AnyLevel();
+    AnyLevel(int level,int timeperlevel,std::vector<Row> rows);
+    ~AnyLevel();
+    void AddLevelConfiguration(Level level);
+    void AddLevelConfiguration(int level,int timeperlevel,std::vector<Row> row);
+    std::vector<Row> GetLevelRows(int level);
 
-
-
-    void AddLevelConfiguration(LevelRow config, int level);
-
-    // Alle LEvel Config zurück
-    std::vector<LevelConfigurations> LevelConfiguration();
-    //LevelConfigurations GetLevelConfig(int level);
-
+    std::vector<Level> GetAllLevels();
+    Level GetLevelData(int level);
 
 private:
+    std::vector<Level> _Levels;
 
-    std::map<int,std::vector<LevelRow>> Levels;
-
-
-
-
-    std::vector<LevelConfigurations> LevelsConfig;
 
 };
 } //CONFIG

@@ -34,6 +34,30 @@ TestEngine::~TestEngine(){
     delete frogdeath;
     delete Croco_Row_3;
 
+    // for(std::vector<CONFIG::Level> level : _AnyLevel->GetAllLevels()){
+
+    //     int i =0;
+    //     for(std::vector<CONFIG::Row> row : level.GetLevelRows(i++)){
+
+    //         // Release the objects
+    //         std::vector<ENGINE::Sprite*> sp = row.Objects;
+
+    //         for (std::vector<ENGINE::Sprite*> s: sp)
+    //             delete s;
+    //         row.Objects.clear();
+
+    //         // Release Enemies
+    //         sp = row.Enemies;
+    //         for (std::vector<ENGINE::Sprite*> s: sp)
+    //             delete s;
+    //         row.Enemies.clear();
+    //     }
+
+    //     _AnyLevel->GetAllLevels().clear();
+    // }
+
+
+
     for(int i=0; i< MAX_TILE_X; i++)
         delete StreetBlocksBottom[i];
 
@@ -1783,12 +1807,16 @@ string TestEngine::_Score2String(){
 }
 
 void TestEngine::InitLevels(){
+    _AnyLevel = new CONFIG::AnyLevel();
 
-    CONFIG::LevelRow row;
-
-    row.CountObjects = 4; row.Step = 4; row.TimePerLevel = 200;
-
-    _LevelConfig.AddLevelConfiguration(row,1);
+    // CONFIG::Row r1;
+    // CONFIG::Row r2;
+    // // .....
+    // // .....
+    // std::vector<CONFIG::Row> rows;
+    // rows.push_back(r1);
+    // rows.push_back(r2);
+    // _AnyLevel->AddLevelConfiguration(1,60,rows);
 
 }
 

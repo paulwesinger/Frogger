@@ -153,7 +153,7 @@ public:
 
 protected:
 
-    CONFIG::LevelConfig _LevelConfig;
+    //CONFIG::LevelConfig _LevelConfig;
 
     void _ResetTimeCounter(GAMELEVEL level);
     void _ResetScore();
@@ -360,6 +360,7 @@ private:
     std::vector<SCORE::HighScorePlayer*> _BestPlayers;
     SCORE::HighScorePlayer* _BestPlayer;
 
+    CONFIG::AnyLevel * _AnyLevel;
 
     static void SoundHandler();
     void ChangeGameState(GAMESTATE state);
