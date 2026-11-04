@@ -1788,7 +1788,7 @@ void TestEngine::_ResetTimeCounter(GAMELEVEL level){
     case GAMELEVEL::Level_1: _TimeCounter = TIMELEVEL_1; break;
     case GAMELEVEL::Level_2: _TimeCounter = TIMELEVEL_2; break;
     case GAMELEVEL::Level_3: _TimeCounter = TIMELEVEL_3; break;
-    case GAMELEVEL::Level_4: _TimeCounter = TIMELEVEL_4; break;   /// usw... an jeden level anpassen !! je höher , je kürzer
+    case  GAMELEVEL::Level_4: _TimeCounter = TIMELEVEL_4; break;   /// usw... an jeden level anpassen !! je höher , je kürzer
     case GAMELEVEL::Level_5: _TimeCounter = TIMELEVEL_5; break;
 
     default:
@@ -1806,13 +1806,50 @@ string TestEngine::_Score2String(){
     return std::to_string(_gameScore);
 }
 
+
+CONFIG::Level TestEngine:: InitLevel(CONFIG::ENEMYTYPE enemytype,CONFIG::OBJECTTYPE objecttype,
+                int step, int countobjects, int countenemies, int gap_beetwen){
+
+    switch (objecttype){
+        case CONFIG::OBJECTTYPE::Baum_Kurz:{
+            break;
+        }
+        case CONFIG::OBJECTTYPE::Baum_Lang:{
+            break;
+        }
+            // .....
+    }
+
+    // einen level zusammenbauen und zurückgeben
+
+}
+
 void TestEngine::InitLevels(){
     _AnyLevel = new CONFIG::AnyLevel();
 
-    // CONFIG::Row r1;
+     CONFIG::Row r1;
     // CONFIG::Row r2;
     // // .....
     // // .....
+
+     // Enemies für Row 1:
+     CONFIG::OBJECTTYPE et = CONFIG::OBJECTTYPE::Baum_Kurz;
+     int x = 0;
+     for (int i =0; i < FLOATOBJECTS_PER_ROW_1;i++){
+         ENGINE::Sprite* sp = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum320x68.png",_Shader);
+         sp->InitTextureMap(1,1);
+         sp->SetPosition(x,352);
+         sp->StartAnimation(0,0);
+
+         r1.Objects.push_back(sp);
+         x+= 480;
+     }
+
+     //das ganze jetzt noch mit enemy(wenn vorhanden) , den step dazu und row1 ist fertig....
+     // Hilfsfunktion:
+    //CONFIG::Level  InitLevel(EnemyType,Objecttype,Step)
+
+
     // std::vector<CONFIG::Row> rows;
     // rows.push_back(r1);
     // rows.push_back(r2);

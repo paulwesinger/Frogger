@@ -13,6 +13,16 @@ namespace CONFIG{
 /*
  * Layout:
  */
+
+enum OBJECTTYPE{
+    BigCar,
+    SmallCar,
+    Truck,
+    Bolide,
+    Baum_Lang,
+    Baum_Kurz
+};
+
  enum ENEMYTYPE{
     Croco = 0,
     Snake ,

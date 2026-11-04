@@ -300,6 +300,10 @@ protected:
     uint64_t _Elapsed;
     uint64_t _TimerGameOver;
 
+protected:
+    CONFIG::Level InitLevel(CONFIG::ENEMYTYPE enemytype,
+        CONFIG::OBJECTTYPE objecttype,int step, int countobjects, int countenemies, int gap_beetwen);
+
 private:
 
     std::string PATHTOBESTPLAYERS = "/home/paul/workspace/Frogger/BestPlayers/Best.txt";
