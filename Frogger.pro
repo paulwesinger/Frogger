@@ -12,6 +12,7 @@ SOURCES += \
         engine.cpp \
         highscoreplayer.cpp \
         levelconfig.cpp \
+        levelserialize.cpp \
         main.cpp \
         sprite.cpp
 
@@ -34,6 +35,7 @@ HEADERS += \
     engine.h \
     highscoreplayer.h \
     levelconfig.h \
+    levelserialize.h \
     matrix2d.h \
     sprite.h \
     sprite.h \

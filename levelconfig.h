@@ -20,7 +20,9 @@ enum OBJECTTYPE{
     Truck,
     Bolide,
     Baum_Lang,
-    Baum_Kurz
+    Baum_Kurz,
+    Turtle_Swiming,  // Taucht nie
+    Turtle_Diving  // Taucht unter
 };
 
  enum ENEMYTYPE{
@@ -66,13 +68,13 @@ typedef struct sRow {
     std::vector<ENGINE::Sprite*> Objects;
     std::vector<ENGINE::Sprite*> Enemies;
 
-    ENEMYTYPE Enemytype;
+    //ENEMYTYPE Enemytype;
     int Step;
 
     sRow(){}
     sRow(std::vector<ENGINE::Sprite*> objects,std::vector<ENGINE::Sprite*> enemies, ENEMYTYPE enemytype,int _step) : Objects(objects),
             Enemies(enemies),Step(_step){
-        Enemytype = enemytype;
+     //   Enemytype = enemytype;
     }
 } Row;
 

@@ -1982,22 +1982,25 @@ bool TestEngine::ReadBestFromDisk(){
 bool TestEngine::InitUserObjects(){
 
     bool ret = true;
+    SERIALIZE::Serialize ser("../../serialize/ser.txt");
+//    ser.SerializeData("../../serialize/ser.txt");
+    ser.DeSerializeData("../../serialize/ser.txt");
 
     // --------------------------
     // Test des highscore ranking
     // --------------------------
-     // int score = 7000;
-     // for (int i = 0; i< 5;i++){
+     int score = 7000;
+     for (int i = 0; i< 5;i++){
 
-     //     SCORE::HighScorePlayer* player = new SCORE::HighScorePlayer("FLATSCHI",score,i+1,0);
-     //     _BestPlayers.push_back(player);
-     //     score -= 1000;
-     // }
+         SCORE::HighScorePlayer* player = new SCORE::HighScorePlayer("FLATSCHI",score,i+1,0);
+         _BestPlayers.push_back(player);
+         score -= 1000;
+     }
 
-    // for(int i=0; i<_BestPlayers.size();i++){
-    //     SCORE::HighScorePlayer p = *_BestPlayers[i];
-    //     std::cout << p.PlayerName() << "  " << p.Score() << "  " << p.Level() << "  " << p.Rank() << std::endl;
-    // }
+    for(int i=0; i<_BestPlayers.size();i++){
+        SCORE::HighScorePlayer p = *_BestPlayers[i];
+        std::cout << p.PlayerName() << "  " << p.Score() << "  " << p.Level() << "  " << p.Rank() << std::endl;
+    }
 
     ReadBestFromDisk();
     // ----------------------------------------------------------------------

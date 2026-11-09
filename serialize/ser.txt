@@ -1,0 +1,58 @@
+# Test für Levelconfig
+#Level 1
+LEVEL_BEGIN
+Levelnr 1
+Timeperlevel 60
+ROWS[	
+	ROW_BEGIN:
+		ROWNUMBER:1		
+		OBJECTS[
+			Baum_lang
+			GAP:150
+			Baum_lang
+			GAP:150	
+			Baum_lang
+		]
+		ENEMIES[
+		]
+		#Speed
+		STEP: -5
+	END_ROW
+# Row 2	
+	ROW_BEGIN:
+		ROWNUMBER:2		
+		OBJECTS[
+			Turtle_Swiming
+			Turtle_Swiming
+			Turtle_Swiming		anm.: keine gap, x um 64 erhöhen
+			GAP:150			anm.: x koordinaten bei der vor der NÄCHSTEN Turtle erhöhen
+			Turtle_Diving
+			Turtle_Diving
+			Turtle_Diving
+			GAP:150	
+			Turtle_Swiming
+			Turtle_Swiming
+			Turtle_Diving
+		]
+		ENEMIES[
+		]
+		#Speed
+		STEP: 3
+	END_ROW
+#  usw bis row 8(9)
+]
+LEVEL_END
+# nächster level
+LEVEL_BEGIN
+Levelnr 2
+Timeperlevel:50
+
+ROWS[
+	siehe oben
+]
+
+LEVEL_END
+
+
+
+
