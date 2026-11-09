@@ -1835,7 +1835,7 @@ void TestEngine::InitLevels(){
      // Enemies für Row 1:
      CONFIG::OBJECTTYPE et = CONFIG::OBJECTTYPE::Baum_Kurz;
      int x = 0;
-     for (int i =0; i < FLOATOBJECTS_PER_ROW_1;i++){
+     for (int i =0; i < FLOATOBJECTS_PER_ROW_1;i++){   // FLOATOBJECTS_PER_ROW ersetzen durch LEVEL_x_ROW1
          ENGINE::Sprite* sp = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum320x68.png",_Shader);
          sp->InitTextureMap(1,1);
          sp->SetPosition(x,352);

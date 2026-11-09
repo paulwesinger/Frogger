@@ -94,14 +94,14 @@ public:
     ~AnyLevel();
     void AddLevelConfiguration(Level level);
     void AddLevelConfiguration(int level,int timeperlevel,std::vector<Row> row);
-    std::vector<Row> GetLevelRows(int level);
 
+    std::vector<Row> GetLevelRows(int level);
     std::vector<Level> GetAllLevels();
     Level GetLevelData(int level);
 
 private:
     std::vector<Level> _Levels;
-
+    std::vector<Row> _Rows;
 
 };
 } //CONFIG

@@ -8,6 +8,21 @@ CONFIG::AnyLevel::AnyLevel(int level,int timeperlevel,std::vector<Row> rows){
 
 CONFIG::AnyLevel::~AnyLevel(){
 
+    for(Level l:_Levels){
+        for(Row row: l.Rows){
+            for(ENGINE::Sprite* sp:row.Objects) {
+                delete sp;
+            }
+            row.Objects.clear();
+
+            for(ENGINE::Sprite* sp:row.Enemies) {
+                delete sp;
+            }
+            row.Enemies.clear();
+        }
+        l.Rows.clear();
+    }
+    _Levels.clear();
 }
 
 void CONFIG::AnyLevel::AddLevelConfiguration(Level level){
