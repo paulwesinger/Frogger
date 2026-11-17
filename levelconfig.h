@@ -69,12 +69,12 @@ typedef struct sRow {
     std::vector<ENGINE::Sprite*> Enemies;
 
     //ENEMYTYPE Enemytype;
-    int Step;
+    int ObjectStep;
+    int EnemyStep;
 
     sRow(){}
-    sRow(std::vector<ENGINE::Sprite*> objects,std::vector<ENGINE::Sprite*> enemies, ENEMYTYPE enemytype,int _step) : Objects(objects),
-            Enemies(enemies),Step(_step){
-     //   Enemytype = enemytype;
+    sRow(std::vector<ENGINE::Sprite*> objects,std::vector<ENGINE::Sprite*> enemies, int _step, int enemystep) : Objects(objects),
+        Enemies(enemies),ObjectStep(_step),EnemyStep(enemystep){
     }
 } Row;
 

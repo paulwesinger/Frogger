@@ -130,7 +130,6 @@ const std::array<std::string,6> LEVEL_NAMES = {
 
 
 
-
 static GAMESTATE GameState;
 
 class TestEngine : public ENGINE::GLFrameWork

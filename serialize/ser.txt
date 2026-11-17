@@ -3,45 +3,43 @@
 LEVEL_BEGIN
 Levelnr 1
 Timeperlevel 60
-ROWS[	
-	ROW_BEGIN:
-		ROWNUMBER:1		
-		OBJECTS[
-			Baum_lang
-			GAP:150
-			Baum_lang
-			GAP:150	
-			Baum_lang
-		]
-		ENEMIES[
-		]
-		#Speed
-		STEP: -5
-	END_ROW
+#ROW 1
+ROW_BEGIN
+ROWNUMBER 1		
+OBJECTS_Begin
+Baum_lang GAP 150 Baum_lang GAP 150 Baum_lang
+OBJECTS_End
+
+#No ENEMIES 
+#Speed
+STEP_Object -5
+STEP_Enemy 6
+END_ROW
+
 # Row 2	
-	ROW_BEGIN:
-		ROWNUMBER:2		
-		OBJECTS[
-			Turtle_Swiming
-			Turtle_Swiming
-			Turtle_Swiming		anm.: keine gap, x um 64 erhöhen
-			GAP:150			anm.: x koordinaten bei der vor der NÄCHSTEN Turtle erhöhen
-			Turtle_Diving
-			Turtle_Diving
-			Turtle_Diving
-			GAP:150	
-			Turtle_Swiming
-			Turtle_Swiming
-			Turtle_Diving
-		]
-		ENEMIES[
-		]
-		#Speed
-		STEP: 3
-	END_ROW
+ROW_BEGIN
+ROWNUMBER 2		
+OBJECTS_Begin
+Turtle Turtle Turtle GAP 150 Turtle Turtle Turtle GAP 150 Turtle Turtle Turtle
+OBJECTS_End
+ENEMIES_Begin
+ENEMIES_END
+#Speed
+STEP_Object 3
+STEP_Enemy 4
+END_ROW
+ROW_Begin
+RowNumber 3
+OBJECTS_Begin
+
+OBJECTS_End
+ENEMIES_Begin
+ENEMIES_End
+Step -4
+ROW_End
 #  usw bis row 8(9)
-]
 LEVEL_END
+
 # nächster level
 LEVEL_BEGIN
 Levelnr 2

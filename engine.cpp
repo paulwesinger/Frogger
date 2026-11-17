@@ -528,6 +528,9 @@ int TestEngine::GetFloatingStep(){
 
     // default:
     int ret = _Step_Trees_1;
+
+    // sitch level hinzufügen!!
+
     switch (row)
     {
         case 1: ret = _Step_Trees_1; break;
@@ -674,9 +677,9 @@ void TestEngine::RenderTurtles(){
         if ( ! turtlesRow2[i]->AnimationDone() ){
             // Warten auf Animationsende
 
-            if (i == 3 || i == 4 || i == 5)
+            if (i == 3 || i == 4 || i == 5)  // Diving
                 turtlesRow2[i]->MoveSprite(0,9,64,64,300,-_StepXTurtlesRow2,0,_Elapsed);
-            else
+            else                             // Swiming
                 turtlesRow2[i]->MoveSprite(0,2,64,64,300,-_StepXTurtlesRow2,0,_Elapsed);
         }
         else{
@@ -1984,7 +1987,7 @@ bool TestEngine::InitUserObjects(){
     bool ret = true;
     SERIALIZE::Serialize ser("../../serialize/ser.txt");
 //    ser.SerializeData("../../serialize/ser.txt");
-    ser.DeSerializeData("../../serialize/ser.txt");
+    ser.DeSerializeData("../../serialize/ser.txt",_Shader,_ResX,_ResY);
 
     // --------------------------
     // Test des highscore ranking

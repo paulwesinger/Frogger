@@ -1,4 +1,5 @@
 #include "levelserialize.h"
+#include <bits/stdc++.h>
 
 SERIALIZE::Serialize::Serialize() {
     _Path = "";
@@ -7,9 +8,11 @@ SERIALIZE::Serialize::Serialize(string path){
     _Path = path;
 }
 
-bool SERIALIZE::Serialize::SerializeData(const string path){
+bool SERIALIZE::Serialize::SerializeData(const string path, Shader *shader, int resx, int resy){
     _Path = path;
-
+    _Shader = shader;
+    _Resx = resx;
+    _Resy = resy;
     std::ofstream file(path); // Kein append !!
     if ( ! file.is_open()) return false;
 
@@ -19,7 +22,7 @@ bool SERIALIZE::Serialize::SerializeData(const string path){
     return true;
 }
 
-bool SERIALIZE::Serialize::DeSerializeData(const string path)
+bool SERIALIZE::Serialize::DeSerializeData(const string path, Shader *shader, int resx, int resy)
 {
     ParseData(path);
     return true;
@@ -60,6 +63,10 @@ bool SERIALIZE::Serialize::DeSerializeData(const string path)
  *
  */
 
+/// ******************************
+/// Hilfsfunktionen
+/// ******************************
+/// Stringsplitter:
 std::vector<std::string> SERIALIZE::Serialize::splitt(const string& str, char delimiter){
     std::vector<std::string> tokens;
     size_t start = 0;
@@ -74,12 +81,231 @@ std::vector<std::string> SERIALIZE::Serialize::splitt(const string& str, char de
     tokens.push_back(str.substr(start));
     return tokens;
 }
+/// stringtoint converter
+int SERIALIZE::Serialize::StringToInt(std::vector<string> strings, int index){
+    if (index >= strings.size()) return -1;
+
+    int tmp;
+    try{
+        tmp = stoi(strings[index]);
+    }
+    catch(const std::invalid_argument &){
+        std::cout << "Invalid argument" << std::endl;
+        tmp = -1;
+    }
+    catch(const std::out_of_range&){
+        std::cout << "argument out of range" << std::endl;
+        tmp = -1;
+    }
+    return tmp;
+}
+
+int SERIALIZE::Serialize::StringToInt(string str){
+    int tmp;
+    try{
+        tmp = stoi(str);
+    }
+    catch(const std::invalid_argument &){
+        std::cout << "Invalid argument" << std::endl;
+        tmp = -1;
+    }
+    catch(const std::out_of_range&){
+        std::cout << "argument out of range" << std::endl;
+        tmp = -1;
+    }
+    return tmp;
+}
+
+std::string SERIALIZE::Serialize::ToUpper(string t){
+    transform(t.begin(),t.end(),t.begin(),::toupper);
+    return t;
+}
+
+
+/// die  gelesene Zeile zerlegen und werte zuiweisen
+
+void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
+    std::vector<std::string> splitted = splitt(line,' ');
+    if (splitted.size() < 1) return;
+
+    // **************************************************
+    // Zeit für jeden Level
+    // **************************************************
+    //transform(splitted[0].begin(),splitted[0].end(),splitted[0].begin(),::toupper);
+
+    splitted[0] = ToUpper(splitted[0]);
+
+    if (splitted[0] == "TIMEPERLEVEL" ){
+
+        _TimePerLevel = StringToInt(splitted,1);
+        if (_TimePerLevel < 0)
+            _TimePerLevel = DEFAULT_TIME_PER_LEVEL;
+    }
+
+    // ***************************************************
+    // Level Nummer
+    // ***************************************************
+    if (splitted[0] == "LEVELNR"){
+        _LevelNr = StringToInt(splitted,1);
+        if (_LevelNr < 0)
+            _LevelNr = DEFAULT_LEVELNR;
+    }
+
+    // ***************************************************
+    // RowNumber's
+    // ***************************************************
+    if (splitted[0] == "ROWNUMBER"){
+        _RowNumber = StringToInt(splitted,1);
+        if (_RowNumber < 0)
+            _RowNumber = DEFAULT_ROWNUMBER;
+    }
+
+    // ***************************************************
+    // Step in row
+    // ***************************************************
+
+    if (splitted[0] == "STEP_OBJECT"){
+        _StepPerRow = StringToInt(splitted,1);
+        if (_StepPerRow < 0)
+            _StepPerRow = DEFAULT_STEPPERROW;
+
+        _Row.ObjectStep = _StepPerRow;
+    }
+
+    // ***************************************************
+    // Step in row enemy
+    // ***************************************************
+
+    if (splitted[0] == "STEP_ENEMY"){
+        _StepEnemyPerRow = StringToInt(splitted,1);
+        if (_StepEnemyPerRow < 0)
+            _StepEnemyPerRow = DEFAULT_STEP_ENEMY;
+        _Row.EnemyStep = _StepEnemyPerRow;
+    }
+
+    // ***************************************************
+    // Objects
+    // ***************************************************
+    if (splitted[0] == "OBJECTS_BEGIN"){
+        string l;
+        int pos_x = 0;
+
+        while (std::getline(f,l)) {
+            l= ToUpper(l);
+            std::vector<string> objects = splitt(l,' ');
+
+            if (l == "OBJECTS_END")
+            {
+                //_Level.Rows.push_back(_Row);
+                break;
+            }
+
+            bool nextisgap=false;
+            for(string s: objects) {
+                if (s == "GAP")
+                {
+                    nextisgap = true;
+                    continue;
+                }
+                else
+                if (nextisgap){
+                    _Gap = StringToInt(s);
+                    if (_Gap <0)
+                        _Gap = DEFAULT_GAP;
+
+                    nextisgap = false;
+                    pos_x += _Gap;
+                }
+                else
+                {
+                    ENGINE::Sprite* sp;
+                    if (s == "BAUM_LANG"){
+                        sp = new ENGINE::Sprite(_Resx,_Resy,IMG_TreeLarge,_Shader);
+                        sp->InitTextureMap(1,1);
+                    }
+                    if ( s == "BAUM_KURZ"){
+                        sp = new ENGINE::Sprite(_Resx,_Resy,IMG_Tree_Small,_Shader);
+                        sp->InitTextureMap(1,1);
+                    }
+                    if ( s== "TURTLE"){
+                        sp = new ENGINE::Sprite(_Resx,_Resy,IMG_Turtles,_Shader);
+                        sp->InitTextureMap(10,1);
+                    }
+                    // Vehicles
+                    /*
+                    BigCar,
+                        SmallCar,
+                        Truck,
+                        Bolide,
+*/
+                    if ( s == "VEHICLE"){ // Welches Teil angezeigt wird, wird in der engine
+                        // ausgesucht...
+                        sp = new ENGINE::Sprite(_Resx,_Resy,IMG_Vehicles,_Shader);
+                        sp->InitTextureMap(6,1);
+
+                        _Row.Objects.push_back(sp);
+                    }
+
+                    if (s == "TRUCK_FRONT"){ // sonderfall, der truck besteht aus 2 tiles
+                        sp = new ENGINE::Sprite(_Resx,_Resy,IMG_Vehicles,_Shader);
+                        sp->InitTextureMap(6,1);
+
+                        pos_x += 260;  // => gap
+
+                    }
+                    if (s == "TRUCK_BACK"){
+                        pos_x += 64;
+                        sp = new ENGINE::Sprite(_Resx,_Resy,IMG_Vehicles,_Shader);
+                        sp->InitTextureMap(6,1);
+                                        // y position ist die selbe wie truck front !!
+                        pos_x += 260; // => gap gleich wie truckfront im leveledithor berücksichtigen
+
+                    }
+                }
+            }
+        }
+    }
+
+    // ***************************************************
+    // Enemies
+    // ***************************************************
+    if (splitted[0] == "ENEMIES_BEGIN"){
+        string l;
+        int pos_x = 0;
+
+        while (std::getline(f,l)) {
+            l= ToUpper(l);
+            std::vector<string> enemies = splitt(l,' ');
+
+            if (l == "ENEMIES_END")
+            {
+                _Level.Rows.push_back(_Row);
+                break;
+            }
+
+
+            // hier die logik
+
+        }
+    }
+
+    // ***************************************************
+    // Row Ende
+    // ***************************************************
+
+    if (splitted[0] == "ROW_END"){
+        _Level.Rows.push_back(_Row);
+
+        // Speicher nicht freigeben,
+        // aber den Row Vector leeren
+       _Row.Objects.clear();
+       _Row.Enemies.clear();
+    }
+}
 
 void SERIALIZE::Serialize::ParseData(const string path){
     std::ifstream file(path);
 
-    CONFIG::AnyLevel level;  // Für alle level
-    CONFIG::Level onelevel; // Einer vom ganzen
 
     if (! file.is_open()) return ; //empty;
     string line;
@@ -90,22 +316,14 @@ void SERIALIZE::Serialize::ParseData(const string path){
             continue;
         }
         else
-            if (line == "") {
-                std::cout << "Leere zeile" << std::endl;
-                continue;
-            }
-                else{
-
-
-                std::cout << line << std::endl;
-
-                std::vector<std::string> splitted = splitt(line,' ');
-
-
-
-
-                }
-        //
+        if (line == "") {
+            std::cout << "Leere zeile" << std::endl;
+            continue;
+        }
+        else{
+            std::cout << line << std::endl;
+            InitDataLine(line,file);
+        }
     }
     file.close();
 }
