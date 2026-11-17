@@ -1987,7 +1987,9 @@ bool TestEngine::InitUserObjects(){
     bool ret = true;
     SERIALIZE::Serialize ser("../../serialize/ser.txt");
 //    ser.SerializeData("../../serialize/ser.txt");
-    ser.DeSerializeData("../../serialize/ser.txt",_Shader,_ResX,_ResY);
+    ser.DeSerializeData("../../serialize/ser.txt", GetShader(),_ResX,_ResY);
+
+
 
     // --------------------------
     // Test des highscore ranking

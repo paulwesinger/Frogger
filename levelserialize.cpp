@@ -24,6 +24,9 @@ bool SERIALIZE::Serialize::SerializeData(const string path, Shader *shader, int 
 
 bool SERIALIZE::Serialize::DeSerializeData(const string path, Shader *shader, int resx, int resy)
 {
+    _Shader = shader;
+    _Resx = resx;
+    _Resy = resy;
     ParseData(path);
     return true;
 }
@@ -195,8 +198,7 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
             std::vector<string> objects = splitt(l,' ');
 
             if (l == "OBJECTS_END")
-            {
-                //_Level.Rows.push_back(_Row);
+            {   
                 break;
             }
 
@@ -218,10 +220,12 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
                 }
                 else
                 {
-                    ENGINE::Sprite* sp;
+                    ENGINE::Sprite* sp = nullptr;
                     if (s == "BAUM_LANG"){
                         sp = new ENGINE::Sprite(_Resx,_Resy,IMG_TreeLarge,_Shader);
                         sp->InitTextureMap(1,1);
+
+
                     }
                     if ( s == "BAUM_KURZ"){
                         sp = new ENGINE::Sprite(_Resx,_Resy,IMG_Tree_Small,_Shader);
@@ -251,7 +255,6 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
                         sp->InitTextureMap(6,1);
 
                         pos_x += 260;  // => gap
-
                     }
                     if (s == "TRUCK_BACK"){
                         pos_x += 64;
@@ -259,8 +262,10 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
                         sp->InitTextureMap(6,1);
                                         // y position ist die selbe wie truck front !!
                         pos_x += 260; // => gap gleich wie truckfront im leveledithor berücksichtigen
-
                     }
+
+                    if (sp != nullptr)
+                        _Row.Objects.push_back(sp);
                 }
             }
         }
@@ -284,7 +289,7 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
             }
 
 
-            // hier die logik
+            // hier die logik und enemies.push_back
 
         }
     }
