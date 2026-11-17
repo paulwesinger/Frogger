@@ -60,13 +60,30 @@ bool SERIALIZE::Serialize::DeSerializeData(const string path)
  *
  */
 
+std::vector<std::string> SERIALIZE::Serialize::splitt(const string& str, char delimiter){
+    std::vector<std::string> tokens;
+    size_t start = 0;
+    size_t end = str.find(delimiter);
+
+    while (end != std::string::npos) {
+        tokens.push_back(str.substr(start, end - start));
+        start = end + 1;
+        end = str.find(delimiter, start);
+    }
+
+    tokens.push_back(str.substr(start));
+    return tokens;
+}
+
 void SERIALIZE::Serialize::ParseData(const string path){
     std::ifstream file(path);
 
-    //CONFIG::AnyLevel empty;
+    CONFIG::AnyLevel level;  // Für alle level
+    CONFIG::Level onelevel; // Einer vom ganzen
 
     if (! file.is_open()) return ; //empty;
     string line;
+
     while (std::getline(file, line)) {
         if (line.starts_with("#")) { // Kommentar
             std::cout << "Kommentar" << std::endl;
@@ -78,7 +95,15 @@ void SERIALIZE::Serialize::ParseData(const string path){
                 continue;
             }
                 else{
-                    std::cout << line << std::endl;
+
+
+                std::cout << line << std::endl;
+
+                std::vector<std::string> splitted = splitt(line,' ');
+
+
+
+
                 }
         //
     }

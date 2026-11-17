@@ -24,6 +24,8 @@ namespace SERIALIZE{
         void ParseData(const string path);
     private:
         string _Path;
+
+        std::vector<std::string> splitt(const std::string& str, char delimiter);
     };
 }
 
