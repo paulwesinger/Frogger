@@ -103,7 +103,7 @@ public:
 
 private:
     std::vector<Level> _Levels;
-    std::vector<Row> _Rows;
+  //  std::vector<Row> _Rows;
 
 };
 } //CONFIG

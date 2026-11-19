@@ -129,6 +129,7 @@ const std::array<std::string,6> LEVEL_NAMES = {
 };
 
 
+const int YPositions[12] ={98,162,226,290,352,418,482,546,610,674,738,802};
 
 static GAMESTATE GameState;
 
@@ -362,7 +363,12 @@ private:
     std::vector<SCORE::HighScorePlayer*> _BestPlayers;
     SCORE::HighScorePlayer* _BestPlayer;
 
-    CONFIG::AnyLevel * _AnyLevel;
+    CONFIG::AnyLevel  _AnyLevel;
+
+    CONFIG::Level _Level;
+
+
+    bool LoadingDone = false;
 
     static void SoundHandler();
     void ChangeGameState(GAMESTATE state);
@@ -376,6 +382,10 @@ private:
     void InitAudio();
     void InitGameOverScreen();
     void InitLevels();
+
+
+    // Testeise aus AnyLevel:
+    void InitFromAnyLevel();
 
     // den Score des 5. platzes ermitteln,
     // ob der aktuelle spieler überhaupt in die bestenliste aufgenommen wird
@@ -400,6 +410,11 @@ private:
     void RenderCrocos();    
     int GetFloatingStep();
     void StartDieAnimation(int starttile, int endtile); // Der Frosch darf nich leiden..
+
+
+    void RenderFrom_AnyLevel();
+
+
 };
 
 #endif // ENGINE_H

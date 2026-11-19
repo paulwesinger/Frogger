@@ -8,22 +8,29 @@ CONFIG::AnyLevel::AnyLevel(int level,int timeperlevel,std::vector<Row> rows){
 
 CONFIG::AnyLevel::~AnyLevel(){
 
-    for(Level l:_Levels){
-        for(Row row: l.Rows){
-            for(ENGINE::Sprite* sp:row.Objects) {
-                delete sp;
-            }
-            row.Objects.clear();
+    try {
+        for(Level l:_Levels){
+            for(Row row: l.Rows){
+                // for(ENGINE::Sprite* sp:row.Objects) {
+                //     delete sp;
+                // }
+                row.Objects.clear();
 
-            for(ENGINE::Sprite* sp:row.Enemies) {
-                delete sp;
+                // for(ENGINE::Sprite* sp:row.Enemies) {
+                //     delete sp;
+                // }
+                row.Enemies.clear();
             }
-            row.Enemies.clear();
+            l.Rows.clear();
         }
-        l.Rows.clear();
+        _Levels.clear();
     }
-    _Levels.clear();
+    catch(const std::exception& ex){
+        std::cout << ex.what() << std::endl;
+    }
 }
+
+
 
 void CONFIG::AnyLevel::AddLevelConfiguration(Level level){
     _Levels.push_back(level);
@@ -38,6 +45,7 @@ std::vector<CONFIG::Level> CONFIG::AnyLevel::GetAllLevels(){
     return _Levels;
 }
 
+// !!!! Achtung Level 1 == Level 0
 CONFIG::Level CONFIG::AnyLevel::GetLevelData(int level){
     CONFIG::Level emptylevel;
     if (level >= _Levels.size()) return emptylevel;

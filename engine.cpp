@@ -503,45 +503,75 @@ void TestEngine::RenderCrocos(){
     }
 }
 
-void TestEngine::RenderWood(){
 
+void TestEngine::RenderFrom_AnyLevel(){
     bool tmp;
-    for (int i =0; i < FLOATOBJECTS_PER_ROW_1;i++){
-        // Erstmal alles rendern
-        Baum_Row1[i]->MoveSprite(0,0,128,64,100,_Step_Trees_1,0,_Elapsed,tmp);
-    }
-
-    for (int i =0; i < FLOATOBJECTS_PER_ROW_3;i++){
-        // Erstmal alles rendern
-        Baum_Row3[i]->MoveSprite(0,0,128,64,500,_Step_Trees_3,0,_Elapsed,tmp);
-    }
-//    RenderCrocos();
-
-    for (int i =0; i < FLOATOBJECTS_PER_ROW_5;i++){
-        // Erstmal alles rendern
-        Baum_Row5[i]->MoveSprite(0,0,128,64,100,_Step_Trees_5,0,_Elapsed,tmp);
+    // MAl nur die Bäume;
+    for ( int i = 0; i<5; i++) {
+    //for (ENGINE::Sprite* sp: _Level.Rows[0].Objects){
+        int step = _Level.Rows[i].ObjectStep;
+        for (ENGINE::Sprite* sp: _Level.Rows[i].Objects){
+           sp->MoveSprite(0,0,128,64,100,step,0,_Elapsed,tmp);
+        }
     }
 }
 
+
+void TestEngine::RenderWood(){
+
+    RenderFrom_AnyLevel();
+
+//     bool tmp;
+//     for (int i =0; i < FLOATOBJECTS_PER_ROW_1;i++){
+//         // Erstmal alles rendern
+//         Baum_Row1[i]->MoveSprite(0,0,128,64,100,_Step_Trees_1,0,_Elapsed,tmp);
+//     }
+
+//     for (int i =0; i < FLOATOBJECTS_PER_ROW_3;i++){
+//         // Erstmal alles rendern
+//         Baum_Row3[i]->MoveSprite(0,0,128,64,500,_Step_Trees_3,0,_Elapsed,tmp);
+//     }
+// //    RenderCrocos();
+
+//     for (int i =0; i < FLOATOBJECTS_PER_ROW_5;i++){
+//         // Erstmal alles rendern
+//         Baum_Row5[i]->MoveSprite(0,0,128,64,100,_Step_Trees_5,0,_Elapsed,tmp);
+//     }
+}
+
 int TestEngine::GetFloatingStep(){
-  int row = FrogInRow();
+
+    int row = FrogInRow();
+    int step;
+
+    switch(row){
+
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+            step = _Level.Rows[row-1].ObjectStep;
+        break;
+    }
+        return step;
 
     // default:
-    int ret = _Step_Trees_1;
+    // int ret = _Step_Trees_1;
 
-    // sitch level hinzufügen!!
+    // // sitch level hinzufügen!!
 
-    switch (row)
-    {
-        case 1: ret = _Step_Trees_1; break;
-        case 2: ret = _StepXTurtlesRow2; break;
-        case 3: ret = _Step_Trees_3; break;
-        case 4: ret = _StepXTurtlesRow4; break;
-        case 5: ret = _Step_Trees_5; break;
-        default:
-            ret = _Step_Trees_1; break;
-    }
-        return ret;
+    // switch (row)
+    // {
+    //     case 1: ret = _Step_Trees_1; break;
+    //     case 2: ret = _StepXTurtlesRow2; break;
+    //     case 3: ret = _Step_Trees_3; break;
+    //     case 4: ret = _StepXTurtlesRow4; break;
+    //     case 5: ret = _Step_Trees_5; break;
+    //     default:
+    //         ret = _Step_Trees_1; break;
+    // }
+    //     return ret;
 }
 
 void TestEngine::RenderFrog(){
@@ -903,6 +933,7 @@ void TestEngine::GetNewState(){
                     plunk = false;
                 }
             }
+
             if (plunk) {
                 GameState = GAMESTATE::Plunk;
                 break;
@@ -1022,8 +1053,15 @@ void TestEngine::GetNewState(){
         }
         else
         {
-            for (int i =0; i< FLOATOBJECTS_PER_ROW_5; i++) {
-                if (Baum_Row5[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
+            // for (int i =0; i< FLOATOBJECTS_PER_ROW_5; i++) {
+            //     if (Baum_Row5[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
+            //         GameState = GAMESTATE::FloatingRight;
+            //         plunk = false;
+            //     }
+            // }
+
+            for(ENGINE::Sprite* sp: _Level.Rows[4].Objects){
+                if (sp->IsColliding(frog->Pos(),frog->SpriteSize())){
                     GameState = GAMESTATE::FloatingRight;
                     plunk = false;
                 }
@@ -1319,6 +1357,11 @@ void TestEngine::Run(){
                     break;
 
                 case GAMESTATE::StartUpFinished:
+
+                    // Den 1. level hole:
+                    _Level= _AnyLevel.GetLevelData(((int)_GameLevel) -1);
+
+
                     RenderBackgroundSprites();
                     RenderWood();
                     RenderTurtles();
@@ -1827,8 +1870,7 @@ CONFIG::Level TestEngine:: InitLevel(CONFIG::ENEMYTYPE enemytype,CONFIG::OBJECTT
 
 }
 
-void TestEngine::InitLevels(){
-    _AnyLevel = new CONFIG::AnyLevel();
+void TestEngine::InitLevels(){    
 
      CONFIG::Row r1;
     // CONFIG::Row r2;
@@ -1987,7 +2029,15 @@ bool TestEngine::InitUserObjects(){
     bool ret = true;
     SERIALIZE::Serialize ser("../../serialize/ser.txt",GetShader(),_ResX,_ResY);
 //    ser.SerializeData("../../serialize/ser.txt");
-    ser.DeSerializeData();
+
+
+    if (ser.DeSerializeData()){
+        _AnyLevel = ser.AnyLevels();
+        LoadingDone = true;
+    }
+
+
+    InitFromAnyLevel();
 
 
 
@@ -2158,7 +2208,7 @@ bool TestEngine::InitUserObjects(){
     InitTreeRows();
     InitVehicles();
     InitGameOverScreen();
-    InitLevels();
+    //InitLevels();
 
     // Default settings at start
     _TileX = 0;
@@ -2255,6 +2305,66 @@ bool TestEngine::InitUserObjects(){
 
     return ret;
 }
+
+
+
+void TestEngine::InitFromAnyLevel(){
+
+    if ( ! LoadingDone) return;
+    int x = 0;
+
+    int i=0;
+    for(CONFIG::Level l : _AnyLevel.GetAllLevels()){
+        int row = 0;
+        for(CONFIG::Row r: l.Rows){
+            for (ENGINE::Sprite* sp: r.Objects){
+
+                sp->SetPosition(x,YPositions[i]);
+
+                // Jetzt mal den Objecttype rusfinden:
+                // Bäume sind nur 1 Bild gross -> 1,1
+                // Vehicles je nach art von 0,0 - 3 und trucks wegen 2 teilen 4-5
+                // Schildkröten ob sie tauchen odernur schwimmen
+                switch(row){
+                    case 0:
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                    sp->StartAnimation(0,0);
+                    break;
+                    case 5: break; // Mittlerer Gehweg
+                    case 6:
+                        sp->StartAnimation(4,4);//trucks
+                        break;
+                    case 7:
+                        sp->StartAnimation(0,0);
+                        break;
+                    case 8:
+                        sp->StartAnimation(2,2);
+                        break;
+                    case 9:
+                        sp->StartAnimation(1,1);
+                        break;
+                    case 10:
+                        sp->StartAnimation(3,3);
+                        break;
+                    case 11: // unterer Gehsteig
+                        break;
+                }
+            }
+            i++;
+        }
+    }
+
+
+
+}
+
+
+
+
+
 
 void TestEngine::InitVehicles(){
     int x = 0;

@@ -28,8 +28,9 @@ bool SERIALIZE::Serialize::SerializeData(const string path, Shader *shader, int 
 
 bool SERIALIZE::Serialize::DeSerializeData()
 {
-    ParseData(_Path);
-    return true;
+    if (ParseData(_Path))
+        return true;
+    return false;
 }
 
 /*
@@ -66,6 +67,10 @@ bool SERIALIZE::Serialize::DeSerializeData()
  * #nächster
  *
  */
+
+CONFIG::AnyLevel &SERIALIZE::Serialize::AnyLevels(){
+    return _AnyLevel;
+}
 
 /// ******************************
 /// Hilfsfunktionen
@@ -104,18 +109,18 @@ int SERIALIZE::Serialize::StringToInt(std::vector<string> strings, int index){
     return tmp;
 }
 
-int SERIALIZE::Serialize::StringToInt(string str){
+int SERIALIZE::Serialize::StringToInt(string str,int FailedVal){
     int tmp;
     try{
         tmp = stoi(str);
     }
     catch(const std::invalid_argument &){
         std::cout << "Invalid argument" << std::endl;
-        tmp = -1;
+        tmp = FailedVal;
     }
     catch(const std::out_of_range&){
         std::cout << "argument out of range" << std::endl;
-        tmp = -1;
+        tmp = FailedVal;
     }
     return tmp;
 }
@@ -144,6 +149,8 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
         _TimePerLevel = StringToInt(splitted,1);
         if (_TimePerLevel < 0)
             _TimePerLevel = DEFAULT_TIME_PER_LEVEL;
+
+        _Level.TimePerLevel = _TimePerLevel;
     }
 
     // ***************************************************
@@ -153,6 +160,8 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
         _LevelNr = StringToInt(splitted,1);
         if (_LevelNr < 0)
             _LevelNr = DEFAULT_LEVELNR;
+
+        _Level.Level = _LevelNr;
     }
 
     // ***************************************************
@@ -170,7 +179,7 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
 
     if (splitted[0] == "STEP_OBJECT"){
         _StepPerRow = StringToInt(splitted,1);
-        if (_StepPerRow < 0)
+        if (_StepPerRow == CONVERT_FAILED_VALUE)
             _StepPerRow = DEFAULT_STEPPERROW;
 
         _Row.ObjectStep = _StepPerRow;
@@ -182,7 +191,7 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
 
     if (splitted[0] == "STEP_ENEMY"){
         _StepEnemyPerRow = StringToInt(splitted,1);
-        if (_StepEnemyPerRow < 0)
+        if (_StepEnemyPerRow == CONVERT_FAILED_VALUE)
             _StepEnemyPerRow = DEFAULT_STEP_ENEMY;
         _Row.EnemyStep = _StepEnemyPerRow;
     }
@@ -220,7 +229,7 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
                 else
                 if (nextisgap){
                     _Gap = StringToInt(s);
-                    if (_Gap <0)
+                    if (_Gap == CONVERT_FAILED_VALUE)
                         _Gap = DEFAULT_GAP;
 
                     nextisgap = false;
@@ -232,8 +241,6 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
                     if (s == "BAUM_LANG"){
                         sp = new ENGINE::Sprite(_Resx,_Resy,IMG_TreeLarge,_Shader);
                         sp->InitTextureMap(1,1);
-
-
                     }
                     if ( s == "BAUM_KURZ"){
                         sp = new ENGINE::Sprite(_Resx,_Resy,IMG_Tree_Small,_Shader);
@@ -260,20 +267,22 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
 
                     if (s == "TRUCK_FRONT"){ // sonderfall, der truck besteht aus 2 tiles
                         sp = new ENGINE::Sprite(_Resx,_Resy,IMG_Vehicles,_Shader);
-                        sp->InitTextureMap(6,1);
-
-                        pos_x += 260;  // => gap
+                        sp->InitTextureMap(6,1);                     
                     }
                     if (s == "TRUCK_BACK"){
                         pos_x += 64;
                         sp = new ENGINE::Sprite(_Resx,_Resy,IMG_Vehicles,_Shader);
                         sp->InitTextureMap(6,1);
-                                        // y position ist die selbe wie truck front !!
-                        pos_x += 260; // => gap gleich wie truckfront im leveledithor berücksichtigen
+                                        // y position ist die selbe wie truck front !!                    
                     }
 
-                    if (sp != nullptr)
+                    if (sp != nullptr){
+
+                        sp->SetPosition(pos_x,0);  //Y-pos Wird im eigentlichen programm dann gesetzt!
                         _Row.Objects.push_back(sp);
+
+                        pos_x += 64;
+                    }
                 }
             }
             return;
@@ -285,7 +294,6 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
     // ***************************************************
     if (splitted[0] == "ENEMIES_END")
     {
-        //_Level.Rows.push_back(_Row);
         return;
     }
 
@@ -314,13 +322,21 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
        _Row.Objects.clear();
        _Row.Enemies.clear();       
     }
+
+    // ***************************************************
+    // Level Ende
+    // ***************************************************
+
+    if (splitted[0] == "LEVEL_END"){
+        _AnyLevel.AddLevelConfiguration(_Level);
+    }
 }
 
-void SERIALIZE::Serialize::ParseData(const string path){
+bool SERIALIZE::Serialize::ParseData(const string path){
     std::ifstream file(path);
 
 
-    if (! file.is_open()) return ; //empty;
+    if (! file.is_open()) return false; //empty;
     string line;
 
     while (std::getline(file, line)) {
@@ -339,4 +355,10 @@ void SERIALIZE::Serialize::ParseData(const string path){
         }
     }
     file.close();
+    _DataParsingOk = true;
+    return true;
+}
+
+bool SERIALIZE::Serialize::LoadingDone(){
+    return _DataParsingOk;
 }

@@ -18,6 +18,8 @@ const int DEFAULT_GAP           = 64;
 const int DEFAULT_STEPPERROW    = 2;
 const int DEFAULT_STEP_ENEMY    = 3;
 
+const int CONVERT_FAILED_VALUE  = 32767;
+
 const std::string IMG_Turtles = "/home/paul/workspace/Frogger/images/Turtles10x1_64x64.png";
 const std::string IMG_Vehicles ="/home/paul/workspace/Frogger/images/Vehicles6x1_64x64.png";
 const std::string IMG_TreeLarge = "/home/paul/workspace/Frogger/images/Baum320x68.png";
@@ -35,11 +37,13 @@ const std::string IMG_Croco = "/home/paul/workspace/Frogger/images/Crocs392x64_2
         bool SerializeData(const string path,Shader* shader,int resx, int resy);
         bool DeSerializeData();
 
+        CONFIG::AnyLevel& AnyLevels();
+        bool LoadingDone();
 
 
 
     protected:
-        void ParseData(const string path);
+        bool ParseData(const string path);
         void InitDataLine(std::string line, ifstream &f);
     private:
         string _Path;
@@ -59,10 +63,11 @@ const std::string IMG_Croco = "/home/paul/workspace/Frogger/images/Crocs392x64_2
 
         std::vector<std::string> splitt(const std::string& str, char delimiter);
         int StringToInt(std::vector<string> strings,int index);
-        int StringToInt(std::string str);
+        int StringToInt(std::string str, int FailedVal = 32767);
         std::string ToUpper(std::string t);
         Shader * _Shader;
         int _Resx,_Resy;
+        bool _DataParsingOk = false;
     };
 }
 
