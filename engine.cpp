@@ -1985,9 +1985,9 @@ bool TestEngine::ReadBestFromDisk(){
 bool TestEngine::InitUserObjects(){
 
     bool ret = true;
-    SERIALIZE::Serialize ser("../../serialize/ser.txt");
+    SERIALIZE::Serialize ser("../../serialize/ser.txt",GetShader(),_ResX,_ResY);
 //    ser.SerializeData("../../serialize/ser.txt");
-    ser.DeSerializeData("../../serialize/ser.txt", GetShader(),_ResX,_ResY);
+    ser.DeSerializeData();
 
 
 

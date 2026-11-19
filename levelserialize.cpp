@@ -3,9 +3,13 @@
 
 SERIALIZE::Serialize::Serialize() {
     _Path = "";
+    _Shader = nullptr;
 }
-SERIALIZE::Serialize::Serialize(string path){
-    _Path = path;
+SERIALIZE::Serialize::Serialize(string path, Shader *shader, int resx, int resy){
+    _Path = path;    
+    _Shader = shader;
+    _Resx = resx;
+    _Resy = resy;
 }
 
 bool SERIALIZE::Serialize::SerializeData(const string path, Shader *shader, int resx, int resy){
@@ -22,12 +26,9 @@ bool SERIALIZE::Serialize::SerializeData(const string path, Shader *shader, int 
     return true;
 }
 
-bool SERIALIZE::Serialize::DeSerializeData(const string path, Shader *shader, int resx, int resy)
+bool SERIALIZE::Serialize::DeSerializeData()
 {
-    _Shader = shader;
-    _Resx = resx;
-    _Resy = resy;
-    ParseData(path);
+    ParseData(_Path);
     return true;
 }
 
@@ -186,6 +187,11 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
         _Row.EnemyStep = _StepEnemyPerRow;
     }
 
+    if (splitted[0] == "OBJECTS_END")
+    {
+        return;
+    }
+
     // ***************************************************
     // Objects
     // ***************************************************
@@ -193,15 +199,17 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
         string l;
         int pos_x = 0;
 
-        while (std::getline(f,l)) {
-            l= ToUpper(l);
+        do
+        {
+            std::getline(f,l);
+        }
+        while(l == " " || l == "#" );
+
+        l= ToUpper(l);
+
+        //while (std::getline(f,l)) {
+
             std::vector<string> objects = splitt(l,' ');
-
-            if (l == "OBJECTS_END")
-            {   
-                break;
-            }
-
             bool nextisgap=false;
             for(string s: objects) {
                 if (s == "GAP")
@@ -268,43 +276,43 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
                         _Row.Objects.push_back(sp);
                 }
             }
-        }
+            return;
+        //}while
     }
 
     // ***************************************************
     // Enemies
     // ***************************************************
+    if (splitted[0] == "ENEMIES_END")
+    {
+        //_Level.Rows.push_back(_Row);
+        return;
+    }
+
     if (splitted[0] == "ENEMIES_BEGIN"){
         string l;
         int pos_x = 0;
 
-        while (std::getline(f,l)) {
-            l= ToUpper(l);
-            std::vector<string> enemies = splitt(l,' ');
-
-            if (l == "ENEMIES_END")
-            {
-                _Level.Rows.push_back(_Row);
-                break;
-            }
+        // while (std::getline(f,l)) {
+        //     l= ToUpper(l);
+        //     std::vector<string> enemies = splitt(l,' ');
 
 
             // hier die logik und enemies.push_back
-
-        }
+        //}
     }
 
     // ***************************************************
     // Row Ende
     // ***************************************************
 
-    if (splitted[0] == "ROW_END"){
+    if (splitted[0] == "END_ROW"){
         _Level.Rows.push_back(_Row);
 
         // Speicher nicht freigeben,
         // aber den Row Vector leeren
        _Row.Objects.clear();
-       _Row.Enemies.clear();
+       _Row.Enemies.clear();       
     }
 }
 

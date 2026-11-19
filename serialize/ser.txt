@@ -8,14 +8,13 @@ ROW_BEGIN
 ROWNUMBER 1		
 OBJECTS_Begin
 Baum_lang GAP 150 Baum_lang GAP 150 Baum_lang
+STEP_Object -5
 OBJECTS_End
 
 #No ENEMIES 
 ENEMIES_Begin
+#STEP_Enemy 0
 ENEMIES_End
-#Speed
-STEP_Object -5
-STEP_Enemy 6
 END_ROW
 
 # Row 2	
@@ -23,12 +22,14 @@ ROW_BEGIN
 ROWNUMBER 2		
 OBJECTS_Begin
 Turtle Turtle Turtle GAP 150 Turtle Turtle Turtle GAP 150 Turtle Turtle Turtle
+STEP_Object 3
 OBJECTS_End
 ENEMIES_Begin
+STEP_Enemy 4
 ENEMIES_END
 #Speed
-STEP_Object 3
-STEP_Enemy 4
+
+
 END_ROW
 
 #Row 3
@@ -36,13 +37,13 @@ END_ROW
 ROW_Begin
 RowNumber 3
 OBJECTS_Begin
-
-OBJECTS_End
-ENEMIES_Begin
-ENEMIES_End
 Step_Object -4
+OBJECTS_End
+
+ENEMIES_Begin
 Step_Enenmy 0
-ROW_End
+ENEMIES_End
+END_ROW
 #  usw bis row 8(9)
 LEVEL_END
 

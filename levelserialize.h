@@ -30,10 +30,10 @@ const std::string IMG_Croco = "/home/paul/workspace/Frogger/images/Crocs392x64_2
     {
     public:
         Serialize();
-        Serialize(string path);
+        Serialize(string path, Shader *shader, int resx, int resy);
 
         bool SerializeData(const string path,Shader* shader,int resx, int resy);
-        bool DeSerializeData(const string path,Shader * shader, int resx, int resy);
+        bool DeSerializeData();
 
 
 
