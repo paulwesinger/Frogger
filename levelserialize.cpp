@@ -220,6 +220,7 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
 
             std::vector<string> objects = splitt(l,' ');
             bool nextisgap=false;
+
             for(string s: objects) {
                 if (s == "GAP")
                 {
@@ -241,34 +242,35 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
                     if (s == "BAUM_LANG"){
                         sp = new ENGINE::Sprite(_Resx,_Resy,IMG_TreeLarge,_Shader);
                         sp->InitTextureMap(1,1);
+                        sp->SetPosition(pos_x,0);
                     }
+                    else
                     if ( s == "BAUM_KURZ"){
                         sp = new ENGINE::Sprite(_Resx,_Resy,IMG_Tree_Small,_Shader);
                         sp->InitTextureMap(1,1);
+                        sp->SetPosition(pos_x,0);
                     }
+                    else
                     if ( s== "TURTLE"){
                         sp = new ENGINE::Sprite(_Resx,_Resy,IMG_Turtles,_Shader);
                         sp->InitTextureMap(10,1);
+                        sp->SetPosition(pos_x,0);
                     }
-                    // Vehicles
-                    /*
-                    BigCar,
-                        SmallCar,
-                        Truck,
-                        Bolide,
-*/
+                    else
                     if ( s == "VEHICLE"){ // Welches Teil angezeigt wird, wird in der engine
                         // ausgesucht...
                         sp = new ENGINE::Sprite(_Resx,_Resy,IMG_Vehicles,_Shader);
                         sp->InitTextureMap(6,1);
+                        sp->SetPosition(pos_x,0);
 
-                        _Row.Objects.push_back(sp);
+                        //_Row.Objects.push_back(sp);
                     }
-
+                    else
                     if (s == "TRUCK_FRONT"){ // sonderfall, der truck besteht aus 2 tiles
                         sp = new ENGINE::Sprite(_Resx,_Resy,IMG_Vehicles,_Shader);
                         sp->InitTextureMap(6,1);                     
                     }
+                    else
                     if (s == "TRUCK_BACK"){
                         pos_x += 64;
                         sp = new ENGINE::Sprite(_Resx,_Resy,IMG_Vehicles,_Shader);
@@ -276,13 +278,12 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
                                         // y position ist die selbe wie truck front !!                    
                     }
 
+
                     if (sp != nullptr){
-
-                        sp->SetPosition(pos_x,0);  //Y-pos Wird im eigentlichen programm dann gesetzt!
+                        //sp->SetPosition(pos_x,0);  //Y-pos Wird im eigentlichen programm dann gesetzt!
                         _Row.Objects.push_back(sp);
-
-                        pos_x += 64;
                     }
+                    pos_x += 64;
                 }
             }
             return;

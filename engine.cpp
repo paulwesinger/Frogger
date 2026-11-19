@@ -2317,9 +2317,10 @@ void TestEngine::InitFromAnyLevel(){
     for(CONFIG::Level l : _AnyLevel.GetAllLevels()){
         int row = 0;
         for(CONFIG::Row r: l.Rows){
+            int step ;
             for (ENGINE::Sprite* sp: r.Objects){
-
-                sp->SetPosition(x,YPositions[i]);
+                step = sp->PosX();
+                sp->SetPosition(step,YPositions[i]);
 
                 // Jetzt mal den Objecttype rusfinden:
                 // Bäume sind nur 1 Bild gross -> 1,1
@@ -2352,6 +2353,7 @@ void TestEngine::InitFromAnyLevel(){
                     case 11: // unterer Gehsteig
                         break;
                 }
+                    //x +=  step;
             }
             i++;
         }
