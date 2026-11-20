@@ -82,8 +82,8 @@ END_ROW
 ROW_Begin
 RowNumber 7
 OBJECTS_Begin
-Truck_Front Truck_Back GAP 260 Truck_Front Truck_Back GAP 260 Truck_Front Truck_Back GAP 260 Truck_Front Truck_Back
-Step_Object 3
+Truck_Front Truck_Back GAP 200 Truck_Front Truck_Back GAP 200 Truck_Front Truck_Back GAP 400 Truck_Front Truck_Back
+Step_Object -2
 OBJECTS_End
 ENEMIES_Begin
 Step_Enenmy 0
@@ -94,7 +94,7 @@ END_ROW
 ROW_Begin
 RowNumber 8
 OBJECTS_Begin
-PKW GAP 80 PKW GAP 80 PKW GAP 130 PKW GAP 120 PKW PKW PKW PKW PKW
+PKW GAP 80 PKW GAP 80 PKW GAP 130 PKW GAP 120 PKW GAP 80 PKW GAP 80 PKW PKW PKW
 Step_Object -2
 OBJECTS_End
 ENEMIES_Begin
@@ -130,7 +130,7 @@ END_ROW
 ROW_Begin
 RowNumber 11
 OBJECTS_Begin
-Crawler Crawler Crawler GAP 80 Crawler GAP 80 Crawler GAP 80 Crawler Crawler GAP 120 Crawler Crawler Crawler
+Crawler GAP 150 Crawler GAP 150 Crawler GAP 80 Crawler
 Step_Object 2
 OBJECTS_End
 ENEMIES_Begin

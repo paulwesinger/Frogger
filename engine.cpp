@@ -34,7 +34,10 @@ TestEngine::~TestEngine(){
     delete frogdeath;
     delete Croco_Row_3;
 
-    // for(std::vector<CONFIG::Level> level : _AnyLevel->GetAllLevels()){
+    for(int i=0; i< _AnyLevel.GetAllLevels().size();i++){
+        CONFIG::Level l = _AnyLevel.GetLevelData(i);
+        _AnyLevel.ResetLevel(l);
+    }
 
     //     int i =0;
     //     for(std::vector<CONFIG::Row> row : level.GetLevelRows(i++)){
@@ -72,11 +75,11 @@ TestEngine::~TestEngine(){
      for (int i =0; i<WALLS; i++)
          delete Walls[i];
 
-    for (int i =0; i<TURTLES_ROW_2; i++)
-        delete turtlesRow2[i];
+    // for (int i =0; i<TURTLES_ROW_2; i++)
+    //     delete turtlesRow2[i];
 
-    for (int i =0; i<TURTLES_ROW_4; i++)
-        delete turtlesRow4[i];
+    // for (int i =0; i<TURTLES_ROW_4; i++)
+    //     delete turtlesRow4[i];
 
     for(ENGINE::Sprite * sp:_AvailableFrogs){
         delete sp;
@@ -91,8 +94,8 @@ TestEngine::~TestEngine(){
     _AvailableFrogs.clear();
 
 
-    ReleaseTrees();
-    ReleaseVehicles();
+   // ReleaseTrees();
+   // ReleaseVehicles();
 
     delete _Score;
     delete _HighScore;
@@ -128,33 +131,33 @@ TestEngine::~TestEngine(){
 }
 
 void TestEngine::ReleaseTrees(){
-    for(int i = 0; i < FLOATOBJECTS_PER_ROW_1; i++)
-        delete Baum_Row1[i];
+    // for(int i = 0; i < FLOATOBJECTS_PER_ROW_1; i++)
+    //     delete Baum_Row1[i];
 
-    for(int i = 0; i < FLOATOBJECTS_PER_ROW_3; i++)
-        delete Baum_Row3[i];
+    // for(int i = 0; i < FLOATOBJECTS_PER_ROW_3; i++)
+    //     delete Baum_Row3[i];
 
-    for(int i = 0; i < FLOATOBJECTS_PER_ROW_5; i++)
-        delete Baum_Row5[i];
+    // for(int i = 0; i < FLOATOBJECTS_PER_ROW_5; i++)
+    //     delete Baum_Row5[i];
 }
 
 void TestEngine::ReleaseVehicles(){
-    for(int i = 0; i < VEHICLES_PER_ROW_11; i++)
-        delete Vehicle_Row11[i];
+    // for(int i = 0; i < VEHICLES_PER_ROW_11; i++)
+    //     delete Vehicle_Row11[i];
 
-    for(int i = 0; i < VEHICLES_PER_ROW_10; i++)
-        delete Vehicle_Row10[i];
+    // for(int i = 0; i < VEHICLES_PER_ROW_10; i++)
+    //     delete Vehicle_Row10[i];
 
-    for(int i = 0; i < VEHICLES_PER_ROW_9; i++)
-        delete Vehicle_Row9[i];
+    // for(int i = 0; i < VEHICLES_PER_ROW_9; i++)
+    //     delete Vehicle_Row9[i];
 
-    for(int i = 0; i < VEHICLES_PER_ROW_8; i++)
-        delete Vehicle_Row8[i];
+    // for(int i = 0; i < VEHICLES_PER_ROW_8; i++)
+    //     delete Vehicle_Row8[i];
 
-    for(int i = 0; i < VEHICLES_PER_ROW_7; i++) {
-        delete Vehicle_Row7[i];
-        delete Vehicle_Row7_2[i];
-    }
+    // for(int i = 0; i < VEHICLES_PER_ROW_7; i++) {
+    //     delete Vehicle_Row7[i];
+    //     delete Vehicle_Row7_2[i];
+    // }
 }
 
 bool TestEngine::LoadSurface(string path){
@@ -649,6 +652,13 @@ void TestEngine::RenderVehicles(){
         for(int j=0;j <_Level.Rows[i].Objects.size();j++ ){
 
             ENGINE::Sprite* sp = _Level.Rows[i].Objects[j];
+
+            int tile = sp->RenderFromTile();
+
+            if (tile > 4)
+            {
+                bool wurscht = true;
+            }
             sp-> MoveSprite(sp->RenderFromTile(),sp->RenderFromTile(),0,0,100,step,0,_Elapsed);
         }
     }
@@ -1190,55 +1200,7 @@ void TestEngine::GetNewState(){
         }
         break;
 
-
-    //     for (int i =0; i< VEHICLES_PER_ROW_7; i++) {
-    //         if ((Vehicle_Row7[i]->IsColliding(frog->Pos(),frog->SpriteSize()) )||
-
-    //             (Vehicle_Row7_2[i]->IsColliding(frog->Pos(),frog->SpriteSize())) )  {
-    //             GameState = GAMESTATE::Die;
-    //             StartDieAnimation(0,6);
-    //         }
-    //     }
-
-    //     break;
-    // case 8:
-    //     for (int i =0; i< VEHICLES_PER_ROW_8; i++) {
-    //         if (Vehicle_Row8[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
-    //             GameState = GAMESTATE::Die;
-    //             StartDieAnimation(0,6);
-    //         }
-    //     }
-    //     break;
-    // case 9:
-    //     for (int i =0; i< VEHICLES_PER_ROW_9; i++) {
-    //         if (Vehicle_Row9[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
-    //             GameState = GAMESTATE::Die;
-    //             StartDieAnimation(0,6);
-    //         }
-    //     }
-    //     break;
-
-    // case 10:
-    //     for (int i =0; i< VEHICLES_PER_ROW_10; i++) {
-    //         if (Vehicle_Row10[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
-    //             GameState = GAMESTATE::Die;
-    //             StartDieAnimation(0,6);
-    //         }
-    //     }
-
-    //     break;
-    // case 11:
-
-    //     for (int i =0; i< VEHICLES_PER_ROW_11; i++) {
-    //         if (Vehicle_Row11[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
-    //             GameState = GAMESTATE::Die;
-    //             StartDieAnimation(0,6);
-    //         }
-    //     }
-    //     break;
-
     case 12:
-
 
         break;
     default:
@@ -2304,37 +2266,37 @@ bool TestEngine::InitUserObjects(){
     // Mauern und ziele positionieren !!
     Walls[0] -> setPos(0,0);
 
-    // ----------------------------------
-    // Schildkröten
-    // ----------------------------------
+    // // ----------------------------------
+    // // Schildkröten
+    // // ----------------------------------
 
-    x = 0;
-    for (int i =0; i< TURTLES_ROW_2; i++){
-        turtlesRow2[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Turtles10x1_64x64.png",_Shader);
-        turtlesRow2[i]->InitTextureMap(10,1);
+    // x = 0;
+    // for (int i =0; i< TURTLES_ROW_2; i++){
+    //     turtlesRow2[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Turtles10x1_64x64.png",_Shader);
+    //     turtlesRow2[i]->InitTextureMap(10,1);
 
-        turtlesRow2[i]->SetPosition(x,162);
-        turtlesRow2[i]->StartAnimation(0,0);
+    //     turtlesRow2[i]->SetPosition(x,162);
+    //     turtlesRow2[i]->StartAnimation(0,0);
 
-        if (i == 3 || i== 6)
-            x += 256;
-        else
-            x += 64;
-    }
+    //     if (i == 3 || i== 6)
+    //         x += 256;
+    //     else
+    //         x += 64;
+    // }
 
-    x = 64;
-    for (int i =0; i< TURTLES_ROW_4; i++){
-        turtlesRow4[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Turtles10x1_64x64.png",_Shader);
-        turtlesRow4[i]->InitTextureMap(10,1);
+    // x = 64;
+    // for (int i =0; i< TURTLES_ROW_4; i++){
+    //     turtlesRow4[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Turtles10x1_64x64.png",_Shader);
+    //     turtlesRow4[i]->InitTextureMap(10,1);
 
-        turtlesRow4[i]->SetPosition(x,290);
-        turtlesRow4[i]->StartAnimation(0,0);
+    //     turtlesRow4[i]->SetPosition(x,290);
+    //     turtlesRow4[i]->StartAnimation(0,0);
 
-        if (i == 3 || i == 5)
-            x += 256;
-        else
-            x += 64;
-    }
+    //     if (i == 3 || i == 5)
+    //         x += 256;
+    //     else
+    //         x += 64;
+    // }
 
     InitCroco();
     InitTreeRows();
@@ -2466,35 +2428,24 @@ void TestEngine::InitFromAnyLevel(){
                     case 3:
                     case 4:
                     sp->StartAnimation(0,0);
-                    break;
-                    case 5: break; // Mittlerer Gehweg
-                    case 6:                        
-                //        sp->StartAnimation(fromtile,fromtile);//trucks
-                //        break;
+                        break;
+                    case 5:
+                        break; // Mittlerer Gehweg
+                    case 6:
                     case 7:
-
-                //        sp->StartAnimation(fromtile);
-                //        break;
                     case 8:
-                //        sp->StartAnimation(2,2);
-                //        break;
                     case 9:
-                //        sp->StartAnimation(1,1);
-                //        break;
                     case 10:
                         sp->StartAnimation(fromtile,fromtile);
-
                         break;
                     case 11: // unterer Gehsteig
                         break;
                 }                    
             }
+            row++;
             i++;
         }
     }
-
-
-
 }
 
 
@@ -2503,59 +2454,59 @@ void TestEngine::InitFromAnyLevel(){
 
 
 void TestEngine::InitVehicles(){
-    int x = 0;
-    for (int i =0; i < VEHICLES_PER_ROW_11;i++){
-        Vehicle_Row11[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Vehicles6x1_64x64.png",_Shader);
-        Vehicle_Row11[i]->InitTextureMap(6,1);
-        Vehicle_Row11[i]->SetPosition(x,738);
-        Vehicle_Row11[i]->StartAnimation(3,3);
-        x+= 250;
-    }
+    // int x = 0;
+    // for (int i =0; i < VEHICLES_PER_ROW_11;i++){
+    //     Vehicle_Row11[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Vehicles6x1_64x64.png",_Shader);
+    //     Vehicle_Row11[i]->InitTextureMap(6,1);
+    //     Vehicle_Row11[i]->SetPosition(x,738);
+    //     Vehicle_Row11[i]->StartAnimation(3,3);
+    //     x+= 250;
+    // }
 
-    x = 0;
-    for (int i =0; i < VEHICLES_PER_ROW_10;i++){
-        Vehicle_Row10[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Vehicles6x1_64x64.png",_Shader);
-        Vehicle_Row10[i]->InitTextureMap(6,1);
-        Vehicle_Row10[i]->SetPosition(x,674);
-        Vehicle_Row10[i]->StartAnimation(1,1);
-        x+= 190;
-    }
+    // x = 0;
+    // for (int i =0; i < VEHICLES_PER_ROW_10;i++){
+    //     Vehicle_Row10[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Vehicles6x1_64x64.png",_Shader);
+    //     Vehicle_Row10[i]->InitTextureMap(6,1);
+    //     Vehicle_Row10[i]->SetPosition(x,674);
+    //     Vehicle_Row10[i]->StartAnimation(1,1);
+    //     x+= 190;
+    // }
 
-    x = -64;
-    for (int i =0; i < VEHICLES_PER_ROW_9;i++){
-        Vehicle_Row9[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Vehicles6x1_64x64.png",_Shader);
-        Vehicle_Row9[i]->InitTextureMap(6,1);
-        Vehicle_Row9[i]->SetPosition(x,610);
-        Vehicle_Row9[i]->StartAnimation(2,2);
-        x+= 120;
-    }
+    // x = -64;
+    // for (int i =0; i < VEHICLES_PER_ROW_9;i++){
+    //     Vehicle_Row9[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Vehicles6x1_64x64.png",_Shader);
+    //     Vehicle_Row9[i]->InitTextureMap(6,1);
+    //     Vehicle_Row9[i]->SetPosition(x,610);
+    //     Vehicle_Row9[i]->StartAnimation(2,2);
+    //     x+= 120;
+    // }
 
-    x = 0;
-    for (int i =0; i < VEHICLES_PER_ROW_8;i++){
-        Vehicle_Row8[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Vehicles6x1_64x64.png",_Shader);
-        Vehicle_Row8[i]->InitTextureMap(6,1);
-        Vehicle_Row8[i]->SetPosition(x,546);
-        Vehicle_Row8[i]->StartAnimation(0,0);
-        x+= 300;
-    }
+    // x = 0;
+    // for (int i =0; i < VEHICLES_PER_ROW_8;i++){
+    //     Vehicle_Row8[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Vehicles6x1_64x64.png",_Shader);
+    //     Vehicle_Row8[i]->InitTextureMap(6,1);
+    //     Vehicle_Row8[i]->SetPosition(x,546);
+    //     Vehicle_Row8[i]->StartAnimation(0,0);
+    //     x+= 300;
+    // }
 
-    x = 0;
-    for (int i =0; i < VEHICLES_PER_ROW_7;i++){
-        Vehicle_Row7[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Vehicles6x1_64x64.png",_Shader);
-        Vehicle_Row7[i]->InitTextureMap(6,1);
-        Vehicle_Row7[i]->SetPosition(x,482);
-        Vehicle_Row7[i]->StartAnimation(4,4);
-        x+= 260;
-    }
+    // x = 0;
+    // for (int i =0; i < VEHICLES_PER_ROW_7;i++){
+    //     Vehicle_Row7[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Vehicles6x1_64x64.png",_Shader);
+    //     Vehicle_Row7[i]->InitTextureMap(6,1);
+    //     Vehicle_Row7[i]->SetPosition(x,482);
+    //     Vehicle_Row7[i]->StartAnimation(4,4);
+    //     x+= 260;
+    // }
 
-    x = 64;
-    for (int i =0; i < VEHICLES_PER_ROW_7;i++){
-        Vehicle_Row7_2[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Vehicles6x1_64x64.png",_Shader);
-        Vehicle_Row7_2[i]->InitTextureMap(6,1);
-        Vehicle_Row7_2[i]->SetPosition(x,482);
-        Vehicle_Row7_2[i]->StartAnimation(5,5);
-        x+= 260;
-    }
+    // x = 64;
+    // for (int i =0; i < VEHICLES_PER_ROW_7;i++){
+    //     Vehicle_Row7_2[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Vehicles6x1_64x64.png",_Shader);
+    //     Vehicle_Row7_2[i]->InitTextureMap(6,1);
+    //     Vehicle_Row7_2[i]->SetPosition(x,482);
+    //     Vehicle_Row7_2[i]->StartAnimation(5,5);
+    //     x+= 260;
+    // }
 
 
 }
@@ -2572,32 +2523,32 @@ void TestEngine::InitTreeRows(){
     // -------------------------
     // Bäume Row1 - Row5
     // -------------------------
-    int x = 0;
-    for (int i =0; i < FLOATOBJECTS_PER_ROW_5;i++){
-        Baum_Row5[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum320x68.png",_Shader);
-        Baum_Row5[i]->InitTextureMap(1,1);
-        Baum_Row5[i]->SetPosition(x,352);
-        Baum_Row5[i]->StartAnimation(0,0);
-        x+= 480;
-    }
+    // int x = 0;
+    // for (int i =0; i < FLOATOBJECTS_PER_ROW_5;i++){
+    //     Baum_Row5[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum320x68.png",_Shader);
+    //     Baum_Row5[i]->InitTextureMap(1,1);
+    //     Baum_Row5[i]->SetPosition(x,352);
+    //     Baum_Row5[i]->StartAnimation(0,0);
+    //     x+= 480;
+    // }
 
-    x = 250;
-    for (int i =0; i < FLOATOBJECTS_PER_ROW_3;i++){
-        Baum_Row3[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum192x68.png",_Shader);
-        Baum_Row3[i]->InitTextureMap(1,1);
-        Baum_Row3[i]->SetPosition(x,226);
-        Baum_Row3[i]->StartAnimation(0,0);
-        x+= 300;
-    }
+    // x = 250;
+    // for (int i =0; i < FLOATOBJECTS_PER_ROW_3;i++){
+    //     Baum_Row3[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum192x68.png",_Shader);
+    //     Baum_Row3[i]->InitTextureMap(1,1);
+    //     Baum_Row3[i]->SetPosition(x,226);
+    //     Baum_Row3[i]->StartAnimation(0,0);
+    //     x+= 300;
+    // }
 
-    x = 0;
-    for (int i =0; i < FLOATOBJECTS_PER_ROW_1;i++){
-        Baum_Row1[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum320x68.png",_Shader);
-        Baum_Row1[i]->InitTextureMap(1,1);
-        Baum_Row1[i]->SetPosition(x,98);
-        Baum_Row1[i]->StartAnimation(0,0);
-        x+= 420;
-    }
+    // x = 0;
+    // for (int i =0; i < FLOATOBJECTS_PER_ROW_1;i++){
+    //     Baum_Row1[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum320x68.png",_Shader);
+    //     Baum_Row1[i]->InitTextureMap(1,1);
+    //     Baum_Row1[i]->SetPosition(x,98);
+    //     Baum_Row1[i]->StartAnimation(0,0);
+    //     x+= 420;
+    // }
 }
 
 void TestEngine::SoundHandler(){

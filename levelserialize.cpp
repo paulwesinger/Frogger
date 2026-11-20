@@ -237,6 +237,17 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
             bool nextisgap=false;
 
             for(string s: objects) {
+
+
+
+
+                if(s.starts_with("GAP")){
+                    bool test = false;
+                }
+
+
+
+
                 if (s == "GAP")
                 {
                     nextisgap = true;
@@ -314,12 +325,14 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
                     if (s == "TRUCK_FRONT"){ // sonderfall, der truck besteht aus 2 tiles
                         sp = new ENGINE::Sprite(_Resx,_Resy,IMG_Vehicles,_Shader);
                         sp->InitTextureMap(6,1);
+                        sp->SetPosition(pos_x,0);
                         sp->SetRenderFromTile(4);
                     }
                     else
                     if (s == "TRUCK_BACK"){                       
                         sp = new ENGINE::Sprite(_Resx,_Resy,IMG_Vehicles,_Shader);
                         sp->InitTextureMap(6,1);
+                        sp->SetPosition(pos_x,0);
                         sp->SetRenderFromTile(5);
                                         // y position ist die selbe wie truck front !!                    
                     }
