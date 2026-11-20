@@ -28,7 +28,7 @@ bool SERIALIZE::Serialize::SerializeData(const string path, Shader *shader, int 
 
 bool SERIALIZE::Serialize::DeSerializeData()
 {
-    if (ParseData(_Path))
+    if (SERIALIZE::Serialize::ParseData(_Path))
         return true;
     return false;
 }

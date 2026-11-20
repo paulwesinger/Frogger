@@ -11,14 +11,7 @@ CONFIG::AnyLevel::~AnyLevel(){
     try {
         for(Level l:_Levels){
             for(Row row: l.Rows){
-                // for(ENGINE::Sprite* sp:row.Objects) {
-                //     delete sp;
-                // }
                 row.Objects.clear();
-
-                // for(ENGINE::Sprite* sp:row.Enemies) {
-                //     delete sp;
-                // }
                 row.Enemies.clear();
             }
             l.Rows.clear();
@@ -29,8 +22,6 @@ CONFIG::AnyLevel::~AnyLevel(){
         std::cout << ex.what() << std::endl;
     }
 }
-
-
 
 void CONFIG::AnyLevel::AddLevelConfiguration(Level level){
     _Levels.push_back(level);

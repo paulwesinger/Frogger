@@ -108,6 +108,8 @@ TestEngine::~TestEngine(){
     delete _BestPlayersBG;
     delete _InputBG;
 
+    delete Serializer;
+
     // wav freigeben
     Mix_FreeChunk(sound_Hop);
     Mix_FreeChunk(sound_Startup);
@@ -504,7 +506,7 @@ void TestEngine::RenderCrocos(){
 }
 
 
-void TestEngine::RenderFrom_AnyLevel(){
+void TestEngine::RenderFloatingObjects(){
     bool tmp;
     // MAl nur die Bäume;
     for ( int i = 0; i<5; i++) {
@@ -519,7 +521,7 @@ void TestEngine::RenderFrom_AnyLevel(){
 
 void TestEngine::RenderWood(){
 
-    RenderFrom_AnyLevel();
+    RenderFloatingObjects();
 
 //     bool tmp;
 //     for (int i =0; i < FLOATOBJECTS_PER_ROW_1;i++){
@@ -1337,8 +1339,9 @@ void TestEngine::Run(){
                 case GAMESTATE::Loop:
 
                     RenderBackgroundSprites();
-                    RenderWood();
-                    RenderTurtles();
+                    RenderFloatingObjects();
+                    //RenderWood();
+                    //RenderTurtles();
                     RenderVehicles();
                     RenderArrivedFrogs();
                     RenderCrocos();
@@ -1361,10 +1364,11 @@ void TestEngine::Run(){
                     // Den 1. level hole:
                     _Level= _AnyLevel.GetLevelData(((int)_GameLevel) -1);
 
-
                     RenderBackgroundSprites();
-                    RenderWood();
-                    RenderTurtles();
+                    RenderFloatingObjects();
+
+                    //RenderWood();
+                    //RenderTurtles();
                     RenderVehicles();
                     RenderArrivedFrogs();
                     RenderCrocos();
@@ -1397,10 +1401,10 @@ void TestEngine::Run(){
                     break;
 
                 case GAMESTATE::Run:
-
                     RenderBackgroundSprites();
-                    RenderWood();                   
-                    RenderTurtles();
+                    RenderFloatingObjects();
+                    //RenderWood();
+                    //RenderTurtles();
                     RenderVehicles();
                     RenderArrivedFrogs();
                     RenderCrocos();
@@ -1425,9 +1429,10 @@ void TestEngine::Run(){
                 case GAMESTATE::FloatingRight:
                 case GAMESTATE::FloatingLeft:
                     RenderBackgroundSprites();
-                    RenderWood();
+                    RenderFloatingObjects();
+                    //RenderWood();
                     RenderScore();
-                    RenderTurtles();
+                    //RenderTurtles();
                     RenderVehicles();
                     RenderCrocos();
                     RenderArrivedFrogs();
@@ -1439,10 +1444,11 @@ void TestEngine::Run(){
 
                 case GAMESTATE::TimeOut:
                     RenderBackgroundSprites();
-                    RenderWood();
+                    RenderFloatingObjects();
+                    //RenderWood();
                     RenderScore();
                     RenderVehicles();
-                    RenderTurtles();
+                    //RenderTurtles();
                     RenderCrocos();
                     RenderTime();
                     RenderArrivedFrogs();
@@ -1455,10 +1461,11 @@ void TestEngine::Run(){
                     break;
                 case GAMESTATE::Plunk:
                     RenderBackgroundSprites();
-                    RenderWood();                 
+                    RenderFloatingObjects();
+                    //RenderWood();
                     RenderScore();
                     RenderVehicles();
-                    RenderTurtles();
+                    //RenderTurtles();
                     RenderCrocos();
                     RenderTime();
                     RenderArrivedFrogs();
@@ -1474,11 +1481,11 @@ void TestEngine::Run(){
 
                     }                   break;
                 case GAMESTATE::Die:
-
                     RenderBackgroundSprites();
-                    RenderWood();
+                    RenderFloatingObjects();
+                    //RenderWood();
                     RenderScore();
-                    RenderTurtles();
+                    //RenderTurtles();
                     RenderVehicles();
                     RenderCrocos();
                     RenderTime();
@@ -1501,9 +1508,10 @@ void TestEngine::Run(){
 
                 case GAMESTATE::RemoveFrog:
                     RenderBackgroundSprites();
-                    RenderWood();
+                    RenderFloatingObjects();
+                    //RenderWood();
                     RenderScore();
-                    RenderTurtles();
+                    //RenderTurtles();
                     RenderVehicles();
                     RenderCrocos();
                     RenderTime();
@@ -1537,38 +1545,39 @@ void TestEngine::Run(){
                     break;
                 case GAMESTATE::Arrived:{
 
-                        RenderBackgroundSprites();
-                        RenderWood();
-                        RenderScore();
-                        RenderTurtles();
-                        RenderVehicles();
-                        RenderCrocos();
-                        RenderArrivedFrogs();
-                        RenderTime();
-                        RenderFrog();
-                        RenderAvailableFrogs();
+                    RenderBackgroundSprites();
+                    RenderFloatingObjects();
+                    //    RenderWood();
+                    RenderScore();
+                    //    RenderTurtles();
+                    RenderVehicles();
+                    RenderCrocos();
+                    RenderArrivedFrogs();
+                    RenderTime();
+                    RenderFrog();
+                    RenderAvailableFrogs();
 
-                        bool tmp;
-                        if (!  FrogArrived[_IndexFrogArrived]->AnimationDone()) {
-                            FrogArrived[_IndexFrogArrived]->MoveSprite(0,1,64,72,300,0,0,_Elapsed,tmp);
+                    bool tmp;
+                    if (!  FrogArrived[_IndexFrogArrived]->AnimationDone()) {
+                        FrogArrived[_IndexFrogArrived]->MoveSprite(0,1,64,72,300,0,0,_Elapsed,tmp);
+                    }
+                    else {
+
+                        if (FrogArrivedDestinatons[_IndexFrogArrived].arrived) {
+                            FrogArrived[_IndexFrogArrived]->RenderFromAsset(1,0);
+                            GameState = GAMESTATE::Loop;
+                            _gameScore += 50;  // Für den Frosch
+                            // ... plus verbliebene Zeit * 10
+                            _gameScore += _TimeCounter * 10;
+
+                            audio->PlayBackrgoundSound(sound_MainTheme);
                         }
-                        else {
-
-                            if (FrogArrivedDestinatons[_IndexFrogArrived].arrived) {
-                                FrogArrived[_IndexFrogArrived]->RenderFromAsset(1,0);
-                                GameState = GAMESTATE::Loop;
-                                _gameScore += 50;  // Für den Frosch
-                                // ... plus verbliebene Zeit * 10
-                                _gameScore += _TimeCounter * 10;
-
-                                audio->PlayBackrgoundSound(sound_MainTheme);
-                            }
-                            else
-                            if (FrogArrivedDestinatons[_IndexFrogArrived].haveTodie) {
-                                GameState = GAMESTATE::Die;
-                                StartDieAnimation(4,6);
-                            }
+                        else
+                        if (FrogArrivedDestinatons[_IndexFrogArrived].haveTodie) {
+                            GameState = GAMESTATE::Die;
+                            StartDieAnimation(4,6);
                         }
+                    }
                 }
 
 
@@ -1577,9 +1586,10 @@ void TestEngine::Run(){
                 case GAMESTATE::StageCleared:  // Alle Froggis im Kasten...
 
                     RenderBackgroundSprites();
-                    RenderWood();
+                    RenderFloatingObjects();
+                    //RenderWood();
                     RenderScore();
-                    RenderTurtles();
+                    //RenderTurtles();
                     RenderVehicles();
                     RenderCrocos();
                     RenderTime();
@@ -1615,9 +1625,10 @@ void TestEngine::Run(){
 
                 case GAMESTATE::LevelUp:{
                     RenderBackgroundSprites();
-                    RenderWood();
+                    RenderFloatingObjects();
+                    //7RenderWood();
                     RenderScore();
-                    RenderTurtles();
+                    //RenderTurtles();
                     RenderVehicles();
                     RenderCrocos();                   
                     RenderTime();
@@ -2027,12 +2038,12 @@ bool TestEngine::ReadBestFromDisk(){
 bool TestEngine::InitUserObjects(){
 
     bool ret = true;
-    SERIALIZE::Serialize ser("../../serialize/ser.txt",GetShader(),_ResX,_ResY);
+    Serializer = new SERIALIZE::Serialize("../../serialize/ser.txt",GetShader(),_ResX,_ResY);
 //    ser.SerializeData("../../serialize/ser.txt");
 
 
-    if (ser.DeSerializeData()){
-        _AnyLevel = ser.AnyLevels();
+    if (Serializer->DeSerializeData()){
+        _AnyLevel = Serializer->AnyLevels();
         LoadingDone = true;
     }
 
@@ -2352,8 +2363,7 @@ void TestEngine::InitFromAnyLevel(){
                         break;
                     case 11: // unterer Gehsteig
                         break;
-                }
-                    //x +=  step;
+                }                    
             }
             i++;
         }

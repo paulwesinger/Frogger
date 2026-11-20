@@ -363,8 +363,8 @@ private:
     std::vector<SCORE::HighScorePlayer*> _BestPlayers;
     SCORE::HighScorePlayer* _BestPlayer;
 
+    SERIALIZE::Serialize* Serializer;
     CONFIG::AnyLevel  _AnyLevel;
-
     CONFIG::Level _Level;
 
 
@@ -412,7 +412,7 @@ private:
     void StartDieAnimation(int starttile, int endtile); // Der Frosch darf nich leiden..
 
 
-    void RenderFrom_AnyLevel();
+    void RenderFloatingObjects();
 
 
 };

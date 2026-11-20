@@ -47,8 +47,8 @@ END_ROW
 ROW_Begin
 RowNumber 4
 OBJECTS_Begin
-Turtle Turtle Turtle GAP 100 Turtle Turtle Turtle GAP 150 Turtle Turtle Turtle
-Step_Object -5
+Turtle Turtle Turtle GAP 100 Turtle Turtle Turtle GAP 250 Turtle Turtle Turtle
+Step_Object -2
 OBJECTS_End
 ENEMIES_Begin
 Step_Enenmy 0
