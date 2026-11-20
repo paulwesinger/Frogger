@@ -67,9 +67,11 @@ public:
 
     // Bewegungsgrenzen
     void SetMoveArea(int left, int top,int right, int bottom);
+    void SetDiving(bool diving);
 
     bool IsLocked();
     bool IsRunning();
+    bool IsDiver();
 
 
 protected:
@@ -89,6 +91,7 @@ protected:
     bool _IsLocked;
     bool _IsRunning;
     bool _RenderSprite;
+    bool _IsDiver = false;  // Nur für die Turtles derzeit eventuel neue abgeleitete klasse erstellen !
 
     Bounds _Bounds;
     int _NextTile;

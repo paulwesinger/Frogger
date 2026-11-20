@@ -507,14 +507,61 @@ void TestEngine::RenderCrocos(){
 
 
 void TestEngine::RenderFloatingObjects(){
-    bool tmp;
-    // MAl nur die Bäume;
-    for ( int i = 0; i<5; i++) {
+
+    // turtlesRow2[i]->MoveSprite(0,9,64,64,300,-_StepXTurtlesRow2,0,_Elapsed);
+    // turtlesRow2[i]->MoveSprite(0,2,64,64,300,-_StepXTurtlesRow2,0,_Elapsed);
+
+    // Baumreihe oben:
     //for (ENGINE::Sprite* sp: _Level.Rows[0].Objects){
-        int step = _Level.Rows[i].ObjectStep;
-        for (ENGINE::Sprite* sp: _Level.Rows[i].Objects){
-           sp->MoveSprite(0,0,128,64,100,step,0,_Elapsed,tmp);
+    int step = _Level.Rows[0].ObjectStep;
+    for (ENGINE::Sprite* sp: _Level.Rows[0].Objects){
+       sp->MoveSprite(0,0,128,64,100,step,0,_Elapsed);
+    }
+    step = _Level.Rows[1].ObjectStep;
+    for (ENGINE::Sprite* sp: _Level.Rows[1].Objects){
+        if ( ! sp->AnimationDone() ){
+            if (sp->IsDiver())
+                    sp->MoveSprite(0,9,64,64,400,step,0,_Elapsed);
+            else
+                sp->MoveSprite(0,2,64,64,400,step,0,_Elapsed);
         }
+        else{
+
+            if (sp->IsDiver())
+                sp->StartAnimation(0,9);
+            else
+                sp->StartAnimation(0,2);
+            sp->RenderFromAsset(0,0);
+
+        }
+    }
+    // Baumreihe mitte
+    step = _Level.Rows[2].ObjectStep;
+    for (ENGINE::Sprite* sp: _Level.Rows[2].Objects){
+        sp->MoveSprite(0,0,128,64,100,step,0,_Elapsed);
+    }
+
+    //Turtles unten
+    step = _Level.Rows[3].ObjectStep;
+    for (ENGINE::Sprite* sp: _Level.Rows[3].Objects){
+        if ( !sp->AnimationDone() ){
+            if (sp->IsDiver())
+                sp->MoveSprite(0,9,64,64,400,step,0,_Elapsed);
+            else
+                sp->MoveSprite(0,2,64,64,400,step,0,_Elapsed);
+        }
+        else{
+            if (sp->IsDiver())
+                sp->StartAnimation(0,9);
+            else
+                sp->StartAnimation(0,2);
+            sp->RenderFromAsset(0,0);
+        }
+    }
+    //Baumreihe unten
+    step = _Level.Rows[4].ObjectStep;
+    for (ENGINE::Sprite* sp: _Level.Rows[4].Objects){
+        sp->MoveSprite(0,0,128,64,100,step,0,_Elapsed);
     }
 }
 

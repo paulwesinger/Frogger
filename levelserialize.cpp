@@ -272,6 +272,13 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
                         sp->SetPosition(pos_x,0);
                     }
                     else
+                    if ( s== "TURTLEDIVING"){
+                        sp = new ENGINE::Sprite(_Resx,_Resy,IMG_Turtles,_Shader);
+                        sp->InitTextureMap(10,1);
+                        sp->SetPosition(pos_x,0);
+                        sp->SetDiving(true);
+                    }
+                    else
                     if ( s == "VEHICLE"){ // Welches Teil angezeigt wird, wird in der engine
                         // ausgesucht...
                         sp = new ENGINE::Sprite(_Resx,_Resy,IMG_Vehicles,_Shader);

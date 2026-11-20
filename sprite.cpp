@@ -136,6 +136,14 @@ sSize ENGINE::Sprite::SpriteSize(){
     return _SpriteSize;
 }
 
+bool ENGINE::Sprite::IsDiver(){
+    return _IsDiver;
+}
+
+void ENGINE::Sprite::SetDiving(bool diving){
+    _IsDiver = diving;
+}
+
 bool ENGINE::Sprite::IsColliding(sPoint p, sSize s){
 
     int x1 = _Pos.x + SpriteSize().w;
