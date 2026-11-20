@@ -279,24 +279,48 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
                         sp->SetDiving(true);
                     }
                     else
-                    if ( s == "VEHICLE"){ // Welches Teil angezeigt wird, wird in der engine
+                    if ( s == "PKW"){ // Welches Teil angezeigt wird, wird in der engine
                         // ausgesucht...
                         sp = new ENGINE::Sprite(_Resx,_Resy,IMG_Vehicles,_Shader);
                         sp->InitTextureMap(6,1);
                         sp->SetPosition(pos_x,0);
-
-                        //_Row.Objects.push_back(sp);
+                        sp->SetRenderFromTile(0);
                     }
                     else
+                        if ( s == "BOLIDEFAST"){ // Welches Teil angezeigt wird, wird in der engine
+                            // ausgesucht...
+                            sp = new ENGINE::Sprite(_Resx,_Resy,IMG_Vehicles,_Shader);
+                            sp->InitTextureMap(6,1);
+                            sp->SetPosition(pos_x,0);
+                            sp->SetRenderFromTile(1);
+                        }
+                        else
+                        if ( s == "BOLIDESLOW"){ // Welches Teil angezeigt wird, wird in der engine
+                            // ausgesucht...
+                            sp = new ENGINE::Sprite(_Resx,_Resy,IMG_Vehicles,_Shader);
+                            sp->InitTextureMap(6,1);
+                            sp->SetPosition(pos_x,0);
+                            sp->SetRenderFromTile(2);
+                        }
+                        else
+                            if ( s == "CRAWLER"){ // Welches Teil angezeigt wird, wird in der engine
+                                // ausgesucht...
+                                sp = new ENGINE::Sprite(_Resx,_Resy,IMG_Vehicles,_Shader);
+                                sp->InitTextureMap(6,1);
+                                sp->SetPosition(pos_x,0);
+                                sp->SetRenderFromTile(3);
+                            }
+                            else
                     if (s == "TRUCK_FRONT"){ // sonderfall, der truck besteht aus 2 tiles
                         sp = new ENGINE::Sprite(_Resx,_Resy,IMG_Vehicles,_Shader);
-                        sp->InitTextureMap(6,1);                     
+                        sp->InitTextureMap(6,1);
+                        sp->SetRenderFromTile(4);
                     }
                     else
-                    if (s == "TRUCK_BACK"){
-                        pos_x += 64;
+                    if (s == "TRUCK_BACK"){                       
                         sp = new ENGINE::Sprite(_Resx,_Resy,IMG_Vehicles,_Shader);
                         sp->InitTextureMap(6,1);
+                        sp->SetRenderFromTile(5);
                                         // y position ist die selbe wie truck front !!                    
                     }
 

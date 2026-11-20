@@ -68,10 +68,13 @@ public:
     // Bewegungsgrenzen
     void SetMoveArea(int left, int top,int right, int bottom);
     void SetDiving(bool diving);
+    void SetRenderFromTile(int tile);
 
     bool IsLocked();
     bool IsRunning();
     bool IsDiver();
+    int RenderFromTile();
+
 
 
 protected:
@@ -102,9 +105,11 @@ protected:
     uint64_t _TimePerSequence;
     int _ToPosX;
     int _ToPosY;
+    int _RenderFromTile = 0;
     bool _AnimationDone;
     bool _EndAnimationDone;
     uint64_t _TimeToAnimate;
+
 private:
     uint64_t steptime = 0;
     uint64_t time = 0;

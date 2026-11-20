@@ -640,6 +640,40 @@ void TestEngine::RenderFrog(){
 
 void TestEngine::RenderVehicles(){
 
+
+
+    for (int i=6; i<_Level.Rows.size(); i++){
+     //   if (i == 8)
+     //       continue; // wegen der boliden mit sound
+        int step = _Level.Rows[i].ObjectStep;
+        for(int j=0;j <_Level.Rows[i].Objects.size();j++ ){
+
+            ENGINE::Sprite* sp = _Level.Rows[i].Objects[j];
+            sp-> MoveSprite(sp->RenderFromTile(),sp->RenderFromTile(),0,0,100,step,0,_Elapsed);
+        }
+    }
+
+
+    sPoint p = _Level.Rows[8].Objects[0]->Pos();
+
+    audio->ChannelToListen(AUDIO_CHANNEL_RaceCar); // wir leihen uns den startup aus...
+
+    if (p.x < 0) {   // wir testen nur den ersten wagen
+
+        audio->PlaySound(sound_Racer,AUDIO_CHANNEL_RaceCar);
+    }
+
+
+
+    // for(CONFIG::Row r: _Level.Rows){
+    //     int step = r.ObjectStep;
+    //     for (ENGINE::Sprite* sp: r.Objects){
+    //         sp->MoveSprite(sp->RenderFromTile(),sp->RenderFromTile(),0,0,100,step,0,_Elapsed);
+    //     }
+    // }
+
+
+/*
     for (int i=0;i<VEHICLES_PER_ROW_11; i++){
         if ( ! Vehicle_Row11[i]->AnimationDone() ){
             // Warten auf Animationsende
@@ -736,6 +770,7 @@ void TestEngine::RenderVehicles(){
             Vehicle_Row7_2[i]->RenderFromAsset(5,0);
         }
     }
+*/
 }
 
 void TestEngine::RenderTurtles(){
@@ -1136,51 +1171,71 @@ void TestEngine::GetNewState(){
         GameState = GAMESTATE::Run;
         break;
     case 7:
-        for (int i =0; i< VEHICLES_PER_ROW_7; i++) {
-            if ((Vehicle_Row7[i]->IsColliding(frog->Pos(),frog->SpriteSize()) )||
-
-                (Vehicle_Row7_2[i]->IsColliding(frog->Pos(),frog->SpriteSize())) )  {
-                GameState = GAMESTATE::Die;
-                StartDieAnimation(0,6);
-            }
-        }
-
-        break;
     case 8:
-        for (int i =0; i< VEHICLES_PER_ROW_8; i++) {
-            if (Vehicle_Row8[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
-                GameState = GAMESTATE::Die;
-                StartDieAnimation(0,6);
-            }
-        }
-        break;
     case 9:
-        for (int i =0; i< VEHICLES_PER_ROW_9; i++) {
-            if (Vehicle_Row9[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
-                GameState = GAMESTATE::Die;
-                StartDieAnimation(0,6);
-            }
-        }
-        break;
-
     case 10:
-        for (int i =0; i< VEHICLES_PER_ROW_10; i++) {
-            if (Vehicle_Row10[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
-                GameState = GAMESTATE::Die;
-                StartDieAnimation(0,6);
-            }
-        }
-
-        break;
     case 11:
 
-        for (int i =0; i< VEHICLES_PER_ROW_11; i++) {
-            if (Vehicle_Row11[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
-                GameState = GAMESTATE::Die;
-                StartDieAnimation(0,6);
+
+        for (int i=6; i<_Level.Rows.size(); i++){
+
+            for(int j=0;j <_Level.Rows[i].Objects.size();j++ ){
+
+                ENGINE::Sprite* sp = _Level.Rows[i].Objects[j];
+                if (sp->IsColliding(frog->Pos(),frog->SpriteSize())){
+                    GameState = GAMESTATE::Die;
+                    StartDieAnimation(0,6);
+                }
             }
         }
         break;
+
+
+    //     for (int i =0; i< VEHICLES_PER_ROW_7; i++) {
+    //         if ((Vehicle_Row7[i]->IsColliding(frog->Pos(),frog->SpriteSize()) )||
+
+    //             (Vehicle_Row7_2[i]->IsColliding(frog->Pos(),frog->SpriteSize())) )  {
+    //             GameState = GAMESTATE::Die;
+    //             StartDieAnimation(0,6);
+    //         }
+    //     }
+
+    //     break;
+    // case 8:
+    //     for (int i =0; i< VEHICLES_PER_ROW_8; i++) {
+    //         if (Vehicle_Row8[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
+    //             GameState = GAMESTATE::Die;
+    //             StartDieAnimation(0,6);
+    //         }
+    //     }
+    //     break;
+    // case 9:
+    //     for (int i =0; i< VEHICLES_PER_ROW_9; i++) {
+    //         if (Vehicle_Row9[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
+    //             GameState = GAMESTATE::Die;
+    //             StartDieAnimation(0,6);
+    //         }
+    //     }
+    //     break;
+
+    // case 10:
+    //     for (int i =0; i< VEHICLES_PER_ROW_10; i++) {
+    //         if (Vehicle_Row10[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
+    //             GameState = GAMESTATE::Die;
+    //             StartDieAnimation(0,6);
+    //         }
+    //     }
+
+    //     break;
+    // case 11:
+
+    //     for (int i =0; i< VEHICLES_PER_ROW_11; i++) {
+    //         if (Vehicle_Row11[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
+    //             GameState = GAMESTATE::Die;
+    //             StartDieAnimation(0,6);
+    //         }
+    //     }
+    //     break;
 
     case 12:
 
@@ -2403,6 +2458,7 @@ void TestEngine::InitFromAnyLevel(){
                 // Bäume sind nur 1 Bild gross -> 1,1
                 // Vehicles je nach art von 0,0 - 3 und trucks wegen 2 teilen 4-5
                 // Schildkröten ob sie tauchen odernur schwimmen
+                int fromtile =sp->RenderFromTile();
                 switch(row){
                     case 0:
                     case 1:
@@ -2412,20 +2468,22 @@ void TestEngine::InitFromAnyLevel(){
                     sp->StartAnimation(0,0);
                     break;
                     case 5: break; // Mittlerer Gehweg
-                    case 6:
-                        sp->StartAnimation(4,4);//trucks
-                        break;
+                    case 6:                        
+                //        sp->StartAnimation(fromtile,fromtile);//trucks
+                //        break;
                     case 7:
-                        sp->StartAnimation(0,0);
-                        break;
+
+                //        sp->StartAnimation(fromtile);
+                //        break;
                     case 8:
-                        sp->StartAnimation(2,2);
-                        break;
+                //        sp->StartAnimation(2,2);
+                //        break;
                     case 9:
-                        sp->StartAnimation(1,1);
-                        break;
+                //        sp->StartAnimation(1,1);
+                //        break;
                     case 10:
-                        sp->StartAnimation(3,3);
+                        sp->StartAnimation(fromtile,fromtile);
+
                         break;
                     case 11: // unterer Gehsteig
                         break;

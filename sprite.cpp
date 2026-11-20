@@ -144,6 +144,13 @@ void ENGINE::Sprite::SetDiving(bool diving){
     _IsDiver = diving;
 }
 
+void ENGINE::Sprite::SetRenderFromTile(int tile){
+    _RenderFromTile = tile;
+}
+int ENGINE::Sprite::RenderFromTile(){
+    return _RenderFromTile;
+}
+
 bool ENGINE::Sprite::IsColliding(sPoint p, sSize s){
 
     int x1 = _Pos.x + SpriteSize().w;
