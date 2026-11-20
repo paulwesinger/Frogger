@@ -47,12 +47,19 @@ int CONFIG::AnyLevel::LevelCount(){
     return _Levels.size();
 }
 
+std::string CONFIG::AnyLevel::LevelName(int level){
+
+    if (level < _Levels.size())
+        return _Levels[level].LevelName;
+    return "Unbekannter Level";
+}
+
 void CONFIG::AnyLevel::AddLevelConfiguration(Level level){
     _Levels.push_back(level);
 }
 
-void CONFIG::AnyLevel::AddLevelConfiguration(int level, int timeperlevel, std::vector<Row> row){
-    Level l(level,timeperlevel,row);
+void CONFIG::AnyLevel::AddLevelConfiguration(int level, int timeperlevel, std::vector<Row> row, std::string name){
+    Level l(level,timeperlevel,row,name);
     _Levels.push_back(l);
 }
 
@@ -75,6 +82,7 @@ CONFIG::Level CONFIG::AnyLevel::GetLevelData(int level){
 bool CONFIG::AnyLevel::IsEmptyLevel(){
     return _IsEmptyLevel;
 }
+
 
 std::vector<CONFIG::Row>CONFIG::AnyLevel::GetLevelRows(int level){
     std::vector<CONFIG::Row> emptyRow;

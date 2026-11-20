@@ -81,11 +81,12 @@ typedef struct sRow {
 typedef struct sLevel {
     int Level;
     int TimePerLevel;
+    std::string LevelName;
     std::vector<Row> Rows;
 
     sLevel(){}
-    sLevel(int level, int timeperlevel,std::vector<Row> rows):
-        Level(level),TimePerLevel(timeperlevel),Rows(rows){}
+    sLevel(int level, int timeperlevel,std::vector<Row> rows, std::string name):
+        Level(level),TimePerLevel(timeperlevel),Rows(rows),LevelName(name){}
 }Level;
 
 class AnyLevel
@@ -95,7 +96,7 @@ public:
     AnyLevel(int level,int timeperlevel,std::vector<Row> rows);
     ~AnyLevel();
     void AddLevelConfiguration(Level level);
-    void AddLevelConfiguration(int level,int timeperlevel,std::vector<Row> row);
+    void AddLevelConfiguration(int level, int timeperlevel, std::vector<Row> row, std::string name);
 
     std::vector<Row> GetLevelRows(int level);
     std::vector<Level> GetAllLevels();
@@ -105,6 +106,7 @@ public:
 
     int LevelCount();
     bool IsEmptyLevel();
+    std::string LevelName(int level);
 
 private:
     std::vector<Level> _Levels;

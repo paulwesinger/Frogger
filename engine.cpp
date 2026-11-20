@@ -509,7 +509,7 @@ void TestEngine::RenderCrocos(){
 void TestEngine::RenderFloatingObjects(){
     bool tmp;
     // MAl nur die Bäume;
-    for ( int i = 0; i<5; i++) {
+    for ( int i = 3; i<5; i++) {
     //for (ENGINE::Sprite* sp: _Level.Rows[0].Objects){
         int step = _Level.Rows[i].ObjectStep;
         for (ENGINE::Sprite* sp: _Level.Rows[i].Objects){
@@ -521,7 +521,7 @@ void TestEngine::RenderFloatingObjects(){
 
 void TestEngine::RenderWood(){
 
-    RenderFloatingObjects();
+   // RenderFloatingObjects();
 
 //     bool tmp;
 //     for (int i =0; i < FLOATOBJECTS_PER_ROW_1;i++){
@@ -582,22 +582,11 @@ void TestEngine::RenderFrog(){
         frog->MoveSprite(_StepXFrog,_StepYFrog,Frogger_TIME,Frogger_FRAMES,_Elapsed,_TileX,_TileY);
     }
     else{
-
         GetNewState();
 
-        if (GameState == GAMESTATE::FloatingRight)    {
-            // checken, ob von links nach rechts oder umgekehrt,
-            // zum testen von links nach rechts...
-            sPoint p = frog->Pos();
-            p.x += GetFloatingStep();
-            frog->SetPosition(p.x,p.y);
-        }
-        else
-            if (GameState == GAMESTATE::FloatingLeft) {
-                sPoint p = frog->Pos();
-                p.x -= GetFloatingStep();
-                frog->SetPosition(p.x,p.y);
-            }
+        sPoint p = frog->Pos();
+        p.x += GetFloatingStep();
+        frog->SetPosition(p.x,p.y);
         frog->RenderFromAsset(_EndTileX,_EndTileY);
     }
 }
@@ -758,19 +747,13 @@ void TestEngine::RenderScore(){
 }
 
 void TestEngine::RenderNextLevelScreen(int level){
-
     _LevelBackground->Render();
 
     string sLevel = std::to_string(level);
     string output = "JUMPING TO LEVEL " + sLevel;
     _LevelText->UpdateText(output,0);
 
-    if ((Uint64)level <  LEVEL_NAMES.size()) {
-        _LevelText->UpdateText(LEVEL_NAMES[level],1);
-    }
-    else
-        _LevelText->UpdateText(LEVEL_NAMES[0],1);
-
+    _LevelText->UpdateText(_Level.LevelName,1);
     _LevelText->RenderText(sPoint(300,300));
 }
 
@@ -1024,14 +1007,28 @@ void TestEngine::GetNewState(){
         }
         else
         {
-            for (int i =0; i< TURTLES_ROW_4; i++) {
-                if (turtlesRow4[i]->IsColliding(frog->Pos(),frog->SpriteSize())  &&
-                    turtlesRow4[i]->GetCurrentTile() != TURTLE_DIVING_TILE) {
+            // for (int i =0; i< TURTLES_ROW_4; i++) {
+            //     if (turtlesRow4[i]->IsColliding(frog->Pos(),frog->SpriteSize())  &&
+            //         turtlesRow4[i]->GetCurrentTile() != TURTLE_DIVING_TILE) {
 
-                    GameState = GAMESTATE::FloatingLeft;
-                    plunk = false;
+            //         GameState = GAMESTATE::FloatingLeft;
+            //         plunk = false;
+            //     }
+            // }
+
+            for(ENGINE::Sprite* sp: _Level.Rows[3].Objects){
+                if (sp->IsColliding(frog->Pos(),frog->SpriteSize())){
+                   // turtlesRow4[i]->GetCurrentTile() != TURTLE_DIVING_TILE)
+                    if (sp->GetCurrentTile() != TURTLE_DIVING_TILE)    {
+
+                        GameState = GAMESTATE::FloatingLeft;
+                        plunk = false;
+                    }
                 }
             }
+
+
+
             if (plunk) {
                 GameState = GAMESTATE::Plunk;
                 break;
@@ -1400,8 +1397,8 @@ void TestEngine::Run(){
                         RemoveFrogFromList();
                         _DontRunAgain = false;
                     }
-                    else
-                        RenderNextLevelScreen((int)_GameLevel);
+                    //else
+                      //  RenderNextLevelScreen((int)_GameLevel);
                     break;
 
                 case GAMESTATE::Run:

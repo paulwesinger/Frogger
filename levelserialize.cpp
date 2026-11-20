@@ -154,6 +154,21 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
     }
 
     // ***************************************************
+    // Level Name
+    // ***************************************************
+    if (splitted[0] == "LEVELNAME"){
+        // _LevelNr = StringToInt(splitted,1);
+        // if (_LevelNr < 0)
+        //     _LevelNr = DEFAULT_LEVELNR;
+
+        if (splitted.size() >= 2)
+            _Level.LevelName = splitted[1];
+        else
+            _Level.LevelName = "Unbekannter Level";
+    }
+
+
+    // ***************************************************
     // Level Nummer
     // ***************************************************
     if (splitted[0] == "LEVELNR"){

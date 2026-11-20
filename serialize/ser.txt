@@ -3,6 +3,7 @@
 LEVEL_BEGIN
 Levelnr 1
 Timeperlevel 60
+LevelName BABY-FROG
 #ROW 1
 ROW_BEGIN
 ROWNUMBER 1
