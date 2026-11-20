@@ -886,6 +886,9 @@ void TestEngine::GetNewState(){
             GameState = GAMESTATE::StageCleared;
 
 
+            // **************************
+            // Den GameLevel erhöhen
+            // **************************
             int level = (int)_GameLevel;
             level++;
             _GameLevel = ((GAMELEVEL)level);
@@ -1362,7 +1365,7 @@ void TestEngine::Run(){
                 case GAMESTATE::StartUpFinished:
 
                     // Den 1. level hole:
-                    _Level= _AnyLevel.GetLevelData(((int)_GameLevel) -1);
+                    _Level = _AnyLevel.GetLevelData(((int)_GameLevel) -1); // Gamelevel startet bei 1 !!!
 
                     RenderBackgroundSprites();
                     RenderFloatingObjects();
@@ -1386,6 +1389,7 @@ void TestEngine::Run(){
 
                         audio->PlayBackrgoundSound(sound_MainTheme);
                         frog->SetPosition(608,802);
+
                         GameState = GAMESTATE::Run;
                         // ---------------------------------------
                         // Die Liste mit Available Frogs um einen
@@ -1529,7 +1533,8 @@ void TestEngine::Run(){
 
                     cout << "Frösche " << _FrogCount << endl;
 
-                    if (_FrogCount <= 0){
+                    if (_FrogCount <= 0){                    
+
                         GameState = GAMESTATE::GameOver;
                         audio->HaltMusic();
 
@@ -1603,12 +1608,6 @@ void TestEngine::Run(){
                         _gameScore += 1000;
                         _FrogCount++;
 
-                        // int level = (int)_GameLevel;
-                        // level++;
-                        // _GameLevel = ((GAMELEVEL)level);
-
-
-
                         int x = _ResX/2 -200 + _AvailableFrogs.size()* 70;
                         ENGINE::Sprite* sprite = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/FrogAvailable64x64.png",_Shader);
                         sprite->InitTextureMap(1,1);
@@ -1637,6 +1636,12 @@ void TestEngine::Run(){
                     ClearArrivedFrogs();
                     RenderArrivedFrogs();
                     audio->PlayBackrgoundSound(sound_MainTheme);
+
+                    _Level=_AnyLevel.GetLevelData(((int)_GameLevel-1));
+                    // Testen,obs den nächsten level überhaupt shon gibt..
+                    if (_AnyLevel.IsEmptyLevel())
+
+                        _Level = _AnyLevel.GetLevelData(0); // Nein, wir nehmen den 1 level her...Todo: den letzten level wieder nehmen
 
                     GameState = GAMESTATE::Loop;
                     break;
@@ -1703,6 +1708,11 @@ void TestEngine::Run(){
             SwapWindow();
         }
     }
+}
+
+void TestEngine::ResetLevel(){
+    // Speicher freigeben:
+
 }
 
 void TestEngine::ClearArrivedFrogs(){
@@ -1841,15 +1851,21 @@ void TestEngine::InitTextMap(){
 
 void TestEngine::_ResetTimeCounter(GAMELEVEL level){
 
+    _TimeCounter = _Level.TimePerLevel;
+
+
+
+
     switch (level) {
-    case GAMELEVEL::Level_1: _TimeCounter = TIMELEVEL_1; break;
+
+    case GAMELEVEL::Level_1: _TimeCounter = _Level.TimePerLevel;//  TIMELEVEL_1; break;
     case GAMELEVEL::Level_2: _TimeCounter = TIMELEVEL_2; break;
     case GAMELEVEL::Level_3: _TimeCounter = TIMELEVEL_3; break;
     case  GAMELEVEL::Level_4: _TimeCounter = TIMELEVEL_4; break;   /// usw... an jeden level anpassen !! je höher , je kürzer
     case GAMELEVEL::Level_5: _TimeCounter = TIMELEVEL_5; break;
 
     default:
-        _TimeCounter = TIMELEVEL_5;
+        _TimeCounter = TIMELEVEL_DEFAULT;
         break;
     }
 }

@@ -100,9 +100,16 @@ public:
     std::vector<Row> GetLevelRows(int level);
     std::vector<Level> GetAllLevels();
     Level GetLevelData(int level);
+    // Level auf 0 zurücksetzen und für neuen Level bereit machen
+    bool ResetLevel(Level& l);
+
+    int LevelCount();
+    bool IsEmptyLevel();
 
 private:
     std::vector<Level> _Levels;
+    bool _IsEmptyLevel = false;
+
   //  std::vector<Row> _Rows;
 
 };

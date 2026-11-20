@@ -107,6 +107,8 @@ const int TIMELEVEL_3 = 40;
 const int TIMELEVEL_4 = 35;
 const int TIMELEVEL_5 = 30;
 const int TIMELEVEL_6 = 25;
+const int TIMELEVEL_DEFAULT = 60;
+
 
 
 /* -----------------------------------------------------------------------------
@@ -249,8 +251,6 @@ protected:
     ENGINE::Sprite* Vehicle_Row11[VEHICLES_PER_ROW_11];
 
     std::vector<ENGINE::Sprite*> _AvailableFrogs; // 3 bzw 5 Frogis, deshalb kein Array
-
-
     // Der Frog ist im ziel
     ENGINE::Sprite* FrogArrived[VEHICLES_PER_ROW_7];
 
@@ -330,7 +330,6 @@ private:
 
     int _gameScore;
     int _gameHighScore;
-
 
     int _IndexFrogArrived = 0;
 
@@ -413,6 +412,7 @@ private:
 
 
     void RenderFloatingObjects();
+    void ResetLevel();
 
 
 };
