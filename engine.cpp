@@ -509,7 +509,7 @@ void TestEngine::RenderCrocos(){
 void TestEngine::RenderFloatingObjects(){
     bool tmp;
     // MAl nur die Bäume;
-    for ( int i = 3; i<5; i++) {
+    for ( int i = 0; i<5; i++) {
     //for (ENGINE::Sprite* sp: _Level.Rows[0].Objects){
         int step = _Level.Rows[i].ObjectStep;
         for (ENGINE::Sprite* sp: _Level.Rows[i].Objects){
@@ -915,8 +915,16 @@ void TestEngine::GetNewState(){
         }
         else
         {
-            for (int i =0; i< FLOATOBJECTS_PER_ROW_1; i++) {
-                if (Baum_Row1[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
+            // for (int i =0; i< FLOATOBJECTS_PER_ROW_1; i++) {
+            //     if (Baum_Row1[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
+            //         GameState = GAMESTATE::FloatingRight;
+            //         plunk = false;
+            //     }
+            // }
+
+
+            for(ENGINE::Sprite* sp: _Level.Rows[0].Objects){
+                if (sp->IsColliding(frog->Pos(),frog->SpriteSize())){
                     GameState = GAMESTATE::FloatingRight;
                     plunk = false;
                 }
@@ -944,9 +952,17 @@ void TestEngine::GetNewState(){
         }
         else{
 
-            for (int i =0; i< TURTLES_ROW_2; i++) {
-                if (turtlesRow2[i]->IsColliding(frog->Pos(),frog->SpriteSize()) &&
-                    turtlesRow2[i]->GetCurrentTile() != TURTLE_DIVING_TILE ) {
+            // for (int i =0; i< TURTLES_ROW_2; i++) {
+            //     if (turtlesRow2[i]->IsColliding(frog->Pos(),frog->SpriteSize()) &&
+            //         turtlesRow2[i]->GetCurrentTile() != TURTLE_DIVING_TILE ) {
+            //         GameState = GAMESTATE::FloatingLeft;
+            //         plunk = false;
+            //     }
+            // }
+
+            for(ENGINE::Sprite* sp: _Level.Rows[1].Objects){
+                if ((sp->IsColliding(frog->Pos(),frog->SpriteSize()) && (sp->GetCurrentTile() != TURTLE_DIVING_TILE)))
+                {
                     GameState = GAMESTATE::FloatingLeft;
                     plunk = false;
                 }
@@ -972,12 +988,20 @@ void TestEngine::GetNewState(){
         }
         else
         {
-            for (int i =0; i< FLOATOBJECTS_PER_ROW_3; i++) {
-                if (Baum_Row3[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
+            // for (int i =0; i< FLOATOBJECTS_PER_ROW_3; i++) {
+            //     if (Baum_Row3[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
+            //         GameState = GAMESTATE::FloatingRight;
+            //         plunk = false;
+            //     }
+            // }
+
+            for(ENGINE::Sprite* sp: _Level.Rows[2].Objects){
+                if (sp->IsColliding(frog->Pos(),frog->SpriteSize())){
                     GameState = GAMESTATE::FloatingRight;
                     plunk = false;
                 }
             }
+
             if (plunk) {
                 GameState = GAMESTATE::Plunk;
                 break;
@@ -1007,15 +1031,6 @@ void TestEngine::GetNewState(){
         }
         else
         {
-            // for (int i =0; i< TURTLES_ROW_4; i++) {
-            //     if (turtlesRow4[i]->IsColliding(frog->Pos(),frog->SpriteSize())  &&
-            //         turtlesRow4[i]->GetCurrentTile() != TURTLE_DIVING_TILE) {
-
-            //         GameState = GAMESTATE::FloatingLeft;
-            //         plunk = false;
-            //     }
-            // }
-
             for(ENGINE::Sprite* sp: _Level.Rows[3].Objects){
                 if (sp->IsColliding(frog->Pos(),frog->SpriteSize())){
                    // turtlesRow4[i]->GetCurrentTile() != TURTLE_DIVING_TILE)
@@ -1026,8 +1041,6 @@ void TestEngine::GetNewState(){
                     }
                 }
             }
-
-
 
             if (plunk) {
                 GameState = GAMESTATE::Plunk;
@@ -1055,13 +1068,6 @@ void TestEngine::GetNewState(){
         }
         else
         {
-            // for (int i =0; i< FLOATOBJECTS_PER_ROW_5; i++) {
-            //     if (Baum_Row5[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) {
-            //         GameState = GAMESTATE::FloatingRight;
-            //         plunk = false;
-            //     }
-            // }
-
             for(ENGINE::Sprite* sp: _Level.Rows[4].Objects){
                 if (sp->IsColliding(frog->Pos(),frog->SpriteSize())){
                     GameState = GAMESTATE::FloatingRight;
