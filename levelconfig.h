@@ -95,12 +95,12 @@ public:
     AnyLevel();
     AnyLevel(int level,int timeperlevel,std::vector<Row> rows);
     ~AnyLevel();
-    void AddLevelConfiguration(Level level);
+    void AddLevelConfiguration(Level *level);
     void AddLevelConfiguration(int level, int timeperlevel, std::vector<Row> row, std::string name);
 
     std::vector<Row> GetLevelRows(int level);
-    std::vector<Level> GetAllLevels();
-    Level GetLevelData(int level);
+    std::vector<Level*> GetAllLevels();
+    Level* GetLevelData(int level);
     // Level auf 0 zurücksetzen und für neuen Level bereit machen
     bool ResetLevel(Level& l);
 
@@ -109,7 +109,7 @@ public:
     std::string LevelName(int level);
 
 private:
-    std::vector<Level> _Levels;
+    std::vector<Level*> _Levels;
     bool _IsEmptyLevel = false;
 
   //  std::vector<Row> _Rows;

@@ -35,8 +35,8 @@ TestEngine::~TestEngine(){
     delete Croco_Row_3;
 
     for(int i=0; i< _AnyLevel.GetAllLevels().size();i++){
-        CONFIG::Level l = _AnyLevel.GetLevelData(i);
-        _AnyLevel.ResetLevel(l);
+        CONFIG::Level* l = _AnyLevel.GetLevelData(i);
+        _AnyLevel.ResetLevel(*l);
     }
 
     //     int i =0;
@@ -59,6 +59,15 @@ TestEngine::~TestEngine(){
     //     _AnyLevel->GetAllLevels().clear();
     // }
 
+    std::vector<CONFIG::Level*> levels = _AnyLevel.GetAllLevels();
+    for(CONFIG::Level* l: levels){
+
+        delete l;
+    }
+
+    std::vector<CONFIG::Level*>().swap(levels);
+    //levels.clear();
+    levels.shrink_to_fit();
 
 
     for(int i=0; i< MAX_TILE_X; i++)
@@ -72,7 +81,7 @@ TestEngine::~TestEngine(){
         delete FrogArrived[i];
     }
 
-     for (int i =0; i<WALLS; i++)
+    for (int i =0; i<WALLS; i++)
          delete Walls[i];
 
     // for (int i =0; i<TURTLES_ROW_2; i++)
@@ -516,12 +525,12 @@ void TestEngine::RenderFloatingObjects(){
 
     // Baumreihe oben:
     //for (ENGINE::Sprite* sp: _Level.Rows[0].Objects){
-    int step = _Level.Rows[0].ObjectStep;
-    for (ENGINE::Sprite* sp: _Level.Rows[0].Objects){
+    int step = _Level->Rows[0].ObjectStep;
+    for (ENGINE::Sprite* sp: _Level->Rows[0].Objects){
        sp->MoveSprite(0,0,128,64,100,step,0,_Elapsed);
     }
-    step = _Level.Rows[1].ObjectStep;
-    for (ENGINE::Sprite* sp: _Level.Rows[1].Objects){
+    step = _Level->Rows[1].ObjectStep;
+    for (ENGINE::Sprite* sp: _Level->Rows[1].Objects){
         if ( ! sp->AnimationDone() ){
             if (sp->IsDiver())
                     sp->MoveSprite(0,9,64,64,400,step,0,_Elapsed);
@@ -539,14 +548,14 @@ void TestEngine::RenderFloatingObjects(){
         }
     }
     // Baumreihe mitte
-    step = _Level.Rows[2].ObjectStep;
-    for (ENGINE::Sprite* sp: _Level.Rows[2].Objects){
+    step = _Level->Rows[2].ObjectStep;
+    for (ENGINE::Sprite* sp: _Level->Rows[2].Objects){
         sp->MoveSprite(0,0,128,64,100,step,0,_Elapsed);
     }
 
     //Turtles unten
-    step = _Level.Rows[3].ObjectStep;
-    for (ENGINE::Sprite* sp: _Level.Rows[3].Objects){
+    step = _Level->Rows[3].ObjectStep;
+    for (ENGINE::Sprite* sp: _Level->Rows[3].Objects){
         if ( !sp->AnimationDone() ){
             if (sp->IsDiver())
                 sp->MoveSprite(0,9,64,64,400,step,0,_Elapsed);
@@ -562,8 +571,8 @@ void TestEngine::RenderFloatingObjects(){
         }
     }
     //Baumreihe unten
-    step = _Level.Rows[4].ObjectStep;
-    for (ENGINE::Sprite* sp: _Level.Rows[4].Objects){
+    step = _Level->Rows[4].ObjectStep;
+    for (ENGINE::Sprite* sp: _Level->Rows[4].Objects){
         sp->MoveSprite(0,0,128,64,100,step,0,_Elapsed);
     }
 }
@@ -603,7 +612,7 @@ int TestEngine::GetFloatingStep(){
         case 3:
         case 4:
         case 5:
-            step = _Level.Rows[row-1].ObjectStep;
+            step = _Level->Rows[row-1].ObjectStep;
         break;
     }
         return step;
@@ -645,13 +654,13 @@ void TestEngine::RenderVehicles(){
 
 
 
-    for (int i=6; i<_Level.Rows.size(); i++){
+    for (int i=6; i<_Level->Rows.size(); i++){
      //   if (i == 8)
      //       continue; // wegen der boliden mit sound
-        int step = _Level.Rows[i].ObjectStep;
-        for(int j=0;j <_Level.Rows[i].Objects.size();j++ ){
+        int step = _Level->Rows[i].ObjectStep;
+        for(int j=0;j <_Level->Rows[i].Objects.size();j++ ){
 
-            ENGINE::Sprite* sp = _Level.Rows[i].Objects[j];
+            ENGINE::Sprite* sp = _Level->Rows[i].Objects[j];
 
             int tile = sp->RenderFromTile();
 
@@ -664,7 +673,7 @@ void TestEngine::RenderVehicles(){
     }
 
 
-    sPoint p = _Level.Rows[8].Objects[0]->Pos();
+    sPoint p = _Level->Rows[8].Objects[0]->Pos();
 
     audio->ChannelToListen(AUDIO_CHANNEL_RaceCar); // wir leihen uns den startup aus...
 
@@ -845,7 +854,7 @@ void TestEngine::RenderNextLevelScreen(int level){
     string output = "JUMPING TO LEVEL " + sLevel;
     _LevelText->UpdateText(output,0);
 
-    _LevelText->UpdateText(_Level.LevelName,1);
+    _LevelText->UpdateText(_Level->LevelName,1);
     _LevelText->RenderText(sPoint(300,300));
 }
 
@@ -1015,7 +1024,7 @@ void TestEngine::GetNewState(){
             // }
 
 
-            for(ENGINE::Sprite* sp: _Level.Rows[0].Objects){
+            for(ENGINE::Sprite* sp: _Level->Rows[0].Objects){
                 if (sp->IsColliding(frog->Pos(),frog->SpriteSize())){
                     GameState = GAMESTATE::FloatingRight;
                     plunk = false;
@@ -1052,7 +1061,7 @@ void TestEngine::GetNewState(){
             //     }
             // }
 
-            for(ENGINE::Sprite* sp: _Level.Rows[1].Objects){
+            for(ENGINE::Sprite* sp: _Level->Rows[1].Objects){
                 if ((sp->IsColliding(frog->Pos(),frog->SpriteSize()) && (sp->GetCurrentTile() != TURTLE_DIVING_TILE)))
                 {
                     GameState = GAMESTATE::FloatingLeft;
@@ -1087,7 +1096,7 @@ void TestEngine::GetNewState(){
             //     }
             // }
 
-            for(ENGINE::Sprite* sp: _Level.Rows[2].Objects){
+            for(ENGINE::Sprite* sp: _Level->Rows[2].Objects){
                 if (sp->IsColliding(frog->Pos(),frog->SpriteSize())){
                     GameState = GAMESTATE::FloatingRight;
                     plunk = false;
@@ -1123,7 +1132,7 @@ void TestEngine::GetNewState(){
         }
         else
         {
-            for(ENGINE::Sprite* sp: _Level.Rows[3].Objects){
+            for(ENGINE::Sprite* sp: _Level->Rows[3].Objects){
                 if (sp->IsColliding(frog->Pos(),frog->SpriteSize())){
                    // turtlesRow4[i]->GetCurrentTile() != TURTLE_DIVING_TILE)
                     if (sp->GetCurrentTile() != TURTLE_DIVING_TILE)    {
@@ -1160,7 +1169,7 @@ void TestEngine::GetNewState(){
         }
         else
         {
-            for(ENGINE::Sprite* sp: _Level.Rows[4].Objects){
+            for(ENGINE::Sprite* sp: _Level->Rows[4].Objects){
                 if (sp->IsColliding(frog->Pos(),frog->SpriteSize())){
                     GameState = GAMESTATE::FloatingRight;
                     plunk = false;
@@ -1187,11 +1196,11 @@ void TestEngine::GetNewState(){
     case 11:
 
 
-        for (int i=6; i<_Level.Rows.size(); i++){
+        for (int i=6; i<_Level->Rows.size(); i++){
 
-            for(int j=0;j <_Level.Rows[i].Objects.size();j++ ){
+            for(int j=0;j <_Level->Rows[i].Objects.size();j++ ){
 
-                ENGINE::Sprite* sp = _Level.Rows[i].Objects[j];
+                ENGINE::Sprite* sp = _Level->Rows[i].Objects[j];
                 if (sp->IsColliding(frog->Pos(),frog->SpriteSize())){
                     GameState = GAMESTATE::Die;
                     StartDieAnimation(0,6);
@@ -1918,14 +1927,14 @@ void TestEngine::InitTextMap(){
 
 void TestEngine::_ResetTimeCounter(GAMELEVEL level){
 
-    _TimeCounter = _Level.TimePerLevel;
+    _TimeCounter = _Level->TimePerLevel;
 
 
 
 
     switch (level) {
 
-    case GAMELEVEL::Level_1: _TimeCounter = _Level.TimePerLevel;//  TIMELEVEL_1; break;
+    case GAMELEVEL::Level_1: _TimeCounter = _Level->TimePerLevel;//  TIMELEVEL_1; break;
     case GAMELEVEL::Level_2: _TimeCounter = TIMELEVEL_2; break;
     case GAMELEVEL::Level_3: _TimeCounter = TIMELEVEL_3; break;
     case  GAMELEVEL::Level_4: _TimeCounter = TIMELEVEL_4; break;   /// usw... an jeden level anpassen !! je höher , je kürzer
@@ -2121,7 +2130,7 @@ bool TestEngine::ReadBestFromDisk(){
 bool TestEngine::InitUserObjects(){
 
     bool ret = true;
-    Serializer = new SERIALIZE::Serialize("../../serialize/ser.txt",GetShader(),_ResX,_ResY);
+    Serializer = new SERIALIZE::Serialize("../../serialize/",GetShader(),_ResX,_ResY);
 //    ser.SerializeData("../../serialize/ser.txt");
 
 
@@ -2408,9 +2417,9 @@ void TestEngine::InitFromAnyLevel(){
     int x = 0;
 
     int i=0;
-    for(CONFIG::Level l : _AnyLevel.GetAllLevels()){
+    for(CONFIG::Level *l : _AnyLevel.GetAllLevels()){
         int row = 0;
-        for(CONFIG::Row r: l.Rows){
+        for(CONFIG::Row r: l->Rows){
             int step ;
             for (ENGINE::Sprite* sp: r.Objects){
                 step = sp->PosX();
@@ -2558,6 +2567,7 @@ void TestEngine::SoundHandler(){
 
 void TestEngine::StartUp(){
 
+    _Level = _AnyLevel.GetLevelData(((int)_GameLevel) -1);
     ResetGame();
     audio->ChannelToListen(AUDIO_Channel_StartUp);
   //  audio->PlaySound(sound_Startup,AUDIO_Channel_StartUp);

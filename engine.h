@@ -364,7 +364,7 @@ private:
 
     SERIALIZE::Serialize* Serializer;
     CONFIG::AnyLevel  _AnyLevel;
-    CONFIG::Level _Level;
+    CONFIG::Level* _Level;
 
 
     bool LoadingDone = false;

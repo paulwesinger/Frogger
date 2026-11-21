@@ -9,12 +9,12 @@ CONFIG::AnyLevel::AnyLevel(int level,int timeperlevel,std::vector<Row> rows){
 CONFIG::AnyLevel::~AnyLevel(){
 
     try {
-        for(Level l:_Levels){
-            for(Row row: l.Rows){
+        for(Level* l:_Levels){
+            for(Row row: l->Rows){
                 row.Objects.clear();
                 row.Enemies.clear();
             }
-            l.Rows.clear();
+            l->Rows.clear();
         }
         _Levels.clear();
     }
@@ -29,16 +29,14 @@ bool CONFIG::AnyLevel::ResetLevel(Level &l){
         {
             delete sp;
         }
-        std::vector<ENGINE::Sprite*>().swap(row.Objects);
 
         for(ENGINE::Sprite* sp:row.Enemies)
         {
             delete sp;
         }
-
-        std::vector<ENGINE::Sprite*>().swap(row.Enemies);
-    }
-    //std::vector<CONFIG::Row>().swap(l.Rows);
+        row.Objects.clear();
+        row.Enemies.clear();
+    }    
     l.Rows.clear();
     return true;
 }
@@ -50,33 +48,33 @@ int CONFIG::AnyLevel::LevelCount(){
 std::string CONFIG::AnyLevel::LevelName(int level){
 
     if (level < _Levels.size())
-        return _Levels[level].LevelName;
+        return _Levels[level]->LevelName;
     return "Unbekannter Level";
 }
 
-void CONFIG::AnyLevel::AddLevelConfiguration(Level level){
+void CONFIG::AnyLevel::AddLevelConfiguration(Level* level){
     _Levels.push_back(level);
 }
 
 void CONFIG::AnyLevel::AddLevelConfiguration(int level, int timeperlevel, std::vector<Row> row, std::string name){
-    Level l(level,timeperlevel,row,name);
+    Level* l = new Level(level,timeperlevel,row,name);
     _Levels.push_back(l);
 }
 
-std::vector<CONFIG::Level> CONFIG::AnyLevel::GetAllLevels(){
+std::vector<CONFIG::Level*> CONFIG::AnyLevel::GetAllLevels(){
     return _Levels;
 }
 
 // !!!! Achtung Level 1 == Level 0
-CONFIG::Level CONFIG::AnyLevel::GetLevelData(int level){
-    CONFIG::Level emptylevel;
+CONFIG::Level* CONFIG::AnyLevel::GetLevelData(int level){
+    //CONFIG::Level emptylevel;
     if (level < _Levels.size()){
         _IsEmptyLevel = false;
         return _Levels[level];
     }
 
     _IsEmptyLevel = true;
-    return emptylevel;
+    return nullptr;
 }
 
 bool CONFIG::AnyLevel::IsEmptyLevel(){
@@ -90,6 +88,6 @@ std::vector<CONFIG::Row>CONFIG::AnyLevel::GetLevelRows(int level){
     if (level >= _Levels.size()) return emptyRow;
     if (level < 0) return emptyRow;
 
-    return _Levels[level].Rows;
+    return _Levels[level]->Rows;
 }
 

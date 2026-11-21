@@ -1,6 +1,8 @@
 #include "levelserialize.h"
 #include <bits/stdc++.h>
 
+namespace fs = std::filesystem;
+
 SERIALIZE::Serialize::Serialize() {
     _Path = "";
     _Shader = nullptr;
@@ -150,7 +152,7 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
         if (_TimePerLevel < 0)
             _TimePerLevel = DEFAULT_TIME_PER_LEVEL;
 
-        _Level.TimePerLevel = _TimePerLevel;
+        _Level->TimePerLevel = _TimePerLevel;
     }
 
     // ***************************************************
@@ -162,9 +164,9 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
         //     _LevelNr = DEFAULT_LEVELNR;
 
         if (splitted.size() >= 2)
-            _Level.LevelName = splitted[1];
+            _Level->LevelName = splitted[1];
         else
-            _Level.LevelName = "Unbekannter Level";
+            _Level->LevelName = "Unbekannter Level";
     }
 
 
@@ -176,7 +178,7 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
         if (_LevelNr < 0)
             _LevelNr = DEFAULT_LEVELNR;
 
-        _Level.Level = _LevelNr;
+        _Level->Level = _LevelNr;
     }
 
     // ***************************************************
@@ -185,7 +187,7 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
     if (splitted[0] == "ROWNUMBER"){
         _RowNumber = StringToInt(splitted,1);
         if (_RowNumber < 0)
-            _RowNumber = DEFAULT_ROWNUMBER;
+            _RowNumber = DEFAULT_ROWNUMBER;        
     }
 
     // ***************************************************
@@ -375,7 +377,7 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
     // ***************************************************
 
     if (splitted[0] == "END_ROW"){
-        _Level.Rows.push_back(_Row);
+        _Level->Rows.push_back(_Row);
 
         // Speicher nicht freigeben,
         // aber den Row Vector leeren
@@ -384,37 +386,67 @@ void SERIALIZE::Serialize::InitDataLine(string line,std::ifstream & f){
     }
 
     // ***************************************************
+    // Level Begin
+    // ***************************************************
+    if (splitted[0] == "LEVEL_Begin"){
+        _Level = new CONFIG::Level();
+
+        //_AnyLevel.ResetLevel(_Level);
+    }
+    // ***************************************************
     // Level Ende
     // ***************************************************
-
     if (splitted[0] == "LEVEL_END"){
         _AnyLevel.AddLevelConfiguration(_Level);
+        //_AnyLevel.ResetLevel(_Level);
     }
 }
 
 bool SERIALIZE::Serialize::ParseData(const string path){
-    std::ifstream file(path);
 
+    std::vector<std::string> files;
 
-    if (! file.is_open()) return false; //empty;
-    string line;
+    try {
 
-    while (std::getline(file, line)) {
-        if (line.starts_with("#")) { // Kommentar
-            std::cout << "Kommentar" << std::endl;
-            continue;
+        for (const auto& eintrag : fs::directory_iterator(_Path)) {
+            std::string  p = path;
+            if (eintrag.is_regular_file()) {
+
+                p += eintrag.path().filename().string();
+                files.push_back(p);
+            }
         }
-        else
-        if (line == "") {
-            std::cout << "Leere zeile" << std::endl;
-            continue;
-        }
-        else{
-            std::cout << line << std::endl;
-            InitDataLine(line,file);
-        }
+    } catch (const fs::filesystem_error& e) {
+        std::cerr << "Fehler: " << e.what() << '\n';
     }
-    file.close();
+
+
+
+    for(std::string filepath: files){
+
+        std::ifstream file(filepath);
+
+        _Level = new CONFIG::Level();
+        if (! file.is_open()) return false; //empty;
+        string line;
+
+        while (std::getline(file, line)) {
+            if (line.starts_with("#")) { // Kommentar
+                std::cout << "Kommentar" << std::endl;
+                continue;
+            }
+            else
+            if (line == "") {
+                std::cout << "Leere zeile" << std::endl;
+                continue;
+            }
+            else{
+                std::cout << line << std::endl;
+                InitDataLine(line,file);
+            }
+        }
+        file.close();
+    }
     _DataParsingOk = true;
     return true;
 }

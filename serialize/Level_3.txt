@@ -1,9 +1,9 @@
 # Test für Levelconfig
-#Level 1
+#Level 3
 LEVEL_BEGIN
-Levelnr 1
-Timeperlevel 60
-LevelName BABY-FROG
+Levelnr 3
+Timeperlevel 40
+LevelName FLATSCHI
 #ROW 1
 ROW_BEGIN
 ROWNUMBER 1
@@ -137,15 +137,7 @@ ENEMIES_Begin
 Step_Enenmy 0
 ENEMIES_End
 END_ROW
-
-
 LEVEL_END
-
-# nächster level
-#LEVEL_BEGIN
-#Levelnr 3
-#Timeperlevel:50
-#LEVEL_END
 
 
 

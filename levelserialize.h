@@ -47,7 +47,7 @@ const std::string IMG_Croco = "/home/paul/workspace/Frogger/images/Crocs392x64_2
         void InitDataLine(std::string line, ifstream &f);
     private:
         string _Path;
-        CONFIG::Level _Level;
+        CONFIG::Level* _Level;
         CONFIG::AnyLevel _AnyLevel;
 
         // helpers

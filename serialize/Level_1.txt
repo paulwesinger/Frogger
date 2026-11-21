@@ -1,0 +1,144 @@
+# Test für Levelconfig
+#Level 1
+LEVEL_BEGIN
+Levelnr 1
+Timeperlevel 60
+LevelName BABY-FROG
+#ROW 1
+ROW_BEGIN
+ROWNUMBER 1
+OBJECTS_Begin
+Baum_lang GAP 400 Baum_lang GAP 400 Baum_lang
+STEP_Object 2
+OBJECTS_End
+
+#No ENEMIES
+ENEMIES_Begin
+#STEP_Enemy 0
+ENEMIES_End
+END_ROW
+
+# Row 2
+ROW_BEGIN
+ROWNUMBER 2
+OBJECTS_Begin
+TurtleDiving TurtleDiving TurtleDiving GAP 150 TurtleDiving TurtleDiving TurtleDiving GAP 150 Turtle Turtle Turtle
+STEP_Object -3
+OBJECTS_End
+ENEMIES_Begin
+STEP_Enemy 4
+ENEMIES_END
+END_ROW
+
+#Row 3
+ROW_Begin
+RowNumber 3
+OBJECTS_Begin
+Baum_kurz GAP 250 Baum_kurz GAP 250 Baum_kurz GAP 250 Baum_kurz
+Step_Object 4
+OBJECTS_End
+
+ENEMIES_Begin
+Step_Enenmy 0
+ENEMIES_End
+END_ROW
+
+
+#Row 
+ROW_Begin
+RowNumber 4
+OBJECTS_Begin
+Turtle Turtle Turtle GAP 100 Turtle Turtle Turtle GAP 250 Turtle Turtle Turtle
+Step_Object -2
+OBJECTS_End
+ENEMIES_Begin
+Step_Enenmy 0
+ENEMIES_End
+END_ROW
+
+#Row 5
+ROW_Begin
+RowNumber 5
+OBJECTS_Begin
+Baum_kurz GAP 180 Baum_kurz GAP 190 Baum_kurz GAP 190 Baum_kurz GAP 250 Baum_kurz
+Step_Object 4
+OBJECTS_End
+END_ROW
+
+Anm.: Row 6 = Geheg in der 
+#Row 6
+ROW_Begin
+RowNumber 5
+OBJECTS_Begin
+Step_Object -8
+OBJECTS_End
+#Hier die Schlange reinbauen -> späterer level
+ENEMIES_Begin
+Step_Enenmy -5 
+ENEMIES_End
+END_ROW
+
+#Row 7
+ROW_Begin
+RowNumber 7
+OBJECTS_Begin
+Truck_Front Truck_Back GAP 200 Truck_Front Truck_Back GAP 200 Truck_Front Truck_Back GAP 400 Truck_Front Truck_Back
+Step_Object -2
+OBJECTS_End
+ENEMIES_Begin
+Step_Enenmy 0
+ENEMIES_End
+END_ROW
+
+#Row 8
+ROW_Begin
+RowNumber 8
+OBJECTS_Begin
+PKW GAP 80 PKW GAP 80 PKW GAP 130 PKW GAP 120 PKW GAP 80 PKW GAP 80 PKW PKW PKW
+Step_Object -2
+OBJECTS_End
+ENEMIES_Begin
+Step_Enenmy 0
+ENEMIES_End
+END_ROW
+
+#Row 9
+ROW_Begin
+RowNumber 9
+OBJECTS_Begin
+BolideFast GAP 100 BolideFast
+Step_Object -12
+OBJECTS_End
+ENEMIES_Begin
+Step_Enenmy 0
+ENEMIES_End
+END_ROW
+
+#Row 10
+ROW_Begin
+RowNumber 9
+OBJECTS_Begin
+BolideSlow BolideSlow GAP 80 BolideSlow GAP 80 BolideSlow BolideSlow GAP 130 BolideSlow GAP 120 BolideSlow BolideSow
+Step_Object 3
+OBJECTS_End
+ENEMIES_Begin
+Step_Enenmy 0
+ENEMIES_End
+END_ROW
+
+#Row 11
+ROW_Begin
+RowNumber 11
+OBJECTS_Begin
+Crawler GAP 150 Crawler GAP 150 Crawler GAP 80 Crawler
+Step_Object 2
+OBJECTS_End
+ENEMIES_Begin
+Step_Enenmy 0
+ENEMIES_End
+END_ROW
+LEVEL_END
+
+
+
+
