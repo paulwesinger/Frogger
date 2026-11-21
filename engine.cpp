@@ -908,6 +908,7 @@ void TestEngine::GetNewState(){
             int level = (int)_GameLevel;
             level++;
             _GameLevel = ((GAMELEVEL)level);
+            _Level=_AnyLevel.GetLevelData(((int)_GameLevel));
 
 
         }
@@ -1599,17 +1600,13 @@ void TestEngine::Run(){
                 case GAMESTATE::StageCleared:  // Alle Froggis im Kasten...
 
                     RenderBackgroundSprites();
-                    RenderFloatingObjects();
-                    //RenderWood();
-                    RenderScore();
-                    //RenderTurtles();
+                    RenderFloatingObjects(); 
+                    RenderScore();                
                     RenderVehicles();
                     RenderCrocos();
                     RenderTime();
                     RenderArrivedFrogs();
                     RenderAvailableFrogs();
-
-
                     if (audio->PlaySoundFinished(AUDIO_CHANNEL_StageCleared)) {
 
                         GameState = GAMESTATE::LevelUp;   // ersetzen durch ShiftGamelevel
@@ -1621,13 +1618,9 @@ void TestEngine::Run(){
                         sprite->InitTextureMap(1,1);
                         sprite->SetPosition(x,_ResY -90);
                         _AvailableFrogs.push_back(sprite);
-
                     }
                     else
                         RenderNextLevelScreen((int)_GameLevel);
-
-                    RenderAvailableFrogs();
-
                     break;
 
                 case GAMESTATE::LevelUp:{
@@ -1645,7 +1638,7 @@ void TestEngine::Run(){
                     RenderArrivedFrogs();
                     audio->PlayBackrgoundSound(sound_MainTheme);
 
-                    _Level=_AnyLevel.GetLevelData(((int)_GameLevel));
+                    //_Level=_AnyLevel.GetLevelData(((int)_GameLevel));
                     // Testen,obs den nächsten level überhaupt shon gibt..
                     if (_AnyLevel.IsEmptyLevel())
 
