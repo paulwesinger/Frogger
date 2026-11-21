@@ -67,11 +67,30 @@ std::vector<CONFIG::Level*> CONFIG::AnyLevel::GetAllLevels(){
 
 // !!!! Achtung Level 1 == Level 0
 CONFIG::Level* CONFIG::AnyLevel::GetLevelData(int level){
-    //CONFIG::Level emptylevel;
-    if (level < _Levels.size()){
-        _IsEmptyLevel = false;
-        return _Levels[level];
+
+    if (_Levels.size() == 0) return nullptr;
+
+    // for(CONFIG::Level* l:_Levels){
+    //     if (l->Level == level){
+    //         _IsEmptyLevel = false;
+    //         return l;
+    //     }
+    // }
+    // _IsEmptyLevel = true;
+    // return nullptr;
+    for (int i =0; i<_Levels.size();i++){
+        if (_Levels[i]->Level == level){
+            _IsEmptyLevel = false;
+            return _Levels[i];
+        }
     }
+
+
+    // CONFIG::Level emptylevel;
+    // if (level < _Levels.size()){
+    //     _IsEmptyLevel = false;
+    //     return _Levels[level];
+    // }
 
     _IsEmptyLevel = true;
     return nullptr;

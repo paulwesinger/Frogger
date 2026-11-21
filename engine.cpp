@@ -34,7 +34,7 @@ TestEngine::~TestEngine(){
     delete frogdeath;
     delete Croco_Row_3;
 
-    for(int i=0; i< _AnyLevel.GetAllLevels().size();i++){
+    for(int i=1; i<= _AnyLevel.GetAllLevels().size();i++){
         CONFIG::Level* l = _AnyLevel.GetLevelData(i);
         _AnyLevel.ResetLevel(*l);
     }
@@ -1379,7 +1379,7 @@ void TestEngine::Run(){
                 case GAMESTATE::StartUpFinished:
 
                     // Den 1. level hole:
-                    _Level = _AnyLevel.GetLevelData(((int)_GameLevel) -1); // Gamelevel startet bei 1 !!!
+                   // _Level = _AnyLevel.GetLevelData(((int)_GameLevel)); // Gamelevel startet bei 1 !!!
 
                     RenderBackgroundSprites();
                     RenderFloatingObjects();
@@ -1651,11 +1651,11 @@ void TestEngine::Run(){
                     RenderArrivedFrogs();
                     audio->PlayBackrgoundSound(sound_MainTheme);
 
-                    _Level=_AnyLevel.GetLevelData(((int)_GameLevel-1));
+                    _Level=_AnyLevel.GetLevelData(((int)_GameLevel));
                     // Testen,obs den nächsten level überhaupt shon gibt..
                     if (_AnyLevel.IsEmptyLevel())
 
-                        _Level = _AnyLevel.GetLevelData(0); // Nein, wir nehmen den 1 level her...Todo: den letzten level wieder nehmen
+                        _Level = _AnyLevel.GetLevelData(1); // Nein, wir nehmen den 1 level her...Todo: den letzten level wieder nehmen
 
                     GameState = GAMESTATE::Loop;
                     break;
@@ -1867,21 +1867,18 @@ void TestEngine::_ResetTimeCounter(GAMELEVEL level){
 
     _TimeCounter = _Level->TimePerLevel;
 
+    // switch (level) {
 
+    // case GAMELEVEL::Level_1: _TimeCounter = _Level->TimePerLevel;//  TIMELEVEL_1; break;
+    // case GAMELEVEL::Level_2: _TimeCounter = TIMELEVEL_2; break;
+    // case GAMELEVEL::Level_3: _TimeCounter = TIMELEVEL_3; break;
+    // case  GAMELEVEL::Level_4: _TimeCounter = TIMELEVEL_4; break;   /// usw... an jeden level anpassen !! je höher , je kürzer
+    // case GAMELEVEL::Level_5: _TimeCounter = TIMELEVEL_5; break;
 
-
-    switch (level) {
-
-    case GAMELEVEL::Level_1: _TimeCounter = _Level->TimePerLevel;//  TIMELEVEL_1; break;
-    case GAMELEVEL::Level_2: _TimeCounter = TIMELEVEL_2; break;
-    case GAMELEVEL::Level_3: _TimeCounter = TIMELEVEL_3; break;
-    case  GAMELEVEL::Level_4: _TimeCounter = TIMELEVEL_4; break;   /// usw... an jeden level anpassen !! je höher , je kürzer
-    case GAMELEVEL::Level_5: _TimeCounter = TIMELEVEL_5; break;
-
-    default:
-        _TimeCounter = TIMELEVEL_DEFAULT;
-        break;
-    }
+    // default:
+    //     _TimeCounter = TIMELEVEL_DEFAULT;
+    //     break;
+    // }
 }
 
 void TestEngine::_ResetScore(){
@@ -2079,8 +2076,6 @@ bool TestEngine::InitUserObjects(){
 
 
     InitFromAnyLevel();
-
-
 
     // --------------------------
     // Test des highscore ranking
@@ -2357,6 +2352,7 @@ void TestEngine::InitFromAnyLevel(){
     int i=0;
     for(CONFIG::Level *l : _AnyLevel.GetAllLevels()){
         int row = 0;
+        i=0;
         for(CONFIG::Row r: l->Rows){
             int step ;
             for (ENGINE::Sprite* sp: r.Objects){
@@ -2505,7 +2501,7 @@ void TestEngine::SoundHandler(){
 
 void TestEngine::StartUp(){
 
-    _Level = _AnyLevel.GetLevelData(((int)_GameLevel) -1);
+    _Level = _AnyLevel.GetLevelData(((int)_GameLevel));
     ResetGame();
     audio->ChannelToListen(AUDIO_Channel_StartUp);
   //  audio->PlaySound(sound_Startup,AUDIO_Channel_StartUp);

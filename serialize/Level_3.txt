@@ -65,7 +65,7 @@ Step_Object 4
 OBJECTS_End
 END_ROW
 
-Anm.: Row 6 = Geheg in der 
+#Anm.: Row 6 = Geheg in der
 #Row 6
 ROW_Begin
 RowNumber 5
