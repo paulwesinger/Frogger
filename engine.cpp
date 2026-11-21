@@ -589,9 +589,6 @@ void TestEngine::RenderFrog(){
 }
 
 void TestEngine::RenderVehicles(){
-
-
-
     for (int i=6; i<_Level->Rows.size(); i++){
      //   if (i == 8)
      //       continue; // wegen der boliden mit sound
@@ -600,13 +597,10 @@ void TestEngine::RenderVehicles(){
 
             ENGINE::Sprite* sp = _Level->Rows[i].Objects[j];
 
-            int tile = sp->RenderFromTile();
-
-            if (tile > 4)
-            {
-                bool wurscht = true;
-            }
-            sp-> MoveSprite(sp->RenderFromTile(),sp->RenderFromTile(),0,0,100,step,0,_Elapsed);
+            if ( j == 7)
+                sp-> MoveSprite(sp->RenderFromTile(),sp->RenderFromTile(),0,0,100,step,0,_Elapsed,true);
+            else
+               sp-> MoveSprite(sp->RenderFromTile(),sp->RenderFromTile(),0,0,100,step,0,_Elapsed);
         }
     }
 
@@ -1890,56 +1884,6 @@ string TestEngine::_Score2String(){
     return std::to_string(_gameScore);
 }
 
-
-CONFIG::Level TestEngine:: InitLevel(CONFIG::ENEMYTYPE enemytype,CONFIG::OBJECTTYPE objecttype,
-                int step, int countobjects, int countenemies, int gap_beetwen){
-
-    switch (objecttype){
-        case CONFIG::OBJECTTYPE::Baum_Kurz:{
-            break;
-        }
-        case CONFIG::OBJECTTYPE::Baum_Lang:{
-            break;
-        }
-            // .....
-    }
-
-    // einen level zusammenbauen und zurückgeben
-
-}
-
-void TestEngine::InitLevels(){    
-
-     CONFIG::Row r1;
-    // CONFIG::Row r2;
-    // // .....
-    // // .....
-
-     // Enemies für Row 1:
-     CONFIG::OBJECTTYPE et = CONFIG::OBJECTTYPE::Baum_Kurz;
-     int x = 0;
-     for (int i =0; i < FLOATOBJECTS_PER_ROW_1;i++){   // FLOATOBJECTS_PER_ROW ersetzen durch LEVEL_x_ROW1
-         ENGINE::Sprite* sp = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum320x68.png",_Shader);
-         sp->InitTextureMap(1,1);
-         sp->SetPosition(x,352);
-         sp->StartAnimation(0,0);
-
-         r1.Objects.push_back(sp);
-         x+= 480;
-     }
-
-     //das ganze jetzt noch mit enemy(wenn vorhanden) , den step dazu und row1 ist fertig....
-     // Hilfsfunktion:
-    //CONFIG::Level  InitLevel(EnemyType,Objecttype,Step)
-
-
-    // std::vector<CONFIG::Row> rows;
-    // rows.push_back(r1);
-    // rows.push_back(r2);
-    // _AnyLevel->AddLevelConfiguration(1,60,rows);
-
-}
-
 void TestEngine::InitGameOverScreen(){
 
     // ErklärText...
@@ -2241,11 +2185,8 @@ bool TestEngine::InitUserObjects(){
     // }
 
     InitCroco();
-    InitTreeRows();
     InitVehicles();
     InitGameOverScreen();
-    //InitLevels();
-
     // Default settings at start
     _TileX = 0;
     _TileY = 0;
@@ -2460,38 +2401,6 @@ void TestEngine::InitCroco(){
     Croco_Row_3->InitTextureMap(2,1);
     Croco_Row_3->SetPosition(x,226);
     Croco_Row_3->StartAnimation(0,1);
-}
-
-void TestEngine::InitTreeRows(){
-    // -------------------------
-    // Bäume Row1 - Row5
-    // -------------------------
-    // int x = 0;
-    // for (int i =0; i < FLOATOBJECTS_PER_ROW_5;i++){
-    //     Baum_Row5[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum320x68.png",_Shader);
-    //     Baum_Row5[i]->InitTextureMap(1,1);
-    //     Baum_Row5[i]->SetPosition(x,352);
-    //     Baum_Row5[i]->StartAnimation(0,0);
-    //     x+= 480;
-    // }
-
-    // x = 250;
-    // for (int i =0; i < FLOATOBJECTS_PER_ROW_3;i++){
-    //     Baum_Row3[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum192x68.png",_Shader);
-    //     Baum_Row3[i]->InitTextureMap(1,1);
-    //     Baum_Row3[i]->SetPosition(x,226);
-    //     Baum_Row3[i]->StartAnimation(0,0);
-    //     x+= 300;
-    // }
-
-    // x = 0;
-    // for (int i =0; i < FLOATOBJECTS_PER_ROW_1;i++){
-    //     Baum_Row1[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Baum320x68.png",_Shader);
-    //     Baum_Row1[i]->InitTextureMap(1,1);
-    //     Baum_Row1[i]->SetPosition(x,98);
-    //     Baum_Row1[i]->StartAnimation(0,0);
-    //     x+= 420;
-    // }
 }
 
 void TestEngine::SoundHandler(){

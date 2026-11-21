@@ -372,16 +372,12 @@ private:
     static void SoundHandler();
     void ChangeGameState(GAMESTATE state);
     int FrogInRow();// Die aktuelle "Zeile" vom Frosch...
-    void GetNewState();
-    void InitTreeRows();
-    void ReleaseTrees();
+    void GetNewState();  
     void InitTextMap();
     void InitVehicles();
     void InitCroco();
     void InitAudio();
     void InitGameOverScreen();
-    void InitLevels();
-    // Testeise aus AnyLevel:
     void InitFromAnyLevel();
 
     // den Score des 5. platzes ermitteln,
@@ -406,8 +402,6 @@ private:
     void StartDieAnimation(int starttile, int endtile); // Der Frosch darf nich leiden..
     void RenderFloatingObjects();
     void ResetLevel();
-
-
 };
 
 #endif // ENGINE_H
