@@ -39,26 +39,6 @@ TestEngine::~TestEngine(){
         _AnyLevel.ResetLevel(*l);
     }
 
-    //     int i =0;
-    //     for(std::vector<CONFIG::Row> row : level.GetLevelRows(i++)){
-
-    //         // Release the objects
-    //         std::vector<ENGINE::Sprite*> sp = row.Objects;
-
-    //         for (std::vector<ENGINE::Sprite*> s: sp)
-    //             delete s;
-    //         row.Objects.clear();
-
-    //         // Release Enemies
-    //         sp = row.Enemies;
-    //         for (std::vector<ENGINE::Sprite*> s: sp)
-    //             delete s;
-    //         row.Enemies.clear();
-    //     }
-
-    //     _AnyLevel->GetAllLevels().clear();
-    // }
-
     std::vector<CONFIG::Level*> levels = _AnyLevel.GetAllLevels();
     for(CONFIG::Level* l: levels){
 
@@ -66,7 +46,6 @@ TestEngine::~TestEngine(){
     }
 
     std::vector<CONFIG::Level*>().swap(levels);
-    //levels.clear();
     levels.shrink_to_fit();
 
 
@@ -84,12 +63,6 @@ TestEngine::~TestEngine(){
     for (int i =0; i<WALLS; i++)
          delete Walls[i];
 
-    // for (int i =0; i<TURTLES_ROW_2; i++)
-    //     delete turtlesRow2[i];
-
-    // for (int i =0; i<TURTLES_ROW_4; i++)
-    //     delete turtlesRow4[i];
-
     for(ENGINE::Sprite * sp:_AvailableFrogs){
         delete sp;
     }
@@ -99,12 +72,7 @@ TestEngine::~TestEngine(){
     }
 
     _BestPlayers.clear();
-
     _AvailableFrogs.clear();
-
-
-   // ReleaseTrees();
-   // ReleaseVehicles();
 
     delete _Score;
     delete _HighScore;
@@ -137,36 +105,6 @@ TestEngine::~TestEngine(){
     // Mixer_Music freigeben
     Mix_FreeMusic(sound_MainTheme);
     Mix_FreeMusic(sound_Start);
-}
-
-void TestEngine::ReleaseTrees(){
-    // for(int i = 0; i < FLOATOBJECTS_PER_ROW_1; i++)
-    //     delete Baum_Row1[i];
-
-    // for(int i = 0; i < FLOATOBJECTS_PER_ROW_3; i++)
-    //     delete Baum_Row3[i];
-
-    // for(int i = 0; i < FLOATOBJECTS_PER_ROW_5; i++)
-    //     delete Baum_Row5[i];
-}
-
-void TestEngine::ReleaseVehicles(){
-    // for(int i = 0; i < VEHICLES_PER_ROW_11; i++)
-    //     delete Vehicle_Row11[i];
-
-    // for(int i = 0; i < VEHICLES_PER_ROW_10; i++)
-    //     delete Vehicle_Row10[i];
-
-    // for(int i = 0; i < VEHICLES_PER_ROW_9; i++)
-    //     delete Vehicle_Row9[i];
-
-    // for(int i = 0; i < VEHICLES_PER_ROW_8; i++)
-    //     delete Vehicle_Row8[i];
-
-    // for(int i = 0; i < VEHICLES_PER_ROW_7; i++) {
-    //     delete Vehicle_Row7[i];
-    //     delete Vehicle_Row7_2[i];
-    // }
 }
 
 bool TestEngine::LoadSurface(string path){

@@ -381,8 +381,6 @@ private:
     void InitAudio();
     void InitGameOverScreen();
     void InitLevels();
-
-
     // Testeise aus AnyLevel:
     void InitFromAnyLevel();
 
@@ -390,9 +388,6 @@ private:
     // ob der aktuelle spieler überhaupt in die bestenliste aufgenommen wird
     int FifthScore_ofThe_Best();
     void AddPlayerToHighScoreList(SCORE::HighScorePlayer * player);
-
-    void ReleaseVehicles();
-
     void RenderNameInputScreen();
     void RenderBackgroundSprites();
     void RenderStartScreen();
@@ -409,8 +404,6 @@ private:
     void RenderCrocos();    
     int GetFloatingStep();
     void StartDieAnimation(int starttile, int endtile); // Der Frosch darf nich leiden..
-
-
     void RenderFloatingObjects();
     void ResetLevel();
 
