@@ -225,7 +225,42 @@ void ENGINE::Sprite::MoveSprite(int starttile, int lasttile, int tilesizeX, int 
 }
 
 
+void ENGINE::Sprite::MoveSprite(uint64_t elapsed){
+    deltatime += elapsed;
+     sPoint p = Pos();
+    if (deltatime > _TimePerSequence){
+        // if (_CountTiles > 1 && _NextTile < _CountTiles) {
+        //     _NextTile ++;
+        // }
 
+        double step= 0;
+        if (_ToPosX > 0){
+            step = (_TimeToAnimate / (double)_StepX) * (double)deltatime;
+            if (step > 0)
+            {
+                setPos(p.x + step,p.y);
+            }
+        }
+        else{
+            step = (_TimeToAnimate / (double)_StepY) * (double)deltatime;
+            if (step > 0)
+            {
+                setPos(p.x,p.y + step);
+            }
+        }
+        RenderFromAsset(_StartTileX,_StartTileY);
+    }
+    else
+    if (deltatime > _TimeToAnimate){
+        _AnimationDone = true;
+
+       setPos(_ToPosX,_ToPosY);
+       RenderFromAsset(_EndTileX,_EndTileY);
+       EndAnimation(_EndTileX,_EndTileY,200,elapsed);
+
+    }
+    //RenderFromAsset(_StartTileX,_StartTileY);
+}
 
 
 
@@ -464,7 +499,7 @@ void ENGINE::Sprite::EndAnimation(int endtileX, int endtileY, uint64_t delay,uin
         _IsLocked = false;
         _IsRunning = false;
         _EndAnimationDone = false;
-      //  RenderFromAsset(endtileX,endtileY);
+        RenderFromAsset(endtileX,endtileY);
         time += elapsed;
         cout << "FrogPos X : "<< _Pos.x << "   FrogPos Y : "<< _Pos.y << std::endl;
     }
@@ -479,6 +514,31 @@ bool ENGINE::Sprite::AnimationDone(){ return _AnimationDone; }
 
 bool ENGINE::Sprite::EndAnimationDone(){
     return _EndAnimationDone;
+}
+
+void ENGINE::Sprite::StartAnimation(int fromPosX, int fromPosY, int toPosX, int toPosY,
+                                    int starttilecolumn, int starttilerow,
+                                    int endtilex, int endtiley, uint64_t timetoanimate, int counttiles){
+    _CountTiles = counttiles;
+    _StepX = toPosX-fromPosX;
+    _StepY = toPosY-fromPosY;
+
+    _TimePerSequence = timetoanimate / _CountTiles;
+    _AnimationDone = false;
+    _ToPosX = toPosX;
+    _ToPosY = toPosY;
+    _FromPosX = fromPosX;
+    _FromPosY = fromPosY;
+    deltatime = 0;
+    _NextTile = starttilecolumn;
+
+    _StartTileX = starttilecolumn;
+    _StartTileY = starttilerow;
+    _EndTileX = endtilex;
+    _EndTileY = endtiley;
+
+
+    RenderFromAsset(starttilecolumn,starttilerow);
 }
 
 void ENGINE::Sprite::StartAnimation(int firsttile, int lasttile){

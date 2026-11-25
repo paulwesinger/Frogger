@@ -119,9 +119,37 @@ bool TestEngine::LoadSurface(string path){
     return false;
 }
 
-void TestEngine::AnimateFrog(int starttilex,int starttiley,int endtilex,int endtiley, int stepx, int stepy){
+void TestEngine::AnimateFrog(int starttilex,int starttiley,int endtilex,
+                             int endtiley, int stepx, int stepy,int timefak){
+
+    // if (frog->AnimationDone()){
+    //     if ( frog->EndAnimationDone()){
+
+    //         if (stepx != 0)
+    //             frog->StartAnimation(frog->PosX(),frog->PosY(),frog->PosX()+stepx,frog->PosY(),
+    //                                 starttilex,starttiley,
+    //                                 endtilex,endtiley,Frogger_TIME,1);
+    //         else
+    //             frog->StartAnimation(frog->PosX(),frog->PosY(),frog->PosX(),frog->PosY()+stepy,
+    //                                  starttilex,starttiley,
+    //                                  endtilex,endtiley,Frogger_TIME,1);
+    //     }
+    // }
+    // else{
+    //     frog->MoveSprite(_Elapsed);
+    // }
+
+
+    // if ( frog->EndAnimationDone()){
+    //     frog->StartAnimation(starttilex,starttiley,Frogger_TIME,  2,stepx,stepy);
+    // }
+    // else{
+    //     frog->MoveSprite(starttilex,starttiley,0,0,Frogger_TIME,stepx,stepy);
+    // }
+
+
     if (frog->AnimationDone()) {
-        frog->EndAnimation(endtilex,endtiley,Frogger_END_DELAY,_Elapsed);
+        frog->EndAnimation(endtilex,endtiley,Frogger_END_DELAY* timefak,_Elapsed);
 
         if (frog->EndAnimationDone())
             frog->StartAnimation(starttilex,starttiley,Frogger_TIME,Frogger_FRAMES,stepx,stepy);
@@ -201,6 +229,7 @@ bool TestEngine::UserUpdate(KEYBOARDSTATE state){
         _EndTileX = 6; _EndTileY = 0;
 
         AnimateFrog(_TileX,_TileY,_EndTileX,_EndTileY,_StepXFrog,_StepYFrog);
+
         // if (frog->AnimationDone()) {
         //     frog->EndAnimation(_EndTileX,_EndTileY,Frogger_END_DELAY,_Elapsed);
 
@@ -233,7 +262,8 @@ void TestEngine::HandleMessage(){
         case BTN_UP_LEFT_KEY:
         case BTN_UP_RIGHT_KEY:
 
-            frog->EndAnimation(_TileX,_TileY,Frogger_END_DELAY,_Elapsed);
+            //AnimateFrog(_TileX,_TileY,_EndTileX,_EndTileY,_StepXFrog,_StepYFrog);
+            //frog->EndAnimation(_TileX,_TileY,Frogger_END_DELAY,_Elapsed);
             audio->PlaySound(sound_Hop,AUDIO_Channel_Hop);
             cout << "Animation ends" << endl;
 

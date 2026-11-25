@@ -384,7 +384,8 @@ private:
     // ob der aktuelle spieler überhaupt in die bestenliste aufgenommen wird
     int FifthScore_ofThe_Best();
     void AddPlayerToHighScoreList(SCORE::HighScorePlayer * player);
-    void AnimateFrog(int starttilex,int starttiley,int endtilex,int endtiley, int stepx, int stepy);
+    void AnimateFrog(int starttilex, int starttiley, int endtilex, int endtiley, int stepx,
+                     int stepy, int timefak = 1);
     void RenderNameInputScreen();
     void RenderBackgroundSprites();
     void RenderStartScreen();

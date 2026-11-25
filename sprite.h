@@ -42,6 +42,7 @@ public:
     void MoveSprite(int pixelsX, int pixelsY, uint64_t timetoanimate, int steps, uint64_t elapsed, int tilex, int tiley);
     void MoveSprite(int starttile, int lasttile, int tilesizeX, int tilesizeY, uint64_t timeperTile, int stepx, int stepy,
                     uint64_t elapsed,bool mirrorX=false,bool mirrorY=false);
+    void MoveSprite(uint64_t elapsed);
 
     void Animate(uint64_t elapsed, int pixelXperSecond, int pixelYperSecond, int fromTileX, int toTileX, int tileY);
     void InitTextureMap(int colums,int rows);
@@ -49,6 +50,8 @@ public:
     bool EndAnimationDone();
     void StartAnimation(int tileX, int tileY, uint64_t timetoanimatem, int stepsPerMove, int pixelsX, int pixelsY);
     void StartAnimation(int firsttile, int lasttile);
+    void StartAnimation(int fromPosX,int fromPosY,int toPosX,int toPosY,int starttilecolumn,int starttilerow,
+                        int starttile, int endtile,uint64_t timetoanimate,int counttiles);
     void EndAnimation(int endtileX, int endtileY, uint64_t delay, uint64_t elapsed);
 
     void SetPosition(int x, int y);
@@ -97,22 +100,35 @@ protected:
     bool _IsDiver = false;  // Nur für die Turtles derzeit eventuel neue abgeleitete klasse erstellen !
 
     Bounds _Bounds;
-    int _NextTile;
-    int _EndTile;
-    int _CountSteps;
+    int _NextTile = 0;
+
+    int _CountSteps = 1;
+    int _CountTiles = 1;
+    int _StepX = 0;
+    int _StepY = 0;
 
 
     uint64_t _TimePerSequence;
-    int _ToPosX;
-    int _ToPosY;
+    int _ToPosX=0;
+    int _ToPosY=0;
     int _RenderFromTile = 0;
     bool _AnimationDone;
     bool _EndAnimationDone;
+    int _FromPosX = 0;
+    int _FromPosY = 0;
+
+    int _StartTileX = 0;
+    int _StartTileY = 0;
+    int _EndTileX = 0;
+    int _EndTileY = 0;
+    int _EndTile = 0;
+
     uint64_t _TimeToAnimate;
 
 private:
     uint64_t steptime = 0;
     uint64_t time = 0;
+    uint64_t deltatime = 0;
 
     bool _AnimateReverse = false;
 
