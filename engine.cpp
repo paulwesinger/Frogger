@@ -119,27 +119,18 @@ bool TestEngine::LoadSurface(string path){
     return false;
 }
 
+void TestEngine::AnimateFrog(int starttilex,int starttiley,int endtilex,int endtiley, int stepx, int stepy){
+    if (frog->AnimationDone()) {
+        frog->EndAnimation(endtilex,endtiley,Frogger_END_DELAY,_Elapsed);
+
+        if (frog->EndAnimationDone())
+            frog->StartAnimation(starttilex,starttiley,Frogger_TIME,Frogger_FRAMES,stepx,stepy);
+    }
+}
+
 bool TestEngine::UserUpdate(KEYBOARDSTATE state){
 
-
-    bool ret = false;
-
-    // switch(state.BtnStateUP){
-    //     case BTN_UP_F1_KEY:
-    //         _FrogCount = 3;
-    //         GameState = GAMESTATE::StartUpFinished;
-    //         _StartNewGame = true;
-    //         break;
-
-    //     case BTN_UP_F2_KEY:
-    //         _FrogCount = 7;
-    //         _StartNewGame = true;
-    //         GameState = GAMESTATE::StartUpFinished;
-    //         break;
-    // }
-
-
-
+    bool ret = false;   
     switch(state.BtnStatePress){
 
     case  BTN_PRESS_UP_KEY:{
@@ -150,13 +141,16 @@ bool TestEngine::UserUpdate(KEYBOARDSTATE state){
         _TileY = 0;
         _EndTileX = 0; _EndTileY = 0;
 
-        if (frog->AnimationDone()) {
-            frog->EndAnimation(_EndTileX,_EndTileY,Frogger_END_DELAY,_Elapsed);
+        AnimateFrog(_TileX,_TileY,_EndTileX,_EndTileY,_StepXFrog,_StepYFrog);
 
-            if (frog->EndAnimationDone())
-                frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepXFrog,_StepYFrog);
 
-        }
+        // if (frog->AnimationDone()) {
+        //     frog->EndAnimation(_EndTileX,_EndTileY,Frogger_END_DELAY,_Elapsed);
+
+        //     if (frog->EndAnimationDone())
+        //         frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepXFrog,_StepYFrog);
+
+        // }
         break;
     }
 
@@ -168,14 +162,16 @@ bool TestEngine::UserUpdate(KEYBOARDSTATE state){
         _TileY = 0;
         _EndTileX = 4; _EndTileY = 0;
 
-        if (frog->AnimationDone()) {
-            frog->EndAnimation(_EndTileX,_EndTileY,Frogger_END_DELAY,_Elapsed);
+        AnimateFrog(_TileX,_TileY,_EndTileX,_EndTileY,_StepXFrog,_StepYFrog);
 
-            if (frog->EndAnimationDone())
-                frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepXFrog,_StepYFrog);
+        // if (frog->AnimationDone()) {
+        //     frog->EndAnimation(_EndTileX,_EndTileY,Frogger_END_DELAY,_Elapsed);
+
+        //     if (frog->EndAnimationDone())
+        //         frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepXFrog,_StepYFrog);
 
 
-        }
+        // }
         break;
 
     case BTN_PRESS_LEFT_KEY:
@@ -186,13 +182,14 @@ bool TestEngine::UserUpdate(KEYBOARDSTATE state){
         _TileY = 0;
         _EndTileX = 2; _EndTileY = 0;
 
-        if (frog->AnimationDone()) {
-            frog->EndAnimation(_EndTileX,_EndTileY,Frogger_END_DELAY,_Elapsed);
+        AnimateFrog(_TileX,_TileY,_EndTileX,_EndTileY,_StepXFrog,_StepYFrog);
+        // if (frog->AnimationDone()) {
+        //     frog->EndAnimation(_EndTileX,_EndTileY,Frogger_END_DELAY,_Elapsed);
 
-            if (frog->EndAnimationDone())
-                frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepXFrog,_StepYFrog);
+        //     if (frog->EndAnimationDone())
+        //         frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepXFrog,_StepYFrog);
 
-        }
+        // }
         break;
 
     case BTN_PRESS_RIGHT_KEY:
@@ -203,14 +200,15 @@ bool TestEngine::UserUpdate(KEYBOARDSTATE state){
         _TileY = 0;
         _EndTileX = 6; _EndTileY = 0;
 
-        if (frog->AnimationDone()) {
-            frog->EndAnimation(_EndTileX,_EndTileY,Frogger_END_DELAY,_Elapsed);
+        AnimateFrog(_TileX,_TileY,_EndTileX,_EndTileY,_StepXFrog,_StepYFrog);
+        // if (frog->AnimationDone()) {
+        //     frog->EndAnimation(_EndTileX,_EndTileY,Frogger_END_DELAY,_Elapsed);
 
-            if (frog->EndAnimationDone())
-                frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepXFrog,_StepYFrog);
+        //     if (frog->EndAnimationDone())
+        //         frog->StartAnimation(_TileX,_TileY,Frogger_TIME,Frogger_FRAMES,_StepXFrog,_StepYFrog);
 
+        // }
 
-        }
         break;
 
     case BTN_PRESS_SPACE_KEY:
@@ -514,29 +512,6 @@ void TestEngine::RenderFloatingObjects(){
     for (ENGINE::Sprite* sp: _Level->Rows[4].Objects){
         sp->MoveSprite(0,0,128,64,100,step,0,_Elapsed);
     }
-}
-
-
-void TestEngine::RenderWood(){
-
-   // RenderFloatingObjects();
-
-//     bool tmp;
-//     for (int i =0; i < FLOATOBJECTS_PER_ROW_1;i++){
-//         // Erstmal alles rendern
-//         Baum_Row1[i]->MoveSprite(0,0,128,64,100,_Step_Trees_1,0,_Elapsed,tmp);
-//     }
-
-//     for (int i =0; i < FLOATOBJECTS_PER_ROW_3;i++){
-//         // Erstmal alles rendern
-//         Baum_Row3[i]->MoveSprite(0,0,128,64,500,_Step_Trees_3,0,_Elapsed,tmp);
-//     }
-// //    RenderCrocos();
-
-//     for (int i =0; i < FLOATOBJECTS_PER_ROW_5;i++){
-//         // Erstmal alles rendern
-//         Baum_Row5[i]->MoveSprite(0,0,128,64,100,_Step_Trees_5,0,_Elapsed,tmp);
-//     }
 }
 
 int TestEngine::GetFloatingStep(){
