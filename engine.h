@@ -374,7 +374,7 @@ private:
     int FrogInRow();// Die aktuelle "Zeile" vom Frosch...
     void GetNewState();  
     void InitTextMap();
-    void InitVehicles();
+
     void InitCroco();
     void InitAudio();
     void InitGameOverScreen();

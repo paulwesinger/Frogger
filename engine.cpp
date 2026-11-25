@@ -234,6 +234,7 @@ void TestEngine::HandleMessage(){
         case BTN_UP_UP_KEY:
         case BTN_UP_LEFT_KEY:
         case BTN_UP_RIGHT_KEY:
+
             frog->EndAnimation(_TileX,_TileY,Frogger_END_DELAY,_Elapsed);
             audio->PlaySound(sound_Hop,AUDIO_Channel_Hop);
             cout << "Animation ends" << endl;
@@ -1238,7 +1239,6 @@ void TestEngine::Run(){
     clock.Start();
 
     GameState = GAMESTATE::Starting;
-
     while (! _Quit) {
 
         StartUp();
@@ -1284,8 +1284,6 @@ void TestEngine::Run(){
             UpdateTime();
 
             // Das ganze mal mit den states:
-
-            bool tmp;
             switch (GameState){
 
                 case GAMESTATE::Paused:
@@ -1372,28 +1370,17 @@ void TestEngine::Run(){
                     break;
 
                 case GAMESTATE::StartUpFinished:
-
-                    // Den 1. level hole:
-                   // _Level = _AnyLevel.GetLevelData(((int)_GameLevel)); // Gamelevel startet bei 1 !!!
-
                     RenderBackgroundSprites();
                     RenderFloatingObjects();
-
-                    //RenderWood();
-                    //RenderTurtles();
                     RenderVehicles();
                     RenderArrivedFrogs();
                     RenderCrocos();
-                    RenderAvailableFrogs();
-                    //RenderAvailableFrogs();
+                    RenderAvailableFrogs();     
                     RenderNextLevelScreen((int)_GameLevel);
-
                     _UpdateTime = true;
                     _TimesIsOut = false;
 
                     RenderTime();
-                   // RenderFrog();
-
                     if (audio->PlaySoundFinished(AUDIO_Channel_StartUp)){
 
                         audio->PlayBackrgoundSound(sound_MainTheme);
@@ -1415,18 +1402,14 @@ void TestEngine::Run(){
 
                 case GAMESTATE::Run:
                     RenderBackgroundSprites();
-                    RenderFloatingObjects();
-                    //RenderWood();
-                    //RenderTurtles();
+                    RenderFloatingObjects(); 
                     RenderVehicles();
                     RenderArrivedFrogs();
                     RenderCrocos();
                     RenderScore();
-
                     RenderFrog();
                     RenderTime();
                     RenderAvailableFrogs();
-
                     if ( ! snake->AnimationDone())
                         snake->MoveSprite(0,2,128,64,80,_Step_Snake,0,_Elapsed);
                     else{
@@ -1442,26 +1425,21 @@ void TestEngine::Run(){
                 case GAMESTATE::FloatingRight:
                 case GAMESTATE::FloatingLeft:
                     RenderBackgroundSprites();
-                    RenderFloatingObjects();
-                    //RenderWood();
-                    RenderScore();
-                    //RenderTurtles();
+                    RenderFloatingObjects();                  
+                    RenderScore();                   
                     RenderVehicles();
                     RenderCrocos();
                     RenderArrivedFrogs();
                     RenderTime();
                     RenderFrog();
                     RenderAvailableFrogs();
-
                     break;
 
                 case GAMESTATE::TimeOut:
                     RenderBackgroundSprites();
-                    RenderFloatingObjects();
-                    //RenderWood();
+                    RenderFloatingObjects();                   
                     RenderScore();
-                    RenderVehicles();
-                    //RenderTurtles();
+                    RenderVehicles();                  
                     RenderCrocos();
                     RenderTime();
                     RenderArrivedFrogs();
@@ -1470,15 +1448,12 @@ void TestEngine::Run(){
                     GameState = GAMESTATE::Die;
                     StartDieAnimation(0,6);
 
-
                     break;
                 case GAMESTATE::Plunk:
                     RenderBackgroundSprites();
-                    RenderFloatingObjects();
-                    //RenderWood();
+                    RenderFloatingObjects();                   
                     RenderScore();
-                    RenderVehicles();
-                    //RenderTurtles();
+                    RenderVehicles();               
                     RenderCrocos();
                     RenderTime();
                     RenderArrivedFrogs();
@@ -1495,10 +1470,8 @@ void TestEngine::Run(){
                     }                   break;
                 case GAMESTATE::Die:
                     RenderBackgroundSprites();
-                    RenderFloatingObjects();
-                    //RenderWood();
-                    RenderScore();
-                    //RenderTurtles();
+                    RenderFloatingObjects();                    
+                    RenderScore();                    
                     RenderVehicles();
                     RenderCrocos();
                     RenderTime();
@@ -1521,24 +1494,19 @@ void TestEngine::Run(){
 
                 case GAMESTATE::RemoveFrog:
                     RenderBackgroundSprites();
-                    RenderFloatingObjects();
-                    //RenderWood();
-                    RenderScore();
-                    //RenderTurtles();
+                    RenderFloatingObjects();                   
+                    RenderScore();                  
                     RenderVehicles();
                     RenderCrocos();
                     RenderTime();
                     RenderArrivedFrogs();
                     _FrogCount --;
-
                     if (_AvailableFrogs.size() > 0){
 
                         delete _AvailableFrogs[_AvailableFrogs.size()-1];
                         _AvailableFrogs.pop_back();
                     }
-
                     RenderAvailableFrogs();
-
 
                     cout << "Frösche " << _FrogCount << endl;
 
@@ -1560,10 +1528,8 @@ void TestEngine::Run(){
                 case GAMESTATE::Arrived:{
 
                     RenderBackgroundSprites();
-                    RenderFloatingObjects();
-                    //    RenderWood();
-                    RenderScore();
-                    //    RenderTurtles();
+                    RenderFloatingObjects();                   
+                    RenderScore();                   
                     RenderVehicles();
                     RenderCrocos();
                     RenderArrivedFrogs();
@@ -1625,15 +1591,12 @@ void TestEngine::Run(){
 
                 case GAMESTATE::LevelUp:{
                     RenderBackgroundSprites();
-                    RenderFloatingObjects();
-                    //7RenderWood();
-                    RenderScore();
-                    //RenderTurtles();
+                    RenderFloatingObjects();                    
+                    RenderScore();                    
                     RenderVehicles();
                     RenderCrocos();                   
                     RenderTime();
                     RenderAvailableFrogs();
-
                     ClearArrivedFrogs();
                     RenderArrivedFrogs();
                     audio->PlayBackrgoundSound(sound_MainTheme);
@@ -2002,15 +1965,12 @@ bool TestEngine::ReadBestFromDisk(){
 bool TestEngine::InitUserObjects(){
 
     bool ret = true;
-    Serializer = new SERIALIZE::Serialize("../../serialize/",GetShader(),_ResX,_ResY);
-//    ser.SerializeData("../../serialize/ser.txt");
-
+    Serializer = new SERIALIZE::Serialize("/home/paul/workspace/Frogger/serialize/",GetShader(),_ResX,_ResY);
 
     if (Serializer->DeSerializeData()){
         _AnyLevel = Serializer->AnyLevels();
         LoadingDone = true;
     }
-
 
     InitFromAnyLevel();
 
@@ -2079,7 +2039,7 @@ bool TestEngine::InitUserObjects(){
 
     frog = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Froggs8x4.png",_Shader);
     // Für Auflösung 1280x960 Für 64 pixel tiles
-    //frog->SetPosition(608,802);
+    frog->SetPosition(608,802);
     frog->InitTextureMap(8,4);
     frog->SetMoveArea(0,32,1280,876);
 
@@ -2144,41 +2104,7 @@ bool TestEngine::InitUserObjects(){
 
     // Mauern und ziele positionieren !!
     Walls[0] -> setPos(0,0);
-
-    // // ----------------------------------
-    // // Schildkröten
-    // // ----------------------------------
-
-    // x = 0;
-    // for (int i =0; i< TURTLES_ROW_2; i++){
-    //     turtlesRow2[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Turtles10x1_64x64.png",_Shader);
-    //     turtlesRow2[i]->InitTextureMap(10,1);
-
-    //     turtlesRow2[i]->SetPosition(x,162);
-    //     turtlesRow2[i]->StartAnimation(0,0);
-
-    //     if (i == 3 || i== 6)
-    //         x += 256;
-    //     else
-    //         x += 64;
-    // }
-
-    // x = 64;
-    // for (int i =0; i< TURTLES_ROW_4; i++){
-    //     turtlesRow4[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Turtles10x1_64x64.png",_Shader);
-    //     turtlesRow4[i]->InitTextureMap(10,1);
-
-    //     turtlesRow4[i]->SetPosition(x,290);
-    //     turtlesRow4[i]->StartAnimation(0,0);
-
-    //     if (i == 3 || i == 5)
-    //         x += 256;
-    //     else
-    //         x += 64;
-    // }
-
-    InitCroco();
-    InitVehicles();
+    InitCroco();  
     InitGameOverScreen();
     // Default settings at start
     _TileX = 0;
@@ -2264,19 +2190,11 @@ bool TestEngine::InitUserObjects(){
     _BestFive->AddText("FOURTH");
     _BestFive->AddText("FITH");
     _BestFive->setColor(glm::vec4(0.0,0.0,1.0,1.0));
-
-
     // Alle Texts mit den korrespondierenden chars init.
     InitTextMap();
-
     InitAudio();
-
-
-
     return ret;
 }
-
-
 
 void TestEngine::InitFromAnyLevel(){
 
@@ -2325,69 +2243,6 @@ void TestEngine::InitFromAnyLevel(){
     }
 }
 
-
-
-
-
-
-void TestEngine::InitVehicles(){
-    // int x = 0;
-    // for (int i =0; i < VEHICLES_PER_ROW_11;i++){
-    //     Vehicle_Row11[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Vehicles6x1_64x64.png",_Shader);
-    //     Vehicle_Row11[i]->InitTextureMap(6,1);
-    //     Vehicle_Row11[i]->SetPosition(x,738);
-    //     Vehicle_Row11[i]->StartAnimation(3,3);
-    //     x+= 250;
-    // }
-
-    // x = 0;
-    // for (int i =0; i < VEHICLES_PER_ROW_10;i++){
-    //     Vehicle_Row10[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Vehicles6x1_64x64.png",_Shader);
-    //     Vehicle_Row10[i]->InitTextureMap(6,1);
-    //     Vehicle_Row10[i]->SetPosition(x,674);
-    //     Vehicle_Row10[i]->StartAnimation(1,1);
-    //     x+= 190;
-    // }
-
-    // x = -64;
-    // for (int i =0; i < VEHICLES_PER_ROW_9;i++){
-    //     Vehicle_Row9[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Vehicles6x1_64x64.png",_Shader);
-    //     Vehicle_Row9[i]->InitTextureMap(6,1);
-    //     Vehicle_Row9[i]->SetPosition(x,610);
-    //     Vehicle_Row9[i]->StartAnimation(2,2);
-    //     x+= 120;
-    // }
-
-    // x = 0;
-    // for (int i =0; i < VEHICLES_PER_ROW_8;i++){
-    //     Vehicle_Row8[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Vehicles6x1_64x64.png",_Shader);
-    //     Vehicle_Row8[i]->InitTextureMap(6,1);
-    //     Vehicle_Row8[i]->SetPosition(x,546);
-    //     Vehicle_Row8[i]->StartAnimation(0,0);
-    //     x+= 300;
-    // }
-
-    // x = 0;
-    // for (int i =0; i < VEHICLES_PER_ROW_7;i++){
-    //     Vehicle_Row7[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Vehicles6x1_64x64.png",_Shader);
-    //     Vehicle_Row7[i]->InitTextureMap(6,1);
-    //     Vehicle_Row7[i]->SetPosition(x,482);
-    //     Vehicle_Row7[i]->StartAnimation(4,4);
-    //     x+= 260;
-    // }
-
-    // x = 64;
-    // for (int i =0; i < VEHICLES_PER_ROW_7;i++){
-    //     Vehicle_Row7_2[i] = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Vehicles6x1_64x64.png",_Shader);
-    //     Vehicle_Row7_2[i]->InitTextureMap(6,1);
-    //     Vehicle_Row7_2[i]->SetPosition(x,482);
-    //     Vehicle_Row7_2[i]->StartAnimation(5,5);
-    //     x+= 260;
-    // }
-
-
-}
-
 void TestEngine::InitCroco(){
     int x = 0;
     Croco_Row_3 = new ENGINE::Sprite(_ResX,_ResY,"/home/paul/workspace/Frogger/images/Crocs392x64_2_1.png",_Shader);
@@ -2406,11 +2261,7 @@ void TestEngine::StartUp(){
     _Level = _AnyLevel.GetLevelData(((int)_GameLevel));
     ResetGame();
     audio->ChannelToListen(AUDIO_Channel_StartUp);
-  //  audio->PlaySound(sound_Startup,AUDIO_Channel_StartUp);
     audio->PlayBackrgoundSound(sound_Start);
- //   _FrogCount = 3;
-
-    GameState = GAMESTATE::Starting;
     _GameLevel = GAMELEVEL::Level_1;
     _StartNewGame = false;
     _TimerGameOver = 0;
