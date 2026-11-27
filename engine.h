@@ -307,6 +307,8 @@ private:
 
     std::string PATHTOBESTPLAYERS = "/home/paul/workspace/Frogger/BestPlayers/Best.txt";
 
+    sPoint _CurrentFrogPos;
+
     // ----------------------------------------
     // X-Steps für cars, Bäume usw..
     // ----------------------------------------

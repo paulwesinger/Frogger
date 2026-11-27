@@ -42,12 +42,14 @@ public:
     void MoveSprite(int pixelsX, int pixelsY, uint64_t timetoanimate, int steps, uint64_t elapsed, int tilex, int tiley);
     void MoveSprite(int starttile, int lasttile, int tilesizeX, int tilesizeY, uint64_t timeperTile, int stepx, int stepy,
                     uint64_t elapsed,bool mirrorX=false,bool mirrorY=false);
-    void MoveSprite(uint64_t elapsed);
+    void MoveSprite(int tilex, int tiley, uint64_t elapsed, int stepx, int stepy);
 
-    void Animate(uint64_t elapsed, int pixelXperSecond, int pixelYperSecond, int fromTileX, int toTileX, int tileY);
+    void Animate(int toposx, int toposy, uint64_t timetoanimate,
+                 int counttiles, int starttile, int endtile, int yrow, uint64_t elapsed);
     void InitTextureMap(int colums,int rows);
     bool AnimationDone();
     bool EndAnimationDone();
+    bool AnimationStarted();
     void StartAnimation(int tileX, int tileY, uint64_t timetoanimatem, int stepsPerMove, int pixelsX, int pixelsY);
     void StartAnimation(int firsttile, int lasttile);
     void StartAnimation(int fromPosX,int fromPosY,int toPosX,int toPosY,int starttilecolumn,int starttilerow,
@@ -122,6 +124,7 @@ protected:
     int _EndTileX = 0;
     int _EndTileY = 0;
     int _EndTile = 0;
+    int _TileRow = 0;
 
     uint64_t _TimeToAnimate;
 
@@ -131,6 +134,7 @@ private:
     uint64_t deltatime = 0;
 
     bool _AnimateReverse = false;
+    bool _AnimationStarted = false;
 
     // Die grösse des sprites in tilesize
 

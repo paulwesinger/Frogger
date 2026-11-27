@@ -225,41 +225,70 @@ void ENGINE::Sprite::MoveSprite(int starttile, int lasttile, int tilesizeX, int 
 }
 
 
-void ENGINE::Sprite::MoveSprite(uint64_t elapsed){
-    deltatime += elapsed;
-     sPoint p = Pos();
-    if (deltatime > _TimePerSequence){
-        // if (_CountTiles > 1 && _NextTile < _CountTiles) {
-        //     _NextTile ++;
-        // }
+void ENGINE::Sprite::MoveSprite(int tilex,int tiley,uint64_t elapsed,int stepx, int stepy){
 
-        double step= 0;
-        if (_ToPosX > 0){
-            step = (_TimeToAnimate / (double)_StepX) * (double)deltatime;
-            if (step > 0)
-            {
-                setPos(p.x + step,p.y);
-            }
-        }
-        else{
-            step = (_TimeToAnimate / (double)_StepY) * (double)deltatime;
-            if (step > 0)
-            {
-                setPos(p.x,p.y + step);
-            }
-        }
-        RenderFromAsset(_StartTileX,_StartTileY);
-    }
-    else
-    if (deltatime > _TimeToAnimate){
+    static double sx = 0.0;
+    static double sy = 0.0;
+
+    steptime += elapsed;
+
+    if (steptime >= _TimeToAnimate){
         _AnimationDone = true;
+        setPos(_FromPosX+_ToPosX,_FromPosY+_ToPosY);
 
-       setPos(_ToPosX,_ToPosY);
-       RenderFromAsset(_EndTileX,_EndTileY);
-       EndAnimation(_EndTileX,_EndTileY,200,elapsed);
-
+        //_Pos.x = _ToPosX;
+        //_Pos.y = _ToPosY;
+        steptime = 0;
     }
-    //RenderFromAsset(_StartTileX,_StartTileY);
+    else {
+        _AnimationDone = false;
+        sx = round((double)elapsed/(double)_TimeToAnimate * stepx);   //pixelsX / steps;
+        sy = round((double)elapsed/(double)_TimeToAnimate * stepy);
+
+        if (sx > 0){
+            if (_Pos.x + sx < _Bounds.x1){
+                setPos(_Pos.x+sx,_Pos.y);
+            }
+
+        }
+        else
+            if (sx < 0){
+                if (_Pos.x + sx - SpriteSize().w > _Bounds.x){
+                    _Pos.x += sx;
+                }
+            }
+
+
+        if (sy > 0){
+            if (_Pos.y + sy < _Bounds.y1){
+                setPos(_Pos.x,_Pos.y+sy);
+            }
+
+        }
+        else
+            if (sy < 0){
+                if (_Pos.y + sy - SpriteSize().h > _Bounds.y){
+                    _Pos.y += sy;
+                }
+            }
+
+        // if (sy >= 1.0 || sy <= -1.0)
+        //     _Pos.y += sy;
+
+        // if (_Pos.x > _ResX)
+        //     _Pos.x = -SpriteSize().w;  //tilesizeX;
+
+        // if (_Pos.x < -SpriteSize().w) //tilesizeX)
+        //     _Pos.x = _ResX;
+
+        // if (_Pos.y > _ResY)
+        //     _Pos.y = -SpriteSize().h; //tilesizeY;
+
+        // if (_Pos.y < -SpriteSize().h) //tilesizeY)
+        //     _Pos.y = - SpriteSize().h; //_ResY;
+    }
+    if (_RenderSprite)
+        RenderFromAsset(tilex,tiley);
 }
 
 
@@ -372,115 +401,91 @@ void ENGINE::Sprite::MoveSprite(int pixelsX, int pixelsY, uint64_t timetoanimate
     if (_RenderSprite)
         RenderFromAsset(_NextTile,tiley);
 }
+bool ENGINE::Sprite::AnimationStarted(){
+    return _AnimationStarted;
+}
 
-void ENGINE::Sprite::Animate(uint64_t elapsed, int pixelXperSecond, int pixelYperSecond,
-                             int fromTileX, int toTileX, int tileY){
+void ENGINE::Sprite::Animate(int toposx,int toposy,uint64_t timetoanimate,int counttiles,
+                             int starttile, int endtile,int yrow,uint64_t elapsed){
 
-    // zum aufaddieren mit elapsed bis 1000
-    // static double stepx = 0;
-    // static double stepy = 0;
-    // static uint64_t second = 0;
-    // static uint64_t steptime = 0;
-    // static int countframes = 0;
+    if ( ! _AnimationStarted){
+        _AnimationStarted = true;
+        deltatime  = 0;
+        if (counttiles <= 0)
+            counttiles = 1;
 
+        _TimeToAnimate = timetoanimate;
+        _TimePerSequence = timetoanimate > 0 ? timetoanimate/ counttiles : timetoanimate;
+        _ToPosX = toposx;
+        _ToPosY = toposy;
+        _StartTileX = starttile;
+        _NextTile = starttile;
+        _EndTileX = endtile;
+        _TileRow = yrow;
+        _AnimationDone = false;
+        RenderFromAsset(starttile,_TileRow);
+    }
+    else{
 
+        double stepx = 0;
+        double stepy = 0;
 
-    // //speedXpersecond und speedYpersecond sind die pixel pro sekunde, tileX und Y geben das tile im image an
-    // second += elapsed;
-    // steptime += elapsed;
-    // countframes ++;
+        steptime += elapsed;
 
-    // //  if (second >= _TimePerSequence) {
+        // Nächste sequence oder fertig..
+        if (steptime >= _TimePerSequence) {
 
-    // //      nextframe++;
+            // wieviel ist ingesamt vergangen?
+            deltatime += steptime;
 
-    // //      if (nextframe > toTileX )
-    // //          nextframe = toTileX;
-    // //     // second = 0;
-    // // }
+            // Wir sind fertig
+            if (deltatime >= _TimeToAnimate){
+                RenderFromAsset(_EndTileX,_TileRow);
+                _AnimationDone = true;
+                _AnimationStarted =false;
+                steptime = 0;
+                deltatime = 0;
+            }
+            else{
 
-    // // double toX = (double)(_ToPosX);
-    // // double toY = (double)(_ToPosY);
+                _NextTile++;
+                if(_NextTile > endtile){
+                    _NextTile = endtile;
+                }
 
-    // double pixelxpersec = (double)(pixelXperSecond);
-    // double pixelypersec = (double)(pixelYperSecond);
+                double pixX = PosX() - _ToPosX;
+                double pixY = PosY() - _ToPosY;
 
-    // // double sx = static_cast<double>(_StartPos.x);
-    // // double sy = static_cast<double>(_StartPos.y);
-    // double timetoanaim = (double)(_TimeToAnimate);
+                stepx = round((double)(steptime)/(double)timetoanimate * pixX);   //pixelsX / steps;
+                stepy = round((double)(steptime)/(double)timetoanimate * pixY);    //pixelsY / steps;
 
+                sPoint pos = Pos();
+                if (PosX() + stepx-SpriteSize().w < _Bounds.x1 && PosX() + stepx > _Bounds.x){
+                    setPos(pos.x + stepx,pos.y);
+                }
 
+                if (PosY() + stepy-SpriteSize().h < _Bounds.y1 && PosY() + stepy > _Bounds.y){
+                    setPos(pos.x ,pos.y+stepy);
+                }
 
-    // // erstmal den faktor für die pixels per frame berechnen..
-    // double pixelperframex;
-    // double pixelperframey;
+                // if (_Pos.x > _ResX)
+                //     _Pos.x = -SpriteSize().w;  //tilesizeX;
 
-    // if (pixelXperSecond != 0 ){
-    //     pixelperframex = pixelxpersec / timetoanaim;
-    //     stepx += pixelperframex * elapsed;
-    // }
-    // //else
-    // //    stepx =0;
+                // if (_Pos.x < -SpriteSize().w) //tilesizeX)
+                //     _Pos.x = _ResX;
 
-    // if (pixelYperSecond != 0){
-    //     pixelperframey = pixelypersec / timetoanaim;
-    //     stepy += pixelperframey * elapsed;
-    // }
+                // if (_Pos.y > _ResY)
+                //     _Pos.y = -SpriteSize().h; //tilesizeY;
 
-
-
-
-
-    // // if (pixelXperSecond > 0 )
-    // // //    stepx = (toX-sx) / timetoanaim * elapsed;  // wird bei 64 pixel breite 64 sein..... muss aber nicht
-    // //     stepx += pixelxpersec  / timetoanaim * elapsed;  // wird bei 64 pixel breite 64 sein..... muss aber nicht
-    // // else
-    // //     stepx = 0;
-
-    // // if (pixelYperSecond> 0)
-    // //     //stepy = (toY-sy) / timetoanaim * elapsed;
-    // //     stepy += pixelypersec / timetoanaim * elapsed;
-    // // else
-    // //     stepy = 0;
-
-    // if (stepx >= 1.0 || stepx <= -1.0)
-    //     _Pos.x += (int)stepx;
-
-    // //if (_Pos.x == (_Pos.x + _ToPosX) )
-    // //    _Pos.x = _ToPosX;
-
-    // if (stepy >= 1.0 || stepy <= -1.0)
-    //     _Pos.y += (int)stepy;
-
-    // std::cout << "Elapsed : " << elapsed << std::endl;
-    // std::cout << "Pos x : " << _Pos.x << std::endl;
-    // std::cout << "Pos y : "  <<_Pos.y << std::endl << std::endl;
+                // if (_Pos.y < -SpriteSize().h) //tilesizeY)
+                //     _Pos.y = - SpriteSize().h; //_ResY;
 
 
 
-
-    // RenderFromAsset(toTileX, tileY);
-
-    // //if (abs(stepx) >= pixelXperSecond && abs(stepy) >= pixelYperSecond){
-
-    // std::cout << "second: " << second << std::endl;
-
-    // if (second >= _TimeToAnimate && ! _AnimationDone) {
-    //     //_Pos.x = _ToPosX; //fromstartX + toDestX;//stepx;
-    //     std::cout << "second: " << second << std::endl;
-
-    //     std::cout << "Count frames : " << countframes << std::endl;
-
-    //     //_Pos.y = _ToPosY;//fromStartY + toDestY;// stepy;
-    //     _AnimationDone = true;
-    //     _IsLocked = true;
-
-    //     second = 0;   // zum aufaddieren mit elapsed bis 1000
-    //     stepx = 0;
-    //     stepy = 0;
-    //     countframes = 0;
-    //     nextframe = toTileX;
-    // }
+                RenderFromAsset(_NextTile,_TileRow);
+            }
+        }
+    }
 }
 
 void ENGINE::Sprite::SetCountSequences(int count){
@@ -495,7 +500,7 @@ void ENGINE::Sprite::EndAnimation(int endtileX, int endtileY, uint64_t delay,uin
 
     if (time <= delay)
     {
-        setPos(_ToPosX,_ToPosY);
+        setPos(_ToPosX,_ToPosY);        
         _IsLocked = false;
         _IsRunning = false;
         _EndAnimationDone = false;
@@ -524,6 +529,7 @@ void ENGINE::Sprite::StartAnimation(int fromPosX, int fromPosY, int toPosX, int 
     _StepY = toPosY-fromPosY;
 
     _TimePerSequence = timetoanimate / _CountTiles;
+    _TimeToAnimate = timetoanimate;
     _AnimationDone = false;
     _ToPosX = toPosX;
     _ToPosY = toPosY;
@@ -614,7 +620,7 @@ void ENGINE::Sprite::StartAnimation(int tileX, int tileY,uint64_t timetoanimatio
         }
     }
 
-  //  RenderFromAsset(tileX,tileY);
+    RenderFromAsset(tileX,tileY);
 }
 
 void ENGINE::Sprite::SetPosition(int x, int y){

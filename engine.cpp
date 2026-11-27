@@ -11,8 +11,8 @@
 #include <imageloader.h>
 
 
-const uint64_t Frogger_TIME = 100;
-const int Frogger_FRAMES = 2; //5;
+const uint64_t Frogger_TIME = 80;
+const int Frogger_FRAMES = 1; //5;
 const uint64_t Frogger_END_DELAY = 100;
 
 const int STEP_X_FROG = 64;
@@ -122,6 +122,8 @@ bool TestEngine::LoadSurface(string path){
 void TestEngine::AnimateFrog(int starttilex,int starttiley,int endtilex,
                              int endtiley, int stepx, int stepy,int timefak){
 
+        frog->Animate(_CurrentFrogPos.x + _StepXFrog,_CurrentFrogPos.y+_StepYFrog,Frogger_TIME,2,_TileX,_EndTileX,_EndTileY,_Elapsed);
+
     // if (frog->AnimationDone()){
     //     if ( frog->EndAnimationDone()){
 
@@ -140,20 +142,27 @@ void TestEngine::AnimateFrog(int starttilex,int starttiley,int endtilex,
     // }
 
 
-    // if ( frog->EndAnimationDone()){
-    //     frog->StartAnimation(starttilex,starttiley,Frogger_TIME,  2,stepx,stepy);
+    // if (frog->AnimationDone()){
+    //     //if ( frog->EndAnimationDone()){
+    //         // if (stepx != 0)
+    //         //     frog->StartAnimation(frog->PosX(),frog->PosY(),frog->PosX()+stepx,frog->PosY(),starttilex,starttiley,endtilex,endtiley,Frogger_TIME,1);
+    //         //else
+    //              frog->StartAnimation(frog->PosX(),frog->PosY(),frog->PosX()+stepx,frog->PosY()+stepy,starttilex,starttiley,endtilex,endtiley,Frogger_TIME,1);
+    //     //}
+    //     //else
+    //       //  frog->RenderFromAsset(_EndTileX,_EndTileY);
     // }
     // else{
-    //     frog->MoveSprite(starttilex,starttiley,0,0,Frogger_TIME,stepx,stepy);
+    //     frog->MoveSprite(starttilex,starttiley,_Elapsed,stepx,stepy);
     // }
 
 
-    if (frog->AnimationDone()) {
-        frog->EndAnimation(endtilex,endtiley,Frogger_END_DELAY* timefak,_Elapsed);
+    // if (frog->AnimationDone()) {
+    //     frog->EndAnimation(endtilex,endtiley,Frogger_END_DELAY* timefak,_Elapsed);
 
-        if (frog->EndAnimationDone())
-            frog->StartAnimation(starttilex,starttiley,Frogger_TIME,Frogger_FRAMES,stepx,stepy);
-    }
+    //     if (frog->EndAnimationDone())
+    //         frog->StartAnimation(starttilex,starttiley,Frogger_TIME,Frogger_FRAMES,stepx,stepy);
+    //}
 }
 
 bool TestEngine::UserUpdate(KEYBOARDSTATE state){
@@ -168,6 +177,10 @@ bool TestEngine::UserUpdate(KEYBOARDSTATE state){
         _TileX = 1;
         _TileY = 0;
         _EndTileX = 0; _EndTileY = 0;
+
+        if ( ! frog->AnimationStarted()){
+            _CurrentFrogPos = frog->Pos();
+        }
 
         AnimateFrog(_TileX,_TileY,_EndTileX,_EndTileY,_StepXFrog,_StepYFrog);
 
@@ -190,7 +203,14 @@ bool TestEngine::UserUpdate(KEYBOARDSTATE state){
         _TileY = 0;
         _EndTileX = 4; _EndTileY = 0;
 
-        AnimateFrog(_TileX,_TileY,_EndTileX,_EndTileY,_StepXFrog,_StepYFrog);
+        if ( ! frog->AnimationStarted() ){
+            _CurrentFrogPos = frog->Pos();
+        }
+
+        //if (_CurrentFrogPos.y < 802)
+            AnimateFrog(_TileX,_TileY,_EndTileX,_EndTileY,_StepXFrog,_StepYFrog);
+        //else
+        //frog->RenderFromAsset(_EndTileX,_EndTileY);
 
         // if (frog->AnimationDone()) {
         //     frog->EndAnimation(_EndTileX,_EndTileY,Frogger_END_DELAY,_Elapsed);
@@ -210,6 +230,9 @@ bool TestEngine::UserUpdate(KEYBOARDSTATE state){
         _TileY = 0;
         _EndTileX = 2; _EndTileY = 0;
 
+        if ( ! frog->AnimationStarted()){
+            _CurrentFrogPos = frog->Pos();
+        }
         AnimateFrog(_TileX,_TileY,_EndTileX,_EndTileY,_StepXFrog,_StepYFrog);
         // if (frog->AnimationDone()) {
         //     frog->EndAnimation(_EndTileX,_EndTileY,Frogger_END_DELAY,_Elapsed);
@@ -228,6 +251,15 @@ bool TestEngine::UserUpdate(KEYBOARDSTATE state){
         _TileY = 0;
         _EndTileX = 6; _EndTileY = 0;
 
+        if ( ! frog->AnimationStarted()){
+            _CurrentFrogPos = frog->Pos();
+        }
+
+       // if (_CurrentFrogPos.x +frog->SpriteSize().w  < _ResX)
+            AnimateFrog(_TileX,_TileY,_EndTileX,_EndTileY,_StepXFrog,_StepYFrog);
+        // else
+        //     frog->RenderFromAsset(_EndTileX,_EndTileY);
+
         AnimateFrog(_TileX,_TileY,_EndTileX,_EndTileY,_StepXFrog,_StepYFrog);
 
         // if (frog->AnimationDone()) {
@@ -245,10 +277,16 @@ bool TestEngine::UserUpdate(KEYBOARDSTATE state){
         break;
     default:
         keyboardtext = "No Key";
-        _StepXFrog = 0;
-        _StepYFrog = 0;
+        // _StepXFrog = 0;
+        // _StepYFrog = 0;
+        // SDL_PumpEvents();
+        // SDL_FlushEvents(SDL_KEYDOWN,SDL_KEYUP);
+        // SDL_ResetKeyboard();
         break;
     }
+
+    SDL_FlushEvents(SDL_KEYDOWN,SDL_KEYUP);
+
 
     return ret;
 }
@@ -263,12 +301,24 @@ void TestEngine::HandleMessage(){
         case BTN_UP_RIGHT_KEY:
 
             //AnimateFrog(_TileX,_TileY,_EndTileX,_EndTileY,_StepXFrog,_StepYFrog);
-            //frog->EndAnimation(_TileX,_TileY,Frogger_END_DELAY,_Elapsed);
+           // frog->EndAnimation(_EndTileX,_EndTileY,Frogger_END_DELAY,_Elapsed);
+           // if (frog->AnimationDone())
+
+            //frog->EndAnimation(_EndTileX,_EndTileY,Frogger_END_DELAY,_Elapsed);
+
+            //AnimateFrog(_TileX,_TileY,_EndTileX,_EndTileY,_StepXFrog,_StepYFrog);
+
             audio->PlaySound(sound_Hop,AUDIO_Channel_Hop);
             cout << "Animation ends" << endl;
 
             if (GameState >= GAMESTATE::Run && GameState < GameOver)
                 _gameScore += 10;
+
+
+           SDL_PumpEvents();
+           SDL_FlushEvents(SDL_KEYDOWN,SDL_KEYUP);
+         //   SDL_ResetKeyboard();
+
             break;
 
 
@@ -864,7 +914,6 @@ void TestEngine::GetNewState(){
                 if (FrogZiel[i]->IsColliding(frog->Pos(),frog->SpriteSize()) ) { // Colliding with ziel sprite
 
                     iscolliding = true;
-
                     if ( ! FrogArrivedDestinatons[i].arrived) {
 
                         _IndexFrogArrived = i;
@@ -1252,10 +1301,16 @@ void TestEngine::Run(){
 
             _Elapsed = clock.Elapsed(); //CLOCK::GameClock::Elapsed();
             //   cout << "Elapsed: " << elapsed  << endl;
-            HandleMessage();
+
+
+
+
 
             KEYBOARDSTATE state =  KeyState();
             UserUpdate(state);// Nur mal testen
+
+            HandleMessage();
+
 
             //        std::this_thread::sleep_for(std::chrono::milliseconds(50));
             // cout << "Key pressed " << keyboardtext <<  endl;
@@ -1388,17 +1443,16 @@ void TestEngine::Run(){
                     RenderTime();
                     if (audio->PlaySoundFinished(AUDIO_Channel_StartUp)){
 
-                        audio->PlayBackrgoundSound(sound_MainTheme);
-                        frog->SetPosition(608,802);
-
-                        GameState = GAMESTATE::Run;
                         // ---------------------------------------
                         // Die Liste mit Available Frogs um einen
                         // verringern, einer kommt ja jetzt ins
                         // Spielfeld
                         // ---------------------------------------
-
                         RemoveFrogFromList();
+
+                        audio->PlayBackrgoundSound(sound_MainTheme);
+                        frog->SetPosition(608,802);
+                        GameState = GAMESTATE::Run;
                         _DontRunAgain = false;
                     }
                     //else
@@ -2046,7 +2100,7 @@ bool TestEngine::InitUserObjects(){
     // Für Auflösung 1280x960 Für 64 pixel tiles
     frog->SetPosition(608,802);
     frog->InitTextureMap(8,4);
-    frog->SetMoveArea(0,32,1280,876);
+    frog->SetMoveArea(0,32,1280,802);
 
     // ---------------------------------------------
     // Snake
